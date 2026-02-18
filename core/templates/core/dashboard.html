@@ -1,0 +1,161 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Welcome back, {{ request.user.username }}</p>
+        </div>
+        <div class="nav-stats">
+            <div class="nav-stat">
+                <span>Wallet</span>
+                <strong>Tk {{ request.user.wallet.balance }}</strong>
+            </div>
+            <div class="nav-stat">
+                <span>Invested</span>
+                <strong>Tk {{ total_invested }}</strong>
+            </div>
+            <div class="nav-stat">
+                <span>Won Profit</span>
+                <strong>Tk {{ total_profit_won }}</strong>
+            </div>
+            <div class="nav-stat">
+                <span>Commission</span>
+                <strong>Tk {{ commission_total }}</strong>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+    <aside class="sidebar">
+        <h3>Menu</h3>
+        <a href="#profile">User Profile</a>
+        <a href="#wallet">Wallet</a>
+        <a href="#new-investment">New Investment</a>
+        <a href="#summary">Investment Summary</a>
+        <a href="#won-list">Won Investments</a>
+        <a href="#wallet-history">Wallet History</a>
+        <a href="{% url 'investment-page' %}">Investment Page</a>
+        <a href="{% url 'referral-info' %}">Referral</a>
+        <a href="{% url 'manual-payment' %}">Manual Payment</a>
+        <a href="{% url 'password_change' %}">Password Change</a>
+        <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+            {% csrf_token %}
+            <button type="submit" class="sidebar-link-btn">Logout</button>
+        </form>
+    </aside>
+
+    <main class="grid">
+        {% if messages %}
+            <section class="card wide">
+                {% for message in messages %}
+                    <div class="alert {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        <section id="profile" class="card">
+            <h2>User Profile</h2>
+            <ul class="list">
+                <li><strong>Username:</strong> {{ request.user.username }}</li>
+                <li><strong>User Type:</strong> {{ request.user.user_type }}</li>
+                <li><strong>Referral Code:</strong> {{ request.user.referral_code }}</li>
+                <li><strong>Email:</strong> {{ request.user.email|default:"-" }}</li>
+                <li><strong>Joined:</strong> {{ request.user.date_joined|date:"Y-m-d H:i" }}</li>
+                <li><strong>Referrer:</strong> {{ request.user.referred_by.username|default:"None" }}</li>
+                <li><strong>Direct Downline:</strong> {{ direct_downline_count }}</li>
+            </ul>
+        </section>
+
+        <section id="wallet" class="card">
+            <h2>Wallet</h2>
+            <p class="big">Tk {{ request.user.wallet.balance }}</p>
+            <p>Total Commission: Tk {{ commission_total }}</p>
+            <p class="subtitle">
+                Add fund from wallet is disabled.
+                Submit from <a href="{% url 'manual-payment' %}">Manual Payment</a>.
+                Balance will be added after admin approval.
+            </p>
+        </section>
+
+        <section id="new-investment" class="card">
+            <h2>Investment Packages</h2>
+            <p class="subtitle">
+                Choose package with duration from
+                <a href="{% url 'investment-page' %}">Investment Page</a>.
+                Amount will move to investment wallet and return after duration.
+            </p>
+        </section>
+
+        <section id="summary" class="card">
+            <h2>Investment Summary</h2>
+            <ul class="list">
+                <li><strong>Total Invested:</strong> Tk {{ total_invested }}</li>
+                <li><strong>Total Won Profit:</strong> Tk {{ total_profit_won }}</li>
+                <li><strong>Total Investments:</strong> {{ investments|length }}</li>
+                <li><strong>Won Investments:</strong> {{ won_investments|length }}</li>
+            </ul>
+        </section>
+
+        <section id="won-list" class="card wide">
+            <h2>Won Investment List</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Principal</th>
+                        <th>Profit Won</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inv in won_investments %}
+                        <tr>
+                            <td>#{{ inv.id }}</td>
+                            <td>Tk {{ inv.principal_amount }}</td>
+                            <td>Tk {{ inv.profit_realized }}</td>
+                            <td>{{ inv.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4">No won investments yet.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+
+        <section id="wallet-history" class="card wide">
+            <h2>Wallet Transaction History</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for tx in wallet_transactions %}
+                        <tr>
+                            <td>{{ tx.tx_type }}</td>
+                            <td>Tk {{ tx.amount }}</td>
+                            <td>{{ tx.description }}</td>
+                            <td>{{ tx.created_at|date:"Y-m-d H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="4">No wallet transactions.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </section>
+    </main>
+    </div>
+</body>
+</html>

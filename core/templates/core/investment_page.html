@@ -1,0 +1,133 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment</title>
+    <link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <h1>Investment Packages</h1>
+            <p>Invest from wallet to investment wallet and get principal back after duration.</p>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h3>Menu</h3>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'dashboard' %}#profile">User Profile</a>
+            <a href="{% url 'dashboard' %}#wallet">Wallet</a>
+            <a href="{% url 'dashboard' %}#new-investment">New Investment</a>
+            <a href="{% url 'dashboard' %}#summary">Investment Summary</a>
+            <a href="{% url 'dashboard' %}#won-list">Won Investments</a>
+            <a href="{% url 'dashboard' %}#wallet-history">Wallet History</a>
+            <a href="{% url 'investment-page' %}">Investment Page</a>
+            <a href="{% url 'referral-info' %}">Referral</a>
+            <a href="{% url 'manual-payment' %}">Manual Payment</a>
+            <a href="{% url 'password_change' %}">Password Change</a>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-link-btn">Logout</button>
+            </form>
+        </aside>
+
+        <main class="grid">
+            {% if messages %}
+                <section class="card wide">
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+
+            <section class="card wide">
+                <h2>Wallet Balances</h2>
+                <ul class="list">
+                    <li><strong>Main Wallet:</strong> Tk {{ request.user.wallet.balance }}</li>
+                    <li><strong>Investment Wallet:</strong> Tk {{ investment_wallet_balance }}</li>
+                    <li><strong>Return Average:</strong> Tk {{ return_average }}</li>
+                </ul>
+            </section>
+
+            <section class="card wide">
+                <h2>Take Investment Package</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    <label for="package_id">Select Package</label>
+                    <select id="package_id" name="package_id" required>
+                        <option value="">Choose package</option>
+                        {% for p in packages %}
+                            <option value="{{ p.id }}">{{ p.name }} - Tk {{ p.amount }} / {{ p.duration_days }} days</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Start Investment</button>
+                </form>
+            </section>
+
+            <section class="card wide">
+                <h2>Active Investments</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Package</th>
+                            <th>Amount</th>
+                            <th>Duration</th>
+                            <th>Ends At</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in active_investments %}
+                            <tr>
+                                <td>#{{ inv.id }}</td>
+                                <td>{{ inv.package.name|default:"-" }}</td>
+                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>{{ inv.duration_days }} days</td>
+                                <td>{{ inv.ends_at|date:"Y-m-d H:i" }}</td>
+                                <td>{{ inv.status }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6">No active investments.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="card wide">
+                <h2>Completed Investments</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Package</th>
+                            <th>Amount</th>
+                            <th>Duration</th>
+                            <th>Returned</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for inv in completed_investments %}
+                            <tr>
+                                <td>#{{ inv.id }}</td>
+                                <td>{{ inv.package.name|default:"-" }}</td>
+                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>{{ inv.duration_days }} days</td>
+                                <td>{% if inv.principal_returned %}Yes{% else %}No{% endif %}</td>
+                                <td>{{ inv.status }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr><td colspan="6">No completed investments yet.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

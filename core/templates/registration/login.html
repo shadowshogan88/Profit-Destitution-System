@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{% static 'core/login.css' %}">
+</head>
+<body>
+    <main class="page">
+        <section class="card">
+            <h1>Sign In</h1>
+            <p class="subtitle">Access your referral dashboard.</p>
+
+            {% if form.errors %}
+                <div class="alert">Invalid username or password.</div>
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                {% if next %}
+                    <input type="hidden" name="next" value="{{ next }}">
+                {% endif %}
+                <label for="id_username">Username</label>
+                <input id="id_username" name="username" type="text" autocomplete="username" required>
+
+                <label for="id_password">Password</label>
+                <input id="id_password" name="password" type="password" autocomplete="current-password" required>
+
+                <button type="submit">Login</button>
+            </form>
+            <p class="subtitle" style="margin-top:12px;">
+                New user? <a href="{% url 'referral-entry' %}" style="color:#19c37d;">Register with referral code</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>

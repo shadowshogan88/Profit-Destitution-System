@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Code</title>
+    <link rel="stylesheet" href="{% static 'core/login.css' %}">
+</head>
+<body>
+    <main class="page">
+        <section class="card">
+            <h1>Enter Referral Code</h1>
+            <p class="subtitle">Registration is only possible with a valid code.</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                <label for="referral_code">Referral Code</label>
+                <input id="referral_code" name="referral_code" type="text" value="{{ prefill_code }}" required>
+                <button type="submit">Next</button>
+            </form>
+            <p class="subtitle" style="margin-top:12px;">
+                Already have an account? <a href="{% url 'login' %}" style="color:#19c37d;">Login</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>

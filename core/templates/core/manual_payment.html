@@ -1,0 +1,242 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Payment</title>
+    <link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <h1>Manual Payment Gateway</h1>
+            <p>Submit payment request with details and optional image proof</p>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h3>Menu</h3>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'dashboard' %}#profile">User Profile</a>
+            <a href="{% url 'dashboard' %}#wallet">Wallet</a>
+            <a href="{% url 'dashboard' %}#new-investment">New Investment</a>
+            <a href="{% url 'dashboard' %}#summary">Investment Summary</a>
+            <a href="{% url 'dashboard' %}#won-list">Won Investments</a>
+            <a href="{% url 'dashboard' %}#wallet-history">Wallet History</a>
+            <a href="{% url 'investment-page' %}">Investment Page</a>
+            <a href="{% url 'referral-info' %}">Referral</a>
+            <a href="{% url 'manual-payment' %}">Manual Payment</a>
+            <a href="{% url 'password_change' %}">Password Change</a>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-link-btn">Logout</button>
+            </form>
+        </aside>
+
+        <main class="grid">
+            {% if messages %}
+                <section class="card wide">
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+
+            <section class="card wide">
+                <h2>Send Payment Request</h2>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {% if payment_methods %}
+                        <div id="methodInstructionBox" class="list-note" style="display:none;">
+                            <p><strong id="methodInstructionName"></strong></p>
+                            <p id="methodInstructionAccount"></p>
+                            <p id="methodInstructionText"></p>
+                        </div>
+                    {% else %}
+                        <p class="subtitle">No payment method is active. Contact admin.</p>
+                    {% endif %}
+
+                    <label for="amount">Amount</label>
+                    <input id="amount" type="number" step="0.01" min="0.01" name="amount" required>
+
+                    <label for="payment_method">Payment Method</label>
+                    <select id="payment_method" name="payment_method_id" required>
+                        <option value="">Select method</option>
+                        {% for method in payment_methods %}
+                            <option value="{{ method.id }}">{{ method.name }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <label for="transaction_reference">Transaction Reference (optional)</label>
+                    <input id="transaction_reference" type="text" name="transaction_reference" placeholder="TrxID">
+
+                    <label for="details">Payment Details</label>
+                    <textarea id="details" name="details" rows="4" placeholder="Sender number, time, notes..." required></textarea>
+
+                    <label for="proof_image">Payment Image Proof (optional)</label>
+                    <input id="proof_image" type="file" name="proof_image" accept="image/*">
+
+                    <button type="submit">Submit Request</button>
+                </form>
+            </section>
+
+            <section class="card wide">
+                <h2>Your Payment Requests</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Reference</th>
+                            <th>Status</th>
+                            <th>Proof</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in payment_requests %}
+                            <tr>
+                                <td>#{{ item.id }}</td>
+                                <td>Tk {{ item.amount }}</td>
+                                <td>{{ item.payment_method }}</td>
+                                <td>{{ item.transaction_reference|default:"-" }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>
+                                    {% if item.proof_image %}
+                                        <div style="display:flex; align-items:center; gap:8px;">
+                                            <img
+                                                src="{{ item.proof_image.url }}"
+                                                alt="Proof thumbnail"
+                                                style="width:auto; height:44px; max-width:64px; object-fit:contain; border-radius:6px; border:1px solid #2c4465;"
+                                            >
+                                            <button
+                                                type="button"
+                                                class="sidebar-link-btn proof-view-btn"
+                                                data-image-url="{{ item.proof_image.url }}"
+                                                style="width:34px; height:34px; padding:0; display:flex; align-items:center; justify-content:center; font-size:16px; line-height:1;"
+                                            >
+                                                &#128065;
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="7"><strong>Details:</strong> {{ item.details }}</td>
+                            </tr>
+                            {% if item.admin_note %}
+                                <tr>
+                                    <td colspan="7"><strong>Admin Note:</strong> {{ item.admin_note }}</td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="7">No payment request submitted yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    <div id="proofImageModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:1000; padding:20px;">
+        <div style="max-width:900px; margin:40px auto; background:#0f1a2b; border:1px solid #2c4465; border-radius:10px; padding:12px;">
+            <div style="text-align:center;">
+                <img id="proofImagePreview" src="" alt="Proof Image" style="max-width:100%; max-height:75vh; border-radius:8px;">
+            </div>
+            <div style="display:flex; justify-content:center; margin-top:10px;">
+                <button
+                    id="proofImageCloseBtn"
+                    type="button"
+                    class="sidebar-link-btn"
+                    style="padding:6px 12px; width:auto; min-width:0; display:inline-flex; align-items:center; justify-content:center; text-align:center;"
+                >
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+    <script>
+        (function() {
+            const methodSelect = document.getElementById("payment_method");
+            const infoUrl = "{% url 'payment-method-info' %}";
+            const box = document.getElementById("methodInstructionBox");
+            const nameEl = document.getElementById("methodInstructionName");
+            const accountEl = document.getElementById("methodInstructionAccount");
+            const instructionEl = document.getElementById("methodInstructionText");
+
+            if (!methodSelect || !box) {
+                return;
+            }
+
+            methodSelect.addEventListener("change", async function() {
+                const methodId = methodSelect.value;
+                if (!methodId) {
+                    box.style.display = "none";
+                    return;
+                }
+
+                try {
+                    const res = await fetch(`${infoUrl}?id=${encodeURIComponent(methodId)}`);
+                    const data = await res.json();
+                    if (!res.ok || !data.ok) {
+                        box.style.display = "none";
+                        return;
+                    }
+
+                    nameEl.textContent = data.name;
+                    accountEl.textContent = data.account_details
+                        ? `Account: ${data.account_details}`
+                        : "Account: Not provided";
+                    instructionEl.textContent = data.instruction
+                        ? `Instruction: ${data.instruction}`
+                        : "Instruction: Not provided";
+                    box.style.display = "block";
+                } catch (e) {
+                    box.style.display = "none";
+                }
+            });
+        })();
+
+        (function() {
+            const modal = document.getElementById("proofImageModal");
+            const preview = document.getElementById("proofImagePreview");
+            const closeBtn = document.getElementById("proofImageCloseBtn");
+            const viewButtons = document.querySelectorAll(".proof-view-btn");
+
+            if (!modal || !preview || !closeBtn) {
+                return;
+            }
+
+            viewButtons.forEach((btn) => {
+                btn.addEventListener("click", function() {
+                    const imageUrl = btn.getAttribute("data-image-url");
+                    if (!imageUrl) {
+                        return;
+                    }
+                    preview.setAttribute("src", imageUrl);
+                    modal.style.display = "block";
+                });
+            });
+
+            closeBtn.addEventListener("click", function() {
+                modal.style.display = "none";
+                preview.setAttribute("src", "");
+            });
+
+            modal.addEventListener("click", function(event) {
+                if (event.target === modal) {
+                    modal.style.display = "none";
+                    preview.setAttribute("src", "");
+                }
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <link rel="stylesheet" href="{% static 'core/login.css' %}">
+</head>
+<body>
+    <main class="page">
+        <section class="card">
+            <h1>Create Account</h1>
+            <p class="subtitle">
+                Referred by: <strong>{{ referrer.username }}</strong> ({{ referrer.referral_code }})
+            </p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                <label for="username">Username</label>
+                <input id="username" name="username" type="text" required>
+
+                <label for="email">Email (optional)</label>
+                <input id="email" name="email" type="email">
+
+                <label for="user_type">User Type</label>
+                <select id="user_type" name="user_type">
+                    <option value="user" selected>User</option>
+                    <option value="admin">Admin</option>
+                </select>
+
+                <label for="password">Password</label>
+                <input id="password" name="password" type="password" required>
+
+                <label for="confirm_password">Confirm Password</label>
+                <input id="confirm_password" name="confirm_password" type="password" required>
+
+                <button type="submit">Register</button>
+            </form>
+            <p class="subtitle" style="margin-top:12px;">
+                Wrong code? <a href="{% url 'referral-entry' %}" style="color:#19c37d;">Change referral code</a>
+            </p>
+        </section>
+    </main>
+</body>
+</html>
