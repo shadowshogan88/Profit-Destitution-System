@@ -12,6 +12,8 @@ from .models import (
     InvestmentPackage,
     ProfitDistribution,
     ProfitDistributionEntry,
+    UnsettledBalanceAccount,
+    UnsettledBalanceEntry,
     User,
     WalletTransaction,
 )
@@ -25,20 +27,49 @@ def to_2dp(value: Decimal) -> Decimal:
 
 
 def get_rate_map() -> dict[int, Decimal]:
-    rates = {
-        item.level: item.rate_percent
-        for item in CommissionRate.objects.filter(level__lte=MAX_LEVEL)
-    }
-    defaults = {
-        1: Decimal("10.00"),
-        2: Decimal("5.00"),
-        3: Decimal("3.00"),
-        4: Decimal("2.00"),
-        5: Decimal("1.00"),
-    }
-    for level, default_rate in defaults.items():
-        rates.setdefault(level, default_rate)
+    configured = list(
+        CommissionRate.objects.filter(level__lte=MAX_LEVEL).order_by("level")
+    )
+    if not configured:
+        return {}
+
+    rates = {item.level: item.rate_percent for item in configured}
+    max_level = max(rates.keys())
+    for level in range(1, max_level + 1):
+        rates.setdefault(level, Decimal("0.00"))
     return rates
+
+
+@transaction.atomic
+def credit_unsettled_balance(
+    amount: Decimal,
+    description: str,
+    source_user: User | None = None,
+    investment: Investment | None = None,
+    distribution: ProfitDistribution | None = None,
+    missing_from_level: int | None = None,
+    missing_to_level: int | None = None,
+) -> None:
+    amount = to_2dp(amount)
+    if amount <= 0:
+        return
+
+    account, _ = UnsettledBalanceAccount.objects.select_for_update().get_or_create(
+        name="Unsettled Balance"
+    )
+    account.balance = to_2dp(account.balance + amount)
+    account.save(update_fields=["balance", "updated_at"])
+
+    UnsettledBalanceEntry.objects.create(
+        account=account,
+        amount=amount,
+        description=description,
+        source_user=source_user,
+        investment=investment,
+        distribution=distribution,
+        missing_from_level=missing_from_level,
+        missing_to_level=missing_to_level,
+    )
 
 
 @transaction.atomic
@@ -166,7 +197,7 @@ def realize_profit(investment: Investment, new_profit_amount: Decimal) -> None:
         raise ValueError("Profit amount must be greater than zero")
 
     # Referral commission is distributed first from this profit chunk.
-    referral_commission = distribute_commission_upward(investment, new_profit_amount)
+    referral_commission, _ = distribute_commission_upward(investment, new_profit_amount)
     net_profit = to_2dp(new_profit_amount - referral_commission)
     if net_profit < 0:
         net_profit = Decimal("0.00")
@@ -183,22 +214,28 @@ def realize_profit(investment: Investment, new_profit_amount: Decimal) -> None:
 
 
 @transaction.atomic
-def distribute_commission_upward(investment: Investment, profit_chunk: Decimal) -> Decimal:
+def distribute_commission_upward(
+    investment: Investment,
+    profit_chunk: Decimal,
+    distribution: ProfitDistribution | None = None,
+) -> tuple[Decimal, Decimal]:
     source_user = investment.user
+    rates = get_rate_map()
+    if not rates:
+        return Decimal("0.00"), Decimal("0.00")
+    target_max_level = max(rates.keys())
+
     uplines: list[User] = []
     current = source_user.referred_by
-    while current and len(uplines) < MAX_LEVEL:
+    while current and len(uplines) < target_max_level:
         uplines.append(current)
         current = current.referred_by
 
-    if not uplines:
-        return Decimal("0.00")
-
-    rates = get_rate_map()
     computed: dict[int, dict[str, Decimal]] = {}
-    total_commission = Decimal("0.00")
+    total_paid_commission = Decimal("0.00")
+    total_theoretical_commission = Decimal("0.00")
 
-    for level in range(1, len(uplines) + 1):
+    for level in range(1, target_max_level + 1):
         rate_percent = rates[level]
         if level == 1:
             profit_base = profit_chunk
@@ -211,6 +248,7 @@ def distribute_commission_upward(investment: Investment, profit_chunk: Decimal) 
             "profit_base": profit_base,
             "commission_amount": commission_amount,
         }
+        total_theoretical_commission = to_2dp(total_theoretical_commission + commission_amount)
 
     for level, beneficiary in enumerate(uplines, start=1):
         row = computed[level]
@@ -227,14 +265,29 @@ def distribute_commission_upward(investment: Investment, profit_chunk: Decimal) 
             beneficiary=beneficiary,
             source_user=source_user,
             investment=investment,
+            distribution=distribution,
             level=level,
             rate_percent=row["rate_percent"],
             profit_base=row["profit_base"],
             commission_amount=commission_amount,
         )
-        total_commission = to_2dp(total_commission + commission_amount)
+        total_paid_commission = to_2dp(total_paid_commission + commission_amount)
 
-    return total_commission
+    unsettled_commission = to_2dp(total_theoretical_commission - total_paid_commission)
+    if unsettled_commission > 0:
+        missing_from = len(uplines) + 1 if len(uplines) < target_max_level else None
+        missing_to = target_max_level if len(uplines) < target_max_level else None
+        credit_unsettled_balance(
+            unsettled_commission,
+            f"Missing upline levels commission from {source_user.username}",
+            source_user=source_user,
+            investment=investment,
+            distribution=distribution,
+            missing_from_level=missing_from,
+            missing_to_level=missing_to,
+        )
+
+    return total_theoretical_commission, unsettled_commission
 
 
 @transaction.atomic
@@ -270,6 +323,7 @@ def distribute_profit_to_active_investors(
             distributed_amount=Decimal("0.00"),
             remainder_amount=total_amount,
             total_referral_commission=Decimal("0.00"),
+            total_unsettled_commission=Decimal("0.00"),
             total_won_profit=Decimal("0.00"),
             note=(note or "").strip(),
             created_by=created_by,
@@ -285,6 +339,7 @@ def distribute_profit_to_active_investors(
             distributed_amount=Decimal("0.00"),
             remainder_amount=total_amount,
             total_referral_commission=Decimal("0.00"),
+            total_unsettled_commission=Decimal("0.00"),
             total_won_profit=Decimal("0.00"),
             note=(note or "").strip(),
             created_by=created_by,
@@ -294,6 +349,7 @@ def distribute_profit_to_active_investors(
         total_amount=total_amount,
         total_active_principal=total_active_principal,
         total_referral_commission=Decimal("0.00"),
+        total_unsettled_commission=Decimal("0.00"),
         total_won_profit=Decimal("0.00"),
         note=(note or "").strip(),
         created_by=created_by,
@@ -320,6 +376,7 @@ def distribute_profit_to_active_investors(
         remainder_amount = to_2dp(total_amount - distributed_amount)
 
     total_referral_commission = Decimal("0.00")
+    total_unsettled_commission = Decimal("0.00")
     total_won_profit = Decimal("0.00")
     for row in rows:
         gross_profit = row["gross_profit"]
@@ -327,7 +384,11 @@ def distribute_profit_to_active_investors(
             continue
 
         investment = row["investment"]
-        referral_commission = distribute_commission_upward(investment, gross_profit)
+        referral_commission, unsettled_commission = distribute_commission_upward(
+            investment,
+            gross_profit,
+            distribution=distribution,
+        )
         won_profit = to_2dp(gross_profit - referral_commission)
         if won_profit < 0:
             won_profit = Decimal("0.00")
@@ -342,6 +403,7 @@ def distribute_profit_to_active_investors(
             )
 
         total_referral_commission = to_2dp(total_referral_commission + referral_commission)
+        total_unsettled_commission = to_2dp(total_unsettled_commission + unsettled_commission)
         total_won_profit = to_2dp(total_won_profit + won_profit)
         ProfitDistributionEntry.objects.create(
             distribution=distribution,
@@ -350,6 +412,7 @@ def distribute_profit_to_active_investors(
             active_principal=row["active_principal"],
             gross_profit=gross_profit,
             referral_commission=referral_commission,
+            unsettled_commission=unsettled_commission,
             won_profit=won_profit,
             payout_amount=won_profit,
         )
@@ -357,12 +420,14 @@ def distribute_profit_to_active_investors(
     distribution.distributed_amount = distributed_amount
     distribution.remainder_amount = remainder_amount
     distribution.total_referral_commission = total_referral_commission
+    distribution.total_unsettled_commission = total_unsettled_commission
     distribution.total_won_profit = total_won_profit
     distribution.save(
         update_fields=[
             "distributed_amount",
             "remainder_amount",
             "total_referral_commission",
+            "total_unsettled_commission",
             "total_won_profit",
         ]
     )

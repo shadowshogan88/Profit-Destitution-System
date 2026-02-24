@@ -126,6 +126,13 @@ class CommissionLog(models.Model):
     beneficiary = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commission_earnings")
     source_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="commission_sources")
     investment = models.ForeignKey(Investment, on_delete=models.CASCADE, related_name="commission_logs")
+    distribution = models.ForeignKey(
+        "ProfitDistribution",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="commission_logs",
+    )
     level = models.PositiveSmallIntegerField()
     rate_percent = models.DecimalField(max_digits=5, decimal_places=2)
     profit_base = models.DecimalField(max_digits=14, decimal_places=2)
@@ -203,6 +210,11 @@ class ProfitDistribution(models.Model):
         decimal_places=2,
         default=Decimal("0.00"),
     )
+    total_unsettled_commission = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
     total_won_profit = models.DecimalField(
         max_digits=14,
         decimal_places=2,
@@ -242,6 +254,7 @@ class ProfitDistributionEntry(models.Model):
     active_principal = models.DecimalField(max_digits=14, decimal_places=2)
     gross_profit = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
     referral_commission = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    unsettled_commission = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
     won_profit = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
     payout_amount = models.DecimalField(max_digits=14, decimal_places=2)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -251,6 +264,58 @@ class ProfitDistributionEntry(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} got {self.payout_amount} on #{self.distribution_id}"
+
+
+class UnsettledBalanceAccount(models.Model):
+    name = models.CharField(max_length=80, unique=True, default="Unsettled Balance")
+    balance = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        return f"{self.name}: {self.balance}"
+
+
+class UnsettledBalanceEntry(models.Model):
+    account = models.ForeignKey(
+        UnsettledBalanceAccount,
+        on_delete=models.CASCADE,
+        related_name="entries",
+    )
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+    description = models.CharField(max_length=255)
+    source_user = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="unsettled_balance_source_entries",
+    )
+    investment = models.ForeignKey(
+        Investment,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="unsettled_balance_entries",
+    )
+    distribution = models.ForeignKey(
+        ProfitDistribution,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="unsettled_balance_entries",
+    )
+    missing_from_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    missing_to_level = models.PositiveSmallIntegerField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.account.name} +{self.amount}"
 
 
 @receiver(post_save, sender=User)

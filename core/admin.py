@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.contrib import messages
 from django import forms
+from decimal import Decimal
 from django.db.models import DecimalField, Sum, Value
 from django.db.models.functions import Coalesce
 
@@ -14,6 +15,8 @@ from .models import (
     PaymentMethod,
     ProfitDistribution,
     ProfitDistributionEntry,
+    UnsettledBalanceAccount,
+    UnsettledBalanceEntry,
     User,
     Wallet,
     WalletTransaction,
@@ -75,8 +78,10 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(CommissionLog)
 class CommissionLogAdmin(admin.ModelAdmin):
+    change_list_template = "admin/core/commissionlog/change_list.html"
     list_display = (
         "id",
+        "distribution",
         "beneficiary",
         "source_user",
         "investment",
@@ -86,13 +91,26 @@ class CommissionLogAdmin(admin.ModelAdmin):
         "commission_amount",
         "created_at",
     )
-    list_filter = ("level", "created_at")
+    list_filter = ("distribution", "level", "created_at")
     search_fields = (
+        "distribution__id",
         "beneficiary__username",
         "source_user__username",
         "investment__id",
     )
-    list_select_related = ("beneficiary", "source_user", "investment")
+    list_select_related = ("distribution", "beneficiary", "source_user", "investment")
+
+    def changelist_view(self, request, extra_context=None):
+        extra_context = extra_context or {}
+        cl = self.get_changelist_instance(request)
+        totals = cl.get_queryset(request).aggregate(
+            total_commission=Coalesce(
+                Sum("commission_amount"),
+                Value(Decimal("0.00"), output_field=DecimalField(max_digits=14, decimal_places=2)),
+            ),
+        )
+        extra_context["totals"] = totals
+        return super().changelist_view(request, extra_context=extra_context)
 
 
 @admin.register(WalletTransaction)
@@ -121,11 +139,30 @@ class ProfitDistributionEntryInline(admin.TabularInline):
         "active_principal",
         "gross_profit",
         "referral_commission",
+        "unsettled_commission",
         "won_profit",
         "payout_amount",
         "created_at",
     )
     readonly_fields = fields
+
+
+class CommissionLogInline(admin.TabularInline):
+    model = CommissionLog
+    extra = 0
+    can_delete = False
+    fields = (
+        "beneficiary",
+        "source_user",
+        "investment",
+        "level",
+        "rate_percent",
+        "profit_base",
+        "commission_amount",
+        "created_at",
+    )
+    readonly_fields = fields
+    ordering = ("created_at", "level", "id")
 
 
 @admin.register(ProfitDistribution)
@@ -138,6 +175,7 @@ class ProfitDistributionAdmin(admin.ModelAdmin):
         "distributed_amount",
         "remainder_amount",
         "total_referral_commission",
+        "total_unsettled_commission",
         "total_won_profit",
         "created_by",
         "created_at",
@@ -148,6 +186,7 @@ class ProfitDistributionAdmin(admin.ModelAdmin):
         "distributed_amount",
         "remainder_amount",
         "total_referral_commission",
+        "total_unsettled_commission",
         "total_won_profit",
         "created_by",
         "created_at",
@@ -160,11 +199,12 @@ class ProfitDistributionAdmin(admin.ModelAdmin):
         "distributed_amount",
         "remainder_amount",
         "total_referral_commission",
+        "total_unsettled_commission",
         "total_won_profit",
         "created_by",
         "created_at",
     )
-    inlines = [ProfitDistributionEntryInline]
+    inlines = [ProfitDistributionEntryInline, CommissionLogInline]
 
     @admin.display(description="Current Total Invested (All Users)")
     def current_total_invested(self, obj=None):
@@ -192,6 +232,7 @@ class ProfitDistributionAdmin(admin.ModelAdmin):
         obj.distributed_amount = created.distributed_amount
         obj.remainder_amount = created.remainder_amount
         obj.total_referral_commission = created.total_referral_commission
+        obj.total_unsettled_commission = created.total_unsettled_commission
         obj.total_won_profit = created.total_won_profit
         obj.created_by = created.created_by
         obj.created_at = created.created_at
@@ -201,6 +242,7 @@ class ProfitDistributionAdmin(admin.ModelAdmin):
                 request,
                 f"Profit distribution #{created.pk} completed. "
                 f"Gross {created.distributed_amount}, referral {created.total_referral_commission}, "
+                f"unsettled {created.total_unsettled_commission}, "
                 f"won profit {created.total_won_profit}.",
             )
         else:
@@ -230,3 +272,29 @@ class ManualPaymentRequestAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "wallet_credited", "payment_method")
     search_fields = ("user__username", "transaction_reference", "payment_method")
+
+
+class UnsettledBalanceEntryInline(admin.TabularInline):
+    model = UnsettledBalanceEntry
+    extra = 0
+    can_delete = False
+    fields = (
+        "amount",
+        "description",
+        "source_user",
+        "investment",
+        "distribution",
+        "missing_from_level",
+        "missing_to_level",
+        "created_at",
+    )
+    readonly_fields = fields
+    ordering = ("-created_at",)
+
+
+@admin.register(UnsettledBalanceAccount)
+class UnsettledBalanceAccountAdmin(admin.ModelAdmin):
+    list_display = ("name", "balance", "updated_at")
+    readonly_fields = ("balance", "updated_at")
+    fields = ("name", "balance", "updated_at")
+    inlines = [UnsettledBalanceEntryInline]

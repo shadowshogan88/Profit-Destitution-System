@@ -1,0 +1,44 @@
+{% extends "admin/change_list.html" %}
+
+{% block result_list %}
+{{ block.super }}
+<div class="results" style="margin-top:10px;max-width:520px;">
+    <table>
+        <thead>
+            <tr>
+                <th>Total Commission Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td id="js-total-commission-amount">0.00</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    function parseNum(text) {
+        if (!text) return 0;
+        var cleaned = text.replace(/,/g, "").replace(/[^0-9.\-]/g, "");
+        var value = parseFloat(cleaned);
+        return Number.isFinite(value) ? value : 0;
+    }
+
+    var rows = document.querySelectorAll("#result_list tbody tr");
+    var totalCommission = 0;
+
+    rows.forEach(function (row) {
+        var commissionCell = row.querySelector("td.field-commission_amount");
+        if (commissionCell) totalCommission += parseNum(commissionCell.textContent);
+    });
+
+    var commissionTarget = document.getElementById("js-total-commission-amount");
+    if (commissionTarget) commissionTarget.textContent = totalCommission.toFixed(2);
+});
+</script>
+{% endblock %}
