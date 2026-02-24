@@ -28,6 +28,7 @@
             <a href="{% url 'investment-page' %}">Investment Page</a>
             <a href="{% url 'referral-info' %}">Referral</a>
             <a href="{% url 'manual-payment' %}">Manual Payment</a>
+            <a href="{% url 'manual-withdrawal' %}">Manual Withdrawal</a>
             <a href="{% url 'password_change' %}">Password Change</a>
             <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
                 {% csrf_token %}

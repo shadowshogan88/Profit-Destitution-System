@@ -16,7 +16,9 @@ from .models import (
     InvestmentPackage,
     InvestmentWallet,
     ManualPaymentRequest,
+    ManualWithdrawalRequest,
     PaymentMethod,
+    WithdrawalMethod,
     WalletTransaction,
 )
 from .services import (
@@ -394,6 +396,70 @@ def manual_payment(request: HttpRequest):
 
 
 @login_required
+def manual_withdrawal(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    withdrawal_methods = WithdrawalMethod.objects.filter(is_active=True).order_by("name")
+
+    if request.method == "POST":
+        amount_raw = request.POST.get("amount")
+        withdrawal_method_id = request.POST.get("withdrawal_method_id")
+        account_details = (request.POST.get("account_details") or "").strip()
+
+        try:
+            amount = _decimal_or_error(amount_raw)
+            if amount <= 0:
+                raise ValueError("Amount must be greater than zero.")
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect("manual-withdrawal")
+
+        selected_method = withdrawal_methods.filter(id=withdrawal_method_id).first()
+        if not selected_method:
+            messages.error(request, "Please select a valid payment method.")
+            return redirect("manual-withdrawal")
+        if not account_details:
+            messages.error(request, "Account details are required.")
+            return redirect("manual-withdrawal")
+        if request.user.wallet.balance < amount:
+            messages.error(request, "Insufficient wallet balance.")
+            return redirect("manual-withdrawal")
+
+        fee_percent = selected_method.withdrawal_fee_percent
+        fee_fixed = selected_method.withdrawal_fee_fixed
+        if fee_percent > 0:
+            fee_amount = (amount * fee_percent / Decimal("100")).quantize(Decimal("0.01"))
+        else:
+            fee_amount = fee_fixed.quantize(Decimal("0.01"))
+        net_amount = (amount - fee_amount).quantize(Decimal("0.01"))
+        if net_amount < 0:
+            net_amount = Decimal("0.00")
+
+        ManualWithdrawalRequest.objects.create(
+            user=request.user,
+            amount=amount,
+            withdrawal_method=selected_method,
+            payment_method=selected_method.name,
+            withdrawal_fee_percent=fee_percent,
+            withdrawal_fee_fixed=fee_fixed,
+            withdrawal_fee_amount=fee_amount,
+            net_amount=net_amount,
+            account_details=account_details,
+        )
+        messages.success(request, "Withdrawal request submitted successfully.")
+        return redirect("manual-withdrawal")
+
+    withdrawal_requests = ManualWithdrawalRequest.objects.filter(user=request.user).order_by("-created_at")
+    return render(
+        request,
+        "core/manual_withdrawal.html",
+        {
+            "withdrawal_requests": withdrawal_requests,
+            "withdrawal_methods": withdrawal_methods,
+        },
+    )
+
+
+@login_required
 def investment_page(request: HttpRequest):
     settle_matured_investments(user=request.user)
     investment_wallet, _ = InvestmentWallet.objects.get_or_create(user=request.user)
@@ -444,5 +510,24 @@ def payment_method_info(request: HttpRequest):
             "name": method.name,
             "account_details": method.account_details or "",
             "instruction": method.instruction or "",
+        }
+    )
+
+
+@login_required
+def withdrawal_method_info(request: HttpRequest):
+    method_id = request.GET.get("id")
+    method = WithdrawalMethod.objects.filter(id=method_id, is_active=True).first()
+    if not method:
+        return JsonResponse({"ok": False, "error": "Invalid withdrawal method"}, status=404)
+
+    return JsonResponse(
+        {
+            "ok": True,
+            "name": method.name,
+            "account_details": method.account_details or "",
+            "instruction": method.instruction or "",
+            "withdrawal_fee_percent": str(method.withdrawal_fee_percent),
+            "withdrawal_fee_fixed": str(method.withdrawal_fee_fixed),
         }
     )

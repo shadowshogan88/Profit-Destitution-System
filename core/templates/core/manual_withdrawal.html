@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Withdrawal</title>
+    <link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
+</head>
+<body>
+    <header class="topbar">
+        <div>
+            <h1>Manual Withdrawal</h1>
+            <p>Submit withdrawal request. Admin will review and process manually.</p>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <h3>Menu</h3>
+            <a href="{% url 'dashboard' %}">Dashboard</a>
+            <a href="{% url 'investment-page' %}">Investment Page</a>
+            <a href="{% url 'referral-info' %}">Referral</a>
+            <a href="{% url 'manual-payment' %}">Manual Payment</a>
+            <a href="{% url 'manual-withdrawal' %}">Manual Withdrawal</a>
+            <a href="{% url 'password_change' %}">Password Change</a>
+            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
+                {% csrf_token %}
+                <button type="submit" class="sidebar-link-btn">Logout</button>
+            </form>
+        </aside>
+
+        <main class="grid">
+            {% if messages %}
+                <section class="card wide">
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                </section>
+            {% endif %}
+
+            <section class="card wide">
+                <h2>Send Withdrawal Request</h2>
+                <p class="subtitle">Current Wallet Balance: Tk {{ request.user.wallet.balance }}</p>
+                <form method="post">
+                    {% csrf_token %}
+
+                    <label for="amount">Amount</label>
+                    <input id="amount" type="number" step="0.01" min="0.01" name="amount" required>
+
+                    <label for="withdrawal_method">Withdraw Method</label>
+                    <select id="withdrawal_method" name="withdrawal_method_id" required>
+                        <option value="">Select method</option>
+                        {% for method in withdrawal_methods %}
+                            <option value="{{ method.id }}">{{ method.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <p id="withdrawalFeePreview" class="subtitle" style="margin-top:8px;">Withdrawal Fee: -</p>
+                    <p id="withdrawalNetPreview" class="subtitle" style="margin-top:4px;">Estimated Net Receive: -</p>
+
+                    <label for="account_details">Account Details</label>
+                    <textarea id="account_details" name="account_details" rows="4" placeholder="Your number/account and notes" required></textarea>
+
+                    <button type="submit">Submit Withdrawal Request</button>
+                </form>
+            </section>
+
+            <section class="card wide">
+                <h2>Your Withdrawal Requests</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Amount</th>
+                            <th>Method</th>
+                            <th>Fee Rule</th>
+                            <th>Fee</th>
+                            <th>Net</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in withdrawal_requests %}
+                            <tr>
+                                <td>#{{ item.id }}</td>
+                                <td>Tk {{ item.amount }}</td>
+                                <td>{{ item.payment_method }}</td>
+                                <td>
+                                    {% if item.withdrawal_fee_fixed > 0 %}
+                                        Fixed Tk {{ item.withdrawal_fee_fixed }}
+                                    {% else %}
+                                        {{ item.withdrawal_fee_percent }}%
+                                    {% endif %}
+                                </td>
+                                <td>Tk {{ item.withdrawal_fee_amount }}</td>
+                                <td>Tk {{ item.net_amount }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="8"><strong>Account Details:</strong> {{ item.account_details }}</td>
+                            </tr>
+                            {% if item.admin_note %}
+                                <tr>
+                                    <td colspan="8"><strong>Admin Note:</strong> {{ item.admin_note }}</td>
+                                </tr>
+                            {% endif %}
+                        {% empty %}
+                            <tr>
+                                <td colspan="8">No withdrawal request submitted yet.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+    <script>
+        (function() {
+            const methodSelect = document.getElementById("withdrawal_method");
+            const amountInput = document.getElementById("amount");
+            const feePreview = document.getElementById("withdrawalFeePreview");
+            const netPreview = document.getElementById("withdrawalNetPreview");
+            const infoUrl = "{% url 'withdrawal-method-info' %}";
+            let feePercent = 0;
+            let feeFixed = 0;
+
+            function updatePreview() {
+                const amount = parseFloat(amountInput.value || "0");
+                if (!amount || amount <= 0) {
+                    if (feePercent > 0) {
+                        feePreview.textContent = `Withdrawal Fee: ${feePercent.toFixed(2)}%`;
+                    } else if (feeFixed > 0) {
+                        feePreview.textContent = `Withdrawal Fee: Fixed Tk ${feeFixed.toFixed(2)}`;
+                    } else {
+                        feePreview.textContent = "Withdrawal Fee: -";
+                    }
+                    netPreview.textContent = "Estimated Net Receive: -";
+                    return;
+                }
+                const fee = feePercent > 0 ? (amount * feePercent) / 100 : feeFixed;
+                const net = Math.max(0, amount - fee);
+                if (feePercent > 0) {
+                    feePreview.textContent = `Withdrawal Fee: Tk ${fee.toFixed(2)} (${feePercent.toFixed(2)}%)`;
+                } else {
+                    feePreview.textContent = `Withdrawal Fee: Fixed Tk ${fee.toFixed(2)}`;
+                }
+                netPreview.textContent = `Estimated Net Receive: Tk ${net.toFixed(2)}`;
+            }
+
+            methodSelect.addEventListener("change", async function() {
+                const methodId = methodSelect.value;
+                if (!methodId) {
+                    feePercent = 0;
+                    feeFixed = 0;
+                    updatePreview();
+                    return;
+                }
+                try {
+                    const res = await fetch(`${infoUrl}?id=${encodeURIComponent(methodId)}`);
+                    const data = await res.json();
+                    feePercent = parseFloat(data.withdrawal_fee_percent || "0");
+                    feeFixed = parseFloat(data.withdrawal_fee_fixed || "0");
+                } catch (e) {
+                    feePercent = 0;
+                    feeFixed = 0;
+                }
+                updatePreview();
+            });
+
+            amountInput.addEventListener("input", updatePreview);
+            updatePreview();
+        })();
+    </script>
+</body>
+</html>

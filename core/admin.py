@@ -2,8 +2,10 @@ from django.contrib import admin
 from django.contrib import messages
 from django import forms
 from decimal import Decimal
+from django.db import transaction
 from django.db.models import DecimalField, Sum, Value
 from django.db.models.functions import Coalesce
+from django.utils import timezone
 
 from .models import (
     CommissionLog,
@@ -12,12 +14,14 @@ from .models import (
     InvestmentPackage,
     InvestmentWallet,
     ManualPaymentRequest,
+    ManualWithdrawalRequest,
     PaymentMethod,
     ProfitDistribution,
     ProfitDistributionEntry,
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
     User,
+    WithdrawalMethod,
     Wallet,
     WalletTransaction,
 )
@@ -259,6 +263,19 @@ class PaymentMethodAdmin(admin.ModelAdmin):
     search_fields = ("name", "account_details", "instruction")
 
 
+@admin.register(WithdrawalMethod)
+class WithdrawalMethodAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "withdrawal_fee_percent",
+        "withdrawal_fee_fixed",
+        "is_active",
+        "created_at",
+    )
+    list_filter = ("is_active",)
+    search_fields = ("name", "account_details", "instruction")
+
+
 @admin.register(ManualPaymentRequest)
 class ManualPaymentRequestAdmin(admin.ModelAdmin):
     list_display = (
@@ -272,6 +289,78 @@ class ManualPaymentRequestAdmin(admin.ModelAdmin):
     )
     list_filter = ("status", "wallet_credited", "payment_method")
     search_fields = ("user__username", "transaction_reference", "payment_method")
+
+
+@admin.register(ManualWithdrawalRequest)
+class ManualWithdrawalRequestAdmin(admin.ModelAdmin):
+    list_display = (
+        "id",
+        "user",
+        "amount",
+        "payment_method",
+        "withdrawal_fee_percent",
+        "withdrawal_fee_fixed",
+        "withdrawal_fee_amount",
+        "net_amount",
+        "status",
+        "wallet_debited",
+        "created_at",
+    )
+    list_filter = ("status", "wallet_debited", "payment_method")
+    search_fields = ("user__username", "payment_method", "account_details")
+    readonly_fields = (
+        "withdrawal_method",
+        "payment_method",
+        "amount",
+        "withdrawal_fee_percent",
+        "withdrawal_fee_fixed",
+        "withdrawal_fee_amount",
+        "net_amount",
+        "wallet_debited",
+        "debited_at",
+        "created_at",
+        "updated_at",
+    )
+
+    def save_model(self, request, obj, form, change):
+        if change and obj.status == ManualWithdrawalRequest.Status.APPROVED and not obj.wallet_debited:
+            with transaction.atomic():
+                locked = (
+                    ManualWithdrawalRequest.objects.select_for_update()
+                    .select_related("user")
+                    .get(pk=obj.pk)
+                )
+                if locked.wallet_debited:
+                    obj.wallet_debited = True
+                    obj.debited_at = locked.debited_at
+                else:
+                    wallet, _ = Wallet.objects.select_for_update().get_or_create(user=locked.user)
+                    if wallet.balance < locked.amount:
+                        obj.status = ManualWithdrawalRequest.Status.PENDING
+                        messages.error(
+                            request,
+                            f"Insufficient wallet balance for {locked.user.username}. Approval kept pending.",
+                        )
+                    else:
+                        wallet.balance = wallet.balance - locked.amount
+                        wallet.save(update_fields=["balance", "updated_at"])
+                        WalletTransaction.objects.create(
+                            user=locked.user,
+                            tx_type=WalletTransaction.TxType.DEBIT,
+                            amount=locked.amount,
+                            description=(
+                                f"Manual withdrawal approved (Request #{locked.pk}, "
+                                f"fee {locked.withdrawal_fee_amount}, net {locked.net_amount})"
+                            ),
+                        )
+                        obj.wallet_debited = True
+                        obj.debited_at = timezone.now()
+                        messages.success(
+                            request,
+                            f"Withdrawal request #{locked.pk} approved and debited from wallet.",
+                        )
+
+        super().save_model(request, obj, form, change)
 
 
 class UnsettledBalanceEntryInline(admin.TabularInline):

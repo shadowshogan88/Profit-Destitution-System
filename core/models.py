@@ -2,6 +2,7 @@ from decimal import Decimal
 import secrets
 
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models, transaction
 from django.db.models.signals import post_save
@@ -160,6 +161,42 @@ class PaymentMethod(models.Model):
         return self.name
 
 
+class WithdrawalMethod(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    account_details = models.TextField(blank=True)
+    instruction = models.TextField(blank=True)
+    withdrawal_fee_percent = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00")), MaxValueValidator(Decimal("100.00"))],
+    )
+    withdrawal_fee_fixed = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=Decimal("0.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self) -> str:
+        if self.withdrawal_fee_fixed > 0:
+            return f"{self.name} (fixed {self.withdrawal_fee_fixed})"
+        return f"{self.name} ({self.withdrawal_fee_percent}%)"
+
+    def clean(self):
+        percent_positive = self.withdrawal_fee_percent > 0
+        fixed_positive = self.withdrawal_fee_fixed > 0
+        if percent_positive and fixed_positive:
+            raise ValidationError("Use either withdrawal fee percent or fixed fee, not both.")
+        if not percent_positive and not fixed_positive:
+            raise ValidationError("Set a withdrawal fee in either percent or fixed amount.")
+
+
 class InvestmentPackage(models.Model):
     name = models.CharField(max_length=100, unique=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
@@ -198,6 +235,41 @@ class ManualPaymentRequest(models.Model):
 
     def __str__(self) -> str:
         return f"PaymentRequest#{self.pk} {self.user.username} {self.amount} {self.status}"
+
+
+class ManualWithdrawalRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="manual_withdrawal_requests")
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+    withdrawal_method = models.ForeignKey(
+        "WithdrawalMethod",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="withdrawal_requests",
+    )
+    payment_method = models.CharField(max_length=100)
+    withdrawal_fee_percent = models.DecimalField(max_digits=5, decimal_places=2, default=Decimal("0.00"))
+    withdrawal_fee_fixed = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    withdrawal_fee_amount = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    net_amount = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    account_details = models.TextField()
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
+    wallet_debited = models.BooleanField(default=False)
+    debited_at = models.DateTimeField(null=True, blank=True)
+    admin_note = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"WithdrawalRequest#{self.pk} {self.user.username} {self.amount} {self.status}"
 
 
 class ProfitDistribution(models.Model):
