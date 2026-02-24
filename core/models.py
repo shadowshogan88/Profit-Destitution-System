@@ -193,6 +193,66 @@ class ManualPaymentRequest(models.Model):
         return f"PaymentRequest#{self.pk} {self.user.username} {self.amount} {self.status}"
 
 
+class ProfitDistribution(models.Model):
+    total_amount = models.DecimalField(max_digits=14, decimal_places=2)
+    total_active_principal = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    distributed_amount = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    remainder_amount = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    total_referral_commission = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    total_won_profit = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=Decimal("0.00"),
+    )
+    note = models.CharField(max_length=255, blank=True)
+    created_by = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="created_profit_distributions",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"Distribution#{self.pk} amount={self.total_amount}"
+
+
+class ProfitDistributionEntry(models.Model):
+    distribution = models.ForeignKey(
+        ProfitDistribution,
+        on_delete=models.CASCADE,
+        related_name="entries",
+    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="profit_distribution_entries")
+    investment = models.ForeignKey(
+        Investment,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="profit_distribution_entries",
+    )
+    active_principal = models.DecimalField(max_digits=14, decimal_places=2)
+    gross_profit = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    referral_commission = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    won_profit = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    payout_amount = models.DecimalField(max_digits=14, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-payout_amount", "user__username"]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} got {self.payout_amount} on #{self.distribution_id}"
+
+
 @receiver(post_save, sender=User)
 def create_wallet_for_user(sender, instance: User, created: bool, **kwargs):
     if created:

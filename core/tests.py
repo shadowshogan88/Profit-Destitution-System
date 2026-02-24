@@ -4,8 +4,15 @@ from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
-from .models import CommissionLog, InvestmentPackage, User
-from .services import create_investment, credit_wallet, create_package_investment, realize_profit, settle_matured_investments
+from .models import CommissionLog, InvestmentPackage, ProfitDistribution, ProfitDistributionEntry, User
+from .services import (
+    create_investment,
+    credit_wallet,
+    create_package_investment,
+    distribute_profit_to_active_investors,
+    realize_profit,
+    settle_matured_investments,
+)
 
 
 class ReferralCommissionTests(TestCase):
@@ -63,3 +70,26 @@ class ReferralCommissionTests(TestCase):
         self.assertEqual(user.wallet.balance, Decimal("1000.00"))
         self.assertEqual(user.investment_wallet.balance, Decimal("0.00"))
         self.assertTrue(inv.principal_returned)
+
+    def test_admin_distribution_spreads_profit_by_active_principal(self):
+        u1 = User.objects.create_user(username="dist_u1", password="x")
+        u2 = User.objects.create_user(username="dist_u2", password="x")
+        p1 = InvestmentPackage.objects.create(name="Pack-100", amount=Decimal("100.00"), duration_days=7)
+        p2 = InvestmentPackage.objects.create(name="Pack-300", amount=Decimal("300.00"), duration_days=7)
+
+        credit_wallet(u1, Decimal("100.00"), "Seed")
+        credit_wallet(u2, Decimal("300.00"), "Seed")
+        create_package_investment(u1, p1)
+        create_package_investment(u2, p2)
+
+        distribution = distribute_profit_to_active_investors(Decimal("40.00"))
+        u1.refresh_from_db()
+        u2.refresh_from_db()
+
+        self.assertEqual(distribution.total_active_principal, Decimal("400.00"))
+        self.assertEqual(distribution.distributed_amount, Decimal("40.00"))
+        self.assertEqual(distribution.remainder_amount, Decimal("0.00"))
+        self.assertEqual(u1.wallet.balance, Decimal("10.00"))
+        self.assertEqual(u2.wallet.balance, Decimal("30.00"))
+        self.assertEqual(ProfitDistribution.objects.count(), 1)
+        self.assertEqual(ProfitDistributionEntry.objects.count(), 2)
