@@ -3,12 +3,13 @@ from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth import get_user_model
 from django.contrib import messages
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
-from django.db.models import Avg
+from django.db.models import Avg, Sum
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
@@ -18,6 +19,7 @@ from .models import (
     ManualPaymentRequest,
     ManualWithdrawalRequest,
     PaymentMethod,
+    ProfitDistributionEntry,
     WithdrawalMethod,
     WalletTransaction,
 )
@@ -174,8 +176,70 @@ def user_summary(request: HttpRequest, username: str):
     )
 
 
+def _dashboard_context(user):
+    investments = user.investments.order_by("-created_at")
+    won_investments = investments.filter(profit_realized__gt=Decimal("0.00"))
+    wallet_transactions = WalletTransaction.objects.filter(user=user).order_by("-created_at")[:15]
+
+    total_invested = sum((item.principal_amount for item in investments), Decimal("0.00"))
+    total_profit_won = sum((item.profit_realized for item in won_investments), Decimal("0.00"))
+    commission_total = sum(
+        (item.commission_amount for item in user.commission_earnings.all()),
+        Decimal("0.00"),
+    )
+    now = timezone.localtime()
+    approved_monthly_payments = (
+        ManualPaymentRequest.objects.filter(
+            user=user,
+            status=ManualPaymentRequest.Status.APPROVED,
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    approved_monthly_withdrawals = (
+        ManualWithdrawalRequest.objects.filter(
+            user=user,
+            status=ManualWithdrawalRequest.Status.APPROVED,
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    monthly_won_profit = (
+        ProfitDistributionEntry.objects.filter(
+            user=user,
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("won_profit"))["total"]
+        or Decimal("0.00")
+    )
+    monthly_commission = (
+        user.commission_earnings.filter(
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("commission_amount"))["total"]
+        or Decimal("0.00")
+    )
+
+    return {
+        "total_invested": total_invested,
+        "total_profit_won": total_profit_won,
+        "commission_total": commission_total,
+        "monthly_add_money": approved_monthly_payments,
+        "monthly_withdrawals": approved_monthly_withdrawals,
+        "monthly_won_profit": monthly_won_profit,
+        "monthly_commission": monthly_commission,
+        "now": now,
+        "investments": investments[:20],
+        "won_investments": won_investments[:20],
+        "wallet_transactions": wallet_transactions,
+        "direct_downline_count": user.downlines.count(),
+    }
+
+
 @login_required
-def dashboard(request: HttpRequest):
+def user_dashboard(request: HttpRequest):
     user = request.user
     settle_matured_investments(user=user)
 
@@ -193,28 +257,20 @@ def dashboard(request: HttpRequest):
                 request,
                 "Use the Investment page to take a package with duration.",
             )
-            return redirect("dashboard")
+            return redirect("user-dashboard")
 
-    investments = user.investments.order_by("-created_at")
-    won_investments = investments.filter(profit_realized__gt=Decimal("0.00"))
-    wallet_transactions = WalletTransaction.objects.filter(user=user).order_by("-created_at")[:15]
+    context = _dashboard_context(user)
+    context["page_title"] = "User Dashboard"
+    return render(request, "core/user_dashboard.html", context)
 
-    total_invested = sum((item.principal_amount for item in investments), Decimal("0.00"))
-    total_profit_won = sum((item.profit_realized for item in won_investments), Decimal("0.00"))
-    commission_total = sum(
-        (item.commission_amount for item in user.commission_earnings.all()),
-        Decimal("0.00"),
-    )
 
-    context = {
-        "total_invested": total_invested,
-        "total_profit_won": total_profit_won,
-        "commission_total": commission_total,
-        "investments": investments[:20],
-        "won_investments": won_investments[:20],
-        "wallet_transactions": wallet_transactions,
-        "direct_downline_count": user.downlines.count(),
-    }
+@login_required
+def dashboard(request: HttpRequest):
+    if request.user.user_type == User.UserType.USER:
+        return redirect("user-dashboard")
+
+    settle_matured_investments(user=request.user)
+    context = _dashboard_context(request.user)
     return render(request, "core/dashboard.html", context)
 
 
@@ -258,7 +314,7 @@ def register_with_referral(request: HttpRequest):
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
         email = (request.POST.get("email") or "").strip()
-        user_type = (request.POST.get("user_type") or User.UserType.USER).strip().lower()
+        user_type = User.UserType.USER
         password = request.POST.get("password") or ""
         confirm_password = request.POST.get("confirm_password") or ""
 
@@ -274,28 +330,29 @@ def register_with_referral(request: HttpRequest):
         if len(password) < 4:
             messages.error(request, "Password must be at least 4 characters.")
             return redirect("register-with-referral")
-        if user_type not in {User.UserType.ADMIN, User.UserType.USER}:
-            messages.error(request, "Invalid user type selected.")
-            return redirect("register-with-referral")
-
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
             referred_by=referrer,
             user_type=user_type,
-            is_staff=(user_type == User.UserType.ADMIN),
+            is_staff=False,
         )
         request.session.pop("signup_referrer_id", None)
         login(request, user)
         messages.success(request, "Registration successful.")
-        return redirect("dashboard")
+        return redirect("user-dashboard")
 
     return render(
         request,
         "registration/register_with_referral.html",
         {"referrer": referrer},
     )
+
+
+def logout_user(request: HttpRequest):
+    logout(request)
+    return redirect("login")
 
 
 @login_required
