@@ -3,13 +3,15 @@ from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth import get_user_model
 from django.contrib import messages
+from django.contrib.auth import views as auth_views
 from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
+from django.contrib.messages.views import SuccessMessageMixin
 from django.db.models import Avg, Count, Sum
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
@@ -23,6 +25,7 @@ from .models import (
     PaymentMethod,
     ProfitDistributionEntry,
     WithdrawalMethod,
+    Wallet,
     WalletTransaction,
 )
 from .services import (
@@ -34,6 +37,12 @@ from .services import (
 
 User = get_user_model()
 MAX_REFERRAL_LEVEL = 5
+
+
+class DashboardPasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
+    template_name = "core/change_password.html"
+    success_url = reverse_lazy("password_change")
+    success_message = "Password updated successfully."
 
 
 def _json_body(request: HttpRequest) -> dict:
@@ -274,6 +283,67 @@ def dashboard(request: HttpRequest):
     settle_matured_investments(user=request.user)
     context = _dashboard_context(request.user)
     return render(request, "core/dashboard.html", context)
+
+
+@login_required
+def page_profile(request: HttpRequest):
+    user = request.user
+    settle_matured_investments(user=user)
+
+    if request.method == "POST":
+        first_name = (request.POST.get("first_name") or "").strip()
+        last_name = (request.POST.get("last_name") or "").strip()
+        email = (request.POST.get("email") or "").strip()
+        profile_picture = request.FILES.get("profile_picture")
+        remove_profile_picture = request.POST.get("remove_profile_picture") == "1"
+
+        if email and User.objects.exclude(pk=user.pk).filter(email__iexact=email).exists():
+            messages.error(request, "This email is already used by another account.")
+            return redirect("page-profile")
+
+        update_fields = ["first_name", "last_name", "email"]
+        user.first_name = first_name
+        user.last_name = last_name
+        user.email = email
+        if remove_profile_picture and user.profile_picture:
+            user.profile_picture = None
+            update_fields.append("profile_picture")
+        elif profile_picture:
+            user.profile_picture = profile_picture
+            update_fields.append("profile_picture")
+
+        user.save(update_fields=update_fields)
+        messages.success(request, "Profile updated successfully.")
+        return redirect("page-profile")
+
+    wallet, _ = Wallet.objects.get_or_create(user=user)
+    investment_wallet, _ = InvestmentWallet.objects.get_or_create(user=user)
+    total_commission = user.commission_earnings.aggregate(total=Sum("commission_amount"))["total"] or Decimal("0.00")
+    total_add_money = user.manual_payment_requests.count()
+    total_withdrawals = user.manual_withdrawal_requests.count()
+    pending_add_money = user.manual_payment_requests.filter(status=ManualPaymentRequest.Status.PENDING).count()
+    pending_withdrawals = user.manual_withdrawal_requests.filter(
+        status=ManualWithdrawalRequest.Status.PENDING
+    ).count()
+
+    recent_wallet_transactions = user.wallet_transactions.order_by("-created_at")[:10]
+
+    context = {
+        "page_title": "My Profile",
+        "wallet_balance": wallet.balance,
+        "investment_wallet_balance": investment_wallet.balance,
+        "active_investments_count": user.investments.filter(status=Investment.Status.ACTIVE).count(),
+        "total_investments_count": user.investments.count(),
+        "total_referrals": user.downlines.count(),
+        "total_commission": total_commission,
+        "total_add_money": total_add_money,
+        "total_withdrawals": total_withdrawals,
+        "pending_add_money": pending_add_money,
+        "pending_withdrawals": pending_withdrawals,
+        "recent_wallet_transactions": recent_wallet_transactions,
+        "full_name": user.get_full_name() or user.username,
+    }
+    return render(request, "core/page_profile.html", context)
 
 
 def custom_page_not_found(request: HttpRequest, exception=None):

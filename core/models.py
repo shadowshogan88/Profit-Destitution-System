@@ -29,6 +29,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         related_name="downlines",
     )
+    profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
 
     @classmethod
     def generate_referral_code(cls) -> str:

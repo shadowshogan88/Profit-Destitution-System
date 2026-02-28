@@ -1,0 +1,249 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% load static %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="profile-foreground position-relative mx-n4 mt-n4">
+    <div class="profile-wid-bg">
+        <img src="{% static 'assets/images/profile-bg.jpg' %}" alt="" class="profile-wid-img" />
+    </div>
+</div>
+
+<div class="pt-4 mb-4 mb-lg-3 pb-lg-4 profile-wrapper">
+    <div class="row g-4">
+        <div class="col-auto">
+            <div class="avatar-lg">
+                {% if request.user.profile_picture %}
+                <img src="{{ request.user.profile_picture.url }}" alt="user-img" class="img-thumbnail rounded-circle" />
+                {% else %}
+                <img src="{% static 'assets/images/users/avatar-1.jpg' %}" alt="user-img" class="img-thumbnail rounded-circle" />
+                {% endif %}
+            </div>
+        </div>
+        <div class="col">
+            <div class="p-2">
+                <h3 class="text-white mb-1">{{ full_name }}</h3>
+                <p class="text-white text-opacity-75 text-capitalize mb-1">{{ request.user.user_type }}</p>
+                <div class="hstack text-white-50 gap-3">
+                    <div><i class="ri-user-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>@{{ request.user.username }}</div>
+                    <div><i class="ri-calendar-line me-1 text-white text-opacity-75 fs-16 align-middle"></i>Joined {{ request.user.date_joined|date:"d M Y" }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-lg-auto order-last order-lg-0">
+            <div class="row text text-white-50 text-center">
+                <div class="col-6">
+                    <div class="p-2">
+                        <h4 class="text-white mb-1">{{ total_referrals }}</h4>
+                        <p class="fs-14 mb-0">Referrals</p>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="p-2">
+                        <h4 class="text-white mb-1">{{ active_investments_count }}</h4>
+                        <p class="fs-14 mb-0">Active Investments</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-3" role="alert">{{ message }}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-xxl-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Info</h5>
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <th class="ps-0" scope="row">Full Name :</th>
+                                <td class="text-muted">{{ full_name }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Username :</th>
+                                <td class="text-muted">@{{ request.user.username }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">E-mail :</th>
+                                <td class="text-muted">{{ request.user.email|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Referral Code :</th>
+                                <td class="text-muted">{{ request.user.referral_code|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Joined :</th>
+                                <td class="text-muted">{{ request.user.date_joined|date:"d M Y" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Wallet Snapshot</h5>
+                <div class="vstack gap-3">
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Main Wallet</span>
+                        <span class="fw-semibold">Tk {{ wallet_balance }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Investment Wallet</span>
+                        <span class="fw-semibold">Tk {{ investment_wallet_balance }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Total Commission</span>
+                        <span class="fw-semibold">Tk {{ total_commission }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Request Status</h5>
+                <div class="d-flex flex-wrap gap-2 fs-13">
+                    <span class="badge bg-primary-subtle text-primary">Add Money: {{ total_add_money }}</span>
+                    <span class="badge bg-warning-subtle text-warning">Pending Add: {{ pending_add_money }}</span>
+                    <span class="badge bg-success-subtle text-success">Withdrawals: {{ total_withdrawals }}</span>
+                    <span class="badge bg-danger-subtle text-danger">Pending WDR: {{ pending_withdrawals }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xxl-9">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">About</h5>
+                <p class="text-muted mb-4">
+                    This profile page is based on Velzon's profile layout and connected with your live account data.
+                </p>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <p class="text-muted mb-1">Total Investments</p>
+                            <h5 class="mb-0">{{ total_investments_count }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <p class="text-muted mb-1">Active Investments</p>
+                            <h5 class="mb-0">{{ active_investments_count }}</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 border rounded">
+                            <p class="text-muted mb-1">Direct Referrals</p>
+                            <h5 class="mb-0">{{ total_referrals }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="card-title mb-0">Edit Profile</h5>
+                </div>
+                <form method="post" enctype="multipart/form-data" class="row g-3">
+                    {% csrf_token %}
+                    <div class="col-md-4">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ request.user.first_name }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ request.user.last_name }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ request.user.email }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="profile_picture" class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" id="profile_picture" name="profile_picture" accept="image/*">
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="remove_profile_picture" name="remove_profile_picture">
+                            <label class="form-check-label" for="remove_profile_picture">
+                                Remove current profile picture
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="ri-save-line align-bottom me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Wallet Transactions</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Amount</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tx in recent_wallet_transactions %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    {% if tx.tx_type == "CREDIT" %}
+                                    <span class="badge bg-success-subtle text-success">{{ tx.tx_type }}</span>
+                                    {% else %}
+                                    <span class="badge bg-danger-subtle text-danger">{{ tx.tx_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>Tk {{ tx.amount }}</td>
+                                <td>{{ tx.description }}</td>
+                                <td>{{ tx.created_at|date:"d M Y, h:i A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No wallet transactions yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -30,18 +30,15 @@ urlpatterns = [
     path("logout/", views.logout_user, name="logout"),
     path("user-dashboard/", views.user_dashboard, name="user-dashboard"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("profile/", views.page_profile, name="page-profile"),
     path(
         "password-change/",
-        auth_views.PasswordChangeView.as_view(
-            template_name="registration/password_change_form.html"
-        ),
+        views.DashboardPasswordChangeView.as_view(),
         name="password_change",
     ),
     path(
         "password-change/done/",
-        auth_views.PasswordChangeDoneView.as_view(
-            template_name="registration/password_change_done.html"
-        ),
+        RedirectView.as_view(pattern_name="password_change", permanent=False),
         name="password_change_done",
     ),
     path(
