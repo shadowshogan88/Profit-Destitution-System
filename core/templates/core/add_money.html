@@ -1,0 +1,364 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+        </div>
+    </div>
+</div>
+
+<!-- {% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} mb-3" role="alert">{{ message }}</div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %} -->
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" class="vertical-navs-step checkout-tab">
+                    {% csrf_token %}
+                    <div class="row gy-5">
+                        <div class="col-lg-3">
+                            <div class="nav flex-column custom-nav nav-pills" role="tablist" aria-orientation="vertical">
+                                <button class="nav-link active" id="v-pills-bill-info-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-info" type="button" role="tab" aria-controls="v-pills-bill-info" aria-selected="true">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 1</span>
+                                    Payment Info
+                                </button>
+                                <button class="nav-link" id="v-pills-bill-address-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-address" type="button" role="tab" aria-controls="v-pills-bill-address" aria-selected="false">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 2</span>
+                                    Payment Instruction
+                                </button>
+                                <button class="nav-link" id="v-pills-payment-tab" data-bs-toggle="pill" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 3</span>
+                                    Payment
+                                </button>
+                                <button class="nav-link" id="v-pills-finish-tab" data-bs-toggle="pill" data-bs-target="#v-pills-finish" type="button" role="tab" aria-controls="v-pills-finish" aria-selected="false">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 4</span>
+                                    Finish
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7">
+                            <div class="px-lg-4">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="v-pills-bill-info" role="tabpanel" aria-labelledby="v-pills-bill-info-tab">
+                                        <h5>Payment Info</h5>
+                                        <p class="text-muted">Fill all information below</p>
+                                        <div class="row g-3">
+                                            <label for="amount" class="form-label">Amount</label>
+                                            <input type="number" class="form-control rounded-pill mb-3" id="amount" name="amount" step="0.01" min="0.01" required>
+                                            <label for="payment_method" class="form-label">Payment Method</label>
+                                            <select
+                                                id="payment_method"
+                                                name="payment_method_id"
+                                                class="form-select rounded-pill mb-3"
+                                                aria-label="Payment method"
+                                                oninvalid="this.setCustomValidity('Payment Method is required')"
+                                                onchange="this.setCustomValidity('')"
+                                                required
+                                            >
+                                                <option value="" selected>Select payment method</option>
+                                                {% for method in payment_methods %}
+                                                    <option value="{{ method.id }}">{{ method.name }}</option>
+                                                {% empty %}
+                                                    <option value="" disabled>No active payment method</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div id="paymentMethodError" class="text-danger small mt-1" style="display:none;"></div>
+                                        </div>
+                                        <div class="d-flex align-items-start gap-3 mt-4">
+                                            <button type="button" class="btn btn-success btn-label right ms-auto nexttab" data-nexttab="v-pills-bill-address-tab">
+                                                <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Shipping
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="v-pills-bill-address" role="tabpanel" aria-labelledby="v-pills-bill-address-tab">
+                                        <h5>Payment Instruction</h5>
+                                        <p class="text-muted">Fill all information below</p>
+                                        <div id="methodInstructionBox" class="alert alert-info" style="display:none;">
+                                            <p class="mb-1"><strong id="methodInstructionName"></strong></p>
+                                            <p id="methodInstructionAccount" class="mb-1"></p>
+                                            <p id="methodInstructionText" class="mb-0"></p>
+                                        </div>
+                                        <p id="methodInstructionEmpty" class="text-muted mb-0">Select a payment method in Step 1 to see instructions.</p>
+
+                                        <div class="d-flex align-items-start gap-3 mt-4">
+                                            <button type="button" class="btn btn-light btn-label previestab" data-previous="v-pills-bill-info-tab">
+                                                <i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to Billing Info
+                                            </button>
+                                            <button type="button" class="btn btn-success btn-label right ms-auto nexttab" data-nexttab="v-pills-payment-tab">
+                                                <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Payment
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="v-pills-payment" role="tabpanel" aria-labelledby="v-pills-payment-tab">
+                                        <h5>Payment</h5>
+                                        <p class="text-muted">Fill all information below</p>
+
+                                        <div class="row gy-9">
+                                            <div class="col-md-12">
+                                                <label for="cc-name" class="form-label">Transaction Reference (optional)</label>
+                                                <input type="text" class="form-control" id="cc-name" name="transaction_reference" placeholder="TrxID">
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div>
+                                                    <label for="exampleFormControlTextarea5" class="form-label">Payment Details</label>
+                                                    <textarea class="form-control" id="exampleFormControlTextarea5" name="details" rows="3" placeholder="Sender number, time, notes..." required></textarea>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label for="formFile" class="form-label">Payment Image Proof (optional)</label>
+                                                <input class="form-control" type="file" id="formFile" name="proof_image" accept="image/*">
+                                            </div>
+
+                                        <div class="d-flex align-items-start gap-3 mt-4">
+                                            <button type="button" class="btn btn-light btn-label previestab" data-previous="v-pills-bill-address-tab">
+                                                <i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to Shipping Info
+                                            </button>
+                                            <button type="submit" class="btn btn-success btn-label right ms-auto">
+                                                <i class="ri-check-line label-icon align-middle fs-16 ms-2"></i> Submit Request
+                                            </button>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="v-pills-finish" role="tabpanel" aria-labelledby="v-pills-finish-tab">
+                                        <div class="text-center pt-4 pb-2">
+                                            {% for message in messages %}
+                                                {% if message.tags == 'success' %}
+                                                    
+
+                                            <div class="mb-4">
+                                                <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                                            </div>
+                                            <h5>Your Payment is Completed !</h5>
+                                            <p class="text-muted">{{ message }}</p>
+                                            <div class="mt-3">
+                                                <a href="{% url 'add-money' %}" class="btn btn-primary btn-label">
+                                                    <i class="ri-refresh-line label-icon align-middle fs-16 me-2"></i> Another Add Request
+                                                </a>
+                                            </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Your Add Money Requests</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Reference</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in payment_requests %}
+                            <tr>
+                                <td>{{ item.request_code }}</td>
+                                <td>Tk {{ item.amount }}</td>
+                                <td>{{ item.payment_method }}</td>
+                                <td>{{ item.transaction_reference|default:"-" }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.created_at|date:"d M Y, h:i A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">No add money request submitted yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var methodSelect = document.getElementById("payment_method");
+    var infoUrl = "{% url 'payment-method-info' %}";
+    var methodBox = document.getElementById("methodInstructionBox");
+    var methodEmpty = document.getElementById("methodInstructionEmpty");
+    var methodName = document.getElementById("methodInstructionName");
+    var methodAccount = document.getElementById("methodInstructionAccount");
+    var methodInstruction = document.getElementById("methodInstructionText");
+    var paymentMethodError = document.getElementById("paymentMethodError");
+
+    function setPaymentMethodError(message) {
+        if (!paymentMethodError) {
+            return;
+        }
+        paymentMethodError.textContent = message;
+        paymentMethodError.style.display = "block";
+    }
+
+    function clearPaymentMethodError() {
+        if (!paymentMethodError) {
+            return;
+        }
+        paymentMethodError.textContent = "";
+        paymentMethodError.style.display = "none";
+    }
+
+    async function fetchPaymentMethodInfo(methodId) {
+        var response = await fetch(infoUrl + "?id=" + encodeURIComponent(methodId));
+        var data = await response.json();
+        if (!response.ok || !data.ok) {
+            return null;
+        }
+        return data;
+    }
+
+    async function updateMethodInstruction() {
+        if (!methodSelect || !methodBox) {
+            return;
+        }
+        var methodId = methodSelect.value;
+        if (!methodId) {
+            methodBox.style.display = "none";
+            if (methodEmpty) {
+                methodEmpty.style.display = "block";
+            }
+            return;
+        }
+        try {
+            var data = await fetchPaymentMethodInfo(methodId);
+            if (!data) {
+                methodBox.style.display = "none";
+                if (methodEmpty) {
+                    methodEmpty.style.display = "block";
+                }
+                return;
+            }
+            methodName.textContent = data.name;
+            methodAccount.textContent = data.account_details ? "Account: " + data.account_details : "Account: Not provided";
+            methodInstruction.textContent = data.instruction ? "Instruction: " + data.instruction : "Instruction: Not provided";
+            methodBox.style.display = "block";
+            if (methodEmpty) {
+                methodEmpty.style.display = "none";
+            }
+        } catch (error) {
+            methodBox.style.display = "none";
+            if (methodEmpty) {
+                methodEmpty.style.display = "block";
+            }
+        }
+    }
+
+    if (methodSelect) {
+        methodSelect.addEventListener("change", async function () {
+            clearPaymentMethodError();
+            await updateMethodInstruction();
+        });
+    }
+
+    document.querySelectorAll(".nexttab").forEach(function (button) {
+        button.addEventListener("click", async function () {
+            var nextTabId = button.getAttribute("data-nexttab");
+            if (nextTabId === "v-pills-bill-address-tab") {
+                if (!methodSelect || !methodSelect.value) {
+                    setPaymentMethodError("Payment Method is required");
+                    return;
+                }
+                clearPaymentMethodError();
+                try {
+                    var selectedMethod = await fetchPaymentMethodInfo(methodSelect.value);
+                    if (!selectedMethod) {
+                        setPaymentMethodError("Selected payment method is invalid");
+                        return;
+                    }
+                } catch (error) {
+                    setPaymentMethodError("Could not verify payment method. Please try again.");
+                    return;
+                }
+            }
+            var nextTab = document.getElementById(nextTabId);
+            if (nextTab) {
+                nextTab.click();
+            }
+        });
+    });
+
+    document.querySelectorAll(".previestab").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var prevTabId = button.getAttribute("data-previous");
+            var prevTab = document.getElementById(prevTabId);
+            if (prevTab) {
+                prevTab.click();
+            }
+        });
+    });
+
+    updateMethodInstruction();
+
+    function updateStepIcons() {
+        var stepButtons = Array.from(document.querySelectorAll(".custom-nav .nav-link"));
+        var activeIndex = stepButtons.findIndex(function (btn) {
+            return btn.classList.contains("active");
+        });
+        if (activeIndex < 0) {
+            return;
+        }
+        stepButtons.forEach(function (btn, index) {
+            var icon = btn.querySelector(".step-icon");
+            btn.classList.remove("done");
+            if (index < activeIndex) {
+                btn.classList.add("done");
+            }
+            if (!icon) {
+                return;
+            }
+            icon.classList.remove("ri-check-circle-fill");
+            icon.classList.add("ri-close-circle-fill");
+        });
+    }
+
+    document.querySelectorAll(".custom-nav .nav-link").forEach(function (tabBtn) {
+        tabBtn.addEventListener("shown.bs.tab", updateStepIcons);
+    });
+
+    var paymentSubmitted = "{{ payment_submitted|yesno:'true,false' }}" === "true";
+    if (paymentSubmitted) {
+        var finishTab = document.getElementById("v-pills-finish-tab");
+        if (finishTab) {
+            finishTab.click();
+        }
+    }
+
+    updateStepIcons();
+});
+</script>
+{% endblock %}

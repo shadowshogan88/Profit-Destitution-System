@@ -1,87 +1,52 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Referral Info</title>
-    <link rel="stylesheet" href="{% static 'core/dashboard.css' %}">
-</head>
-<body>
-    <header class="topbar">
-        <div>
-            <h1>Referral</h1>
-            <p>Share your code and direct registration link</p>
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}Referral Link{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">Referral Link</h4>
         </div>
-    </header>
-
-    <div class="layout">
-        <aside class="sidebar">
-            <h3>Menu</h3>
-            <a href="{% url 'dashboard' %}">Dashboard</a>
-            <a href="{% url 'dashboard' %}#profile">User Profile</a>
-            <a href="{% url 'dashboard' %}#wallet">Wallet</a>
-            <a href="{% url 'dashboard' %}#new-investment">New Investment</a>
-            <a href="{% url 'dashboard' %}#summary">Investment Summary</a>
-            <a href="{% url 'dashboard' %}#won-list">Won Investments</a>
-            <a href="{% url 'dashboard' %}#wallet-history">Wallet History</a>
-            <a href="{% url 'investment-page' %}">Investment Page</a>
-            <a href="{% url 'referral-info' %}">Referral</a>
-            <a href="{% url 'manual-payment' %}">Manual Payment</a>
-            <a href="{% url 'password_change' %}">Password Change</a>
-            <form method="post" action="{% url 'logout' %}" class="sidebar-logout-form">
-                {% csrf_token %}
-                <button type="submit" class="sidebar-link-btn">Logout</button>
-            </form>
-        </aside>
-
-        <main class="grid">
-            <section class="card wide">
-                <h2>Your Referral Code</h2>
-                <p class="big">{{ request.user.referral_code }}</p>
-            </section>
-
-            <section class="card wide">
-                <h2>Direct Register Link</h2>
-                <input type="text" value="{{ direct_link }}" readonly>
-                <p class="subtitle">Send this link to users. It opens registration with your referral.</p>
-            </section>
-
-            <section class="card wide">
-                <h2>Referral Users (Up to 5 Levels)</h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Level</th>
-                            <th>Username</th>
-                            <th>Invest</th>
-                            <th>Commission</th>
-                            <th>Joined</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for group in level_users %}
-                            {% if group.users %}
-                                {% for item in group.users %}
-                                    <tr>
-                                        <td>L{{ group.level }}</td>
-                                        <td>{{ item.username }}</td>
-                                        <td>Tk {{ item.invest_current_amount }}</td>
-                                        <td>Tk {{ item.commission_amount }}</td>
-                                        <td>{{ item.date_joined|date:"Y-m-d H:i" }}</td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td>L{{ group.level }}</td>
-                                    <td colspan="4">No users</td>
-                                </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </section>
-        </main>
     </div>
-</body>
-</html>
+</div>
+
+<div class="row">
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Your Referral Code</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <h4 class="mb-0" id="referralCode">{{ request.user.referral_code }}</h4>
+                    <button type="button" class="btn btn-sm btn-primary" onclick="copyText('referralCode', this)">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Direct Register Link</h5>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="directLink" value="{{ direct_link }}" readonly>
+                    <button type="button" class="btn btn-primary" onclick="copyText('directLink', this)">Copy</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyText(elementId, button) {
+    var element = document.getElementById(elementId);
+    var value = element.tagName === "INPUT" ? element.value : element.textContent.trim();
+
+    navigator.clipboard.writeText(value).then(function () {
+        var originalText = button.textContent;
+        button.textContent = "Copied";
+        setTimeout(function () {
+            button.textContent = originalText;
+        }, 1200);
+    });
+}
+</script>
+{% endblock %}

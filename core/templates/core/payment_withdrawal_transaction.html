@@ -1,0 +1,108 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Add Money & Withdrawal History</h5>
+                <span class="badge bg-primary-subtle text-primary">{{ transactions|length }} Records</span>
+            </div><!-- end card header -->
+            <div class="card-body">
+                <div id="transaction-gridjs"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #transaction-gridjs .gridjs-wrapper {
+        overflow-x: auto;
+    }
+
+    #transaction-gridjs .gridjs-table {
+        table-layout: auto;
+        width: 100%;
+    }
+
+    #transaction-gridjs .gridjs-th,
+    #transaction-gridjs .gridjs-td {
+        white-space: normal;
+        word-break: break-word;
+    }
+</style>
+
+<script>
+    window.addEventListener("load", function () {
+        const transactionGridData = [
+            {% for row in transactions %}
+            [
+                "{{ row.serial|escapejs }}",
+                "{{ row.request_code|escapejs }}",
+                "{{ row.method|default:'-'|escapejs }}",
+                "{{ row.amount|floatformat:2|escapejs }}",
+                "{{ row.status|escapejs }}",
+                "{{ row.reference|default:'-'|escapejs }}",
+                "{{ row.note|default:'-'|escapejs }}",
+                "{{ row.created_at|date:'d M Y, h:i A'|escapejs }}"
+            ],
+            {% endfor %}
+        ];
+
+        const transactionGridContainer = document.getElementById("transaction-gridjs");
+        if (!transactionGridContainer || !window.gridjs) {
+            return;
+        }
+
+        new gridjs.Grid({
+            columns: [
+                { name: "#" },
+                {
+                    name: "ID",
+                    formatter: function (value) {
+                        return gridjs.html("<span class='fw-semibold'>" + value + "</span>");
+                    }
+                },
+                { name: "Method" },
+                {
+                    name: "Amount (Tk)",
+                    formatter: function (value) {
+                        return gridjs.html("<span class='fw-semibold'>Tk " + value + "</span>");
+                    }
+                },
+                {
+                    name: "Status",
+                    formatter: function (value) {
+                        if (value === "approved") {
+                            return gridjs.html('<span class="badge bg-success-subtle text-success">Approved</span>');
+                        }
+                        if (value === "rejected") {
+                            return gridjs.html('<span class="badge bg-danger-subtle text-danger">Rejected</span>');
+                        }
+                        return gridjs.html('<span class="badge bg-secondary-subtle text-secondary">Pending</span>');
+                    }
+                },
+                { name: "Reference" },
+                { name: "Note" },
+                { name: "Date" }
+            ],
+            data: transactionGridData,
+            search: true,
+            sort: true,
+            pagination: { limit: 10 },
+            language: {
+                noRecordsFound: "No add money or withdrawal request history found."
+            }
+        }).render(transactionGridContainer);
+    });
+</script>
+{% endblock %}

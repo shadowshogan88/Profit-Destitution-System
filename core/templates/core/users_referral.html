@@ -1,0 +1,185 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+
+
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between">
+                <h5 class="card-title mb-0">Referral Users (Up to 5 Levels)</h5>
+                <span class="badge bg-primary-subtle text-primary">{{ level_rows|length }} Users</span>
+            </div><!-- end card header -->
+
+            <div class="card-body">
+                <div id="referral-gridjs"></div>
+            </div><!-- end card-body -->
+        </div><!-- end card -->
+    </div>
+    <!-- end col -->
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Referral Tree</h5>
+            </div>
+            <div class="card-body">
+                <div id="referral-tree-root"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    #referral-gridjs .gridjs-wrapper {
+        overflow-x: auto;
+    }
+
+    #referral-gridjs .gridjs-table {
+        table-layout: auto;
+        width: 100%;
+    }
+
+    #referral-gridjs .gridjs-th,
+    #referral-gridjs .gridjs-td {
+        white-space: normal;
+        word-break: break-word;
+    }
+
+    #referral-tree-root ul {
+        list-style: none;
+        margin: 0;
+        padding-left: 1.25rem;
+        border-left: 1px dashed #d9d9d9;
+    }
+
+    #referral-tree-root li {
+        margin: 0.5rem 0;
+        position: relative;
+    }
+
+    #referral-tree-root li::before {
+        content: "";
+        position: absolute;
+        left: -1.25rem;
+        top: 1rem;
+        width: 1rem;
+        border-top: 1px dashed #d9d9d9;
+    }
+
+    .tree-node {
+        display: inline-block;
+        padding: 0.35rem 0.6rem;
+        border: 1px solid #e9ebec;
+        border-radius: 0.4rem;
+        background: #fff;
+    }
+
+    .tree-node strong {
+        display: block;
+        line-height: 1.2;
+    }
+
+    .tree-node small {
+        color: #878a99;
+    }
+</style>
+
+{{ tree|json_script:"referral-tree-data" }}
+<script>
+    window.addEventListener("load", function () {
+        const referralGridData = [
+            {% for row in level_rows %}
+            [
+                "{{ row.serial|escapejs }}",
+                "{{ row.username|default:'-'|escapejs }}",
+                "{{ row.referral_code|default:'-'|escapejs }}",
+                "Level {{ row.level|escapejs }}",
+                "{{ row.referred_by|default:'-'|escapejs }}",
+                "{{ row.active_invest_amount|floatformat:2|escapejs }}",
+                "{{ row.running_month_commission|floatformat:2|escapejs }}",
+                "{{ row.joined|date:'d M Y, h:i A'|escapejs }}"
+            ],
+            {% endfor %}
+        ];
+
+        const referralGridContainer = document.getElementById("referral-gridjs");
+        if (!referralGridContainer || !window.gridjs) {
+            return;
+        }
+
+        new gridjs.Grid({
+            columns: [
+                { name: "#" },
+                { name: "Username" },
+                { name: "Referral Code" },
+                {
+                    name: "Level",
+                    formatter: function (value) {
+                        return gridjs.html('<span class="badge bg-info-subtle text-info">' + value + '</span>');
+                    }
+                },
+                { name: "Referred By" },
+                {
+                    name: "Active Invest (Tk)",
+                    formatter: function (value) {
+                        return gridjs.html("<span class='fw-semibold'>" + value + "</span>");
+                    }
+                },
+                {
+                    name: "Commission (Monthly)",
+                    formatter: function (value) {
+                        return gridjs.html("<span class='text-success fw-semibold'>" + value + "</span>");
+                    }
+                },
+                { name: "Joined" }
+            ],
+            data: referralGridData,
+            search: true,
+            sort: true,
+            pagination: { limit: 10 },
+            language: {
+                noRecordsFound: "No referral users found up to 5 levels."
+            }
+        }).render(referralGridContainer);
+    });
+</script>
+<script>
+    (function () {
+        const data = JSON.parse(document.getElementById("referral-tree-data").textContent);
+        const root = document.getElementById("referral-tree-root");
+
+        function renderNode(node) {
+            const li = document.createElement("li");
+            const card = document.createElement("div");
+            card.className = "tree-node";
+            card.innerHTML = "<strong>" + node.username + "</strong><small>Code: " + (node.referral_code || "-") + "</small>";
+            li.appendChild(card);
+
+            if (node.children && node.children.length) {
+                const ul = document.createElement("ul");
+                node.children.forEach(function (child) {
+                    ul.appendChild(renderNode(child));
+                });
+                li.appendChild(ul);
+            }
+            return li;
+        }
+
+        const ul = document.createElement("ul");
+        ul.appendChild(renderNode(data));
+        root.appendChild(ul);
+    })();
+</script>
+
+
+{% endblock %}

@@ -4,6 +4,7 @@ import secrets
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import IntegrityError
 from django.db import models, transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -94,6 +95,7 @@ class Investment(models.Model):
         null=True,
         blank=True,
     )
+    investment_code = models.CharField(max_length=20, unique=True, db_index=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="investments")
     principal_amount = models.DecimalField(max_digits=14, decimal_places=2)
     profit_realized = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
@@ -104,8 +106,51 @@ class Investment(models.Model):
     principal_returned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @staticmethod
+    def _month_range(base_dt):
+        month_start = base_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if month_start.month == 12:
+            month_end = month_start.replace(year=month_start.year + 1, month=1)
+        else:
+            month_end = month_start.replace(month=month_start.month + 1)
+        return month_start, month_end
+
+    def _generate_investment_code(self) -> str:
+        raw_dt = self.created_at or timezone.now()
+        code_dt = timezone.localtime(raw_dt) if timezone.is_aware(raw_dt) else raw_dt
+        month_start, month_end = self._month_range(code_dt)
+        prefix = code_dt.strftime("Inv-%m/%y-")
+
+        qs = Investment.objects.filter(
+            created_at__gte=month_start,
+            created_at__lt=month_end,
+        )
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+
+        sequence = qs.count() + 1
+        while True:
+            candidate = f"{prefix}{sequence:03d}"
+            exists = Investment.objects.filter(investment_code=candidate).exclude(pk=self.pk).exists()
+            if not exists:
+                return candidate
+            sequence += 1
+
+    def save(self, *args, **kwargs):
+        if self.investment_code:
+            return super().save(*args, **kwargs)
+
+        for _ in range(20):
+            self.investment_code = self._generate_investment_code()
+            try:
+                return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.investment_code = None
+                continue
+        raise IntegrityError("Could not generate unique investment_code after multiple attempts.")
+
     def __str__(self) -> str:
-        return f"Investment#{self.pk} by {self.user.username}"
+        return f"{self.investment_code or f'Investment#{self.pk}'} by {self.user.username}"
 
 
 class CommissionRate(models.Model):
@@ -202,6 +247,7 @@ class InvestmentPackage(models.Model):
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     duration_days = models.PositiveIntegerField()
     is_active = models.BooleanField(default=True)
+    is_popular = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -218,6 +264,7 @@ class ManualPaymentRequest(models.Model):
         REJECTED = "rejected", "Rejected"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="manual_payment_requests")
+    request_code = models.CharField(max_length=20, unique=True, db_index=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     payment_method = models.CharField(max_length=100)
     transaction_reference = models.CharField(max_length=120, blank=True)
@@ -233,8 +280,51 @@ class ManualPaymentRequest(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+    @staticmethod
+    def _month_range(base_dt):
+        month_start = base_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if month_start.month == 12:
+            month_end = month_start.replace(year=month_start.year + 1, month=1)
+        else:
+            month_end = month_start.replace(month=month_start.month + 1)
+        return month_start, month_end
+
+    def _generate_request_code(self) -> str:
+        raw_dt = self.created_at or timezone.now()
+        code_dt = timezone.localtime(raw_dt) if timezone.is_aware(raw_dt) else raw_dt
+        month_start, month_end = self._month_range(code_dt)
+        prefix = code_dt.strftime("Add-%m/%y-")
+
+        qs = ManualPaymentRequest.objects.filter(
+            created_at__gte=month_start,
+            created_at__lt=month_end,
+        )
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+
+        sequence = qs.count() + 1
+        while True:
+            candidate = f"{prefix}{sequence:03d}"
+            exists = ManualPaymentRequest.objects.filter(request_code=candidate).exclude(pk=self.pk).exists()
+            if not exists:
+                return candidate
+            sequence += 1
+
+    def save(self, *args, **kwargs):
+        if self.request_code:
+            return super().save(*args, **kwargs)
+
+        for _ in range(20):
+            self.request_code = self._generate_request_code()
+            try:
+                return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.request_code = None
+                continue
+        raise IntegrityError("Could not generate unique request_code after multiple attempts.")
+
     def __str__(self) -> str:
-        return f"PaymentRequest#{self.pk} {self.user.username} {self.amount} {self.status}"
+        return f"{self.request_code or f'PaymentRequest#{self.pk}'} {self.user.username} {self.amount} {self.status}"
 
 
 class ManualWithdrawalRequest(models.Model):
@@ -244,6 +334,7 @@ class ManualWithdrawalRequest(models.Model):
         REJECTED = "rejected", "Rejected"
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="manual_withdrawal_requests")
+    request_code = models.CharField(max_length=20, unique=True, db_index=True)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
     withdrawal_method = models.ForeignKey(
         "WithdrawalMethod",
@@ -268,8 +359,51 @@ class ManualWithdrawalRequest(models.Model):
     class Meta:
         ordering = ["-created_at"]
 
+    @staticmethod
+    def _month_range(base_dt):
+        month_start = base_dt.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        if month_start.month == 12:
+            month_end = month_start.replace(year=month_start.year + 1, month=1)
+        else:
+            month_end = month_start.replace(month=month_start.month + 1)
+        return month_start, month_end
+
+    def _generate_request_code(self) -> str:
+        raw_dt = self.created_at or timezone.now()
+        code_dt = timezone.localtime(raw_dt) if timezone.is_aware(raw_dt) else raw_dt
+        month_start, month_end = self._month_range(code_dt)
+        prefix = code_dt.strftime("Wdr-%m/%y-")
+
+        qs = ManualWithdrawalRequest.objects.filter(
+            created_at__gte=month_start,
+            created_at__lt=month_end,
+        )
+        if self.pk:
+            qs = qs.exclude(pk=self.pk)
+
+        sequence = qs.count() + 1
+        while True:
+            candidate = f"{prefix}{sequence:03d}"
+            exists = ManualWithdrawalRequest.objects.filter(request_code=candidate).exclude(pk=self.pk).exists()
+            if not exists:
+                return candidate
+            sequence += 1
+
+    def save(self, *args, **kwargs):
+        if self.request_code:
+            return super().save(*args, **kwargs)
+
+        for _ in range(20):
+            self.request_code = self._generate_request_code()
+            try:
+                return super().save(*args, **kwargs)
+            except IntegrityError:
+                self.request_code = None
+                continue
+        raise IntegrityError("Could not generate unique request_code after multiple attempts.")
+
     def __str__(self) -> str:
-        return f"WithdrawalRequest#{self.pk} {self.user.username} {self.amount} {self.status}"
+        return f"{self.request_code or f'WithdrawalRequest#{self.pk}'} {self.user.username} {self.amount} {self.status}"
 
 
 class ProfitDistribution(models.Model):

@@ -1,18 +1,20 @@
-import json
+﻿import json
 from decimal import Decimal, InvalidOperation
 
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
-from django.db.models import Avg, Sum
+from django.db.models import Avg, Count, Sum
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
+from django.urls import reverse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
+    CommissionLog,
     Investment,
     InvestmentPackage,
     InvestmentWallet,
@@ -274,6 +276,14 @@ def dashboard(request: HttpRequest):
     return render(request, "core/dashboard.html", context)
 
 
+def custom_page_not_found(request: HttpRequest, exception=None):
+    return render(request, "404.html", status=404)
+
+
+def custom_404_preview(request: HttpRequest):
+    return render(request, "404.html", status=404)
+
+
 def referral_code_entry(request: HttpRequest):
     if request.user.is_authenticated:
         return redirect("dashboard")
@@ -403,6 +413,150 @@ def referral_info(request: HttpRequest):
 
 
 @login_required
+def users_referral(request: HttpRequest):
+    def build_tree(node, depth=1):
+        children = (
+            node.downlines.all()
+            .order_by("date_joined")
+            .only("id", "username", "referral_code", "date_joined")
+        )
+        if depth >= MAX_REFERRAL_LEVEL:
+            child_nodes = []
+        else:
+            child_nodes = [build_tree(child, depth + 1) for child in children]
+        return {
+            "id": node.id,
+            "username": node.username,
+            "referral_code": node.referral_code,
+            "joined": node.date_joined,
+            "children": child_nodes,
+        }
+
+    tree = build_tree(request.user)
+    level_rows = []
+    parent_ids = [request.user.id]
+    serial = 1
+    now = timezone.now()
+
+    for level in range(1, MAX_REFERRAL_LEVEL + 1):
+        users = list(
+            User.objects.filter(referred_by_id__in=parent_ids)
+            .select_related("referred_by")
+            .order_by("date_joined")
+            .only("id", "username", "referral_code", "date_joined", "referred_by__username")
+        )
+        if not users:
+            break
+
+        user_ids = [user.id for user in users]
+        active_invest_map = {
+            row["user_id"]: row
+            for row in (
+                Investment.objects.filter(user_id__in=user_ids, status=Investment.Status.ACTIVE)
+                .values("user_id")
+                .annotate(
+                    total_amount=Sum("principal_amount"),
+                    total_count=Count("id"),
+                )
+            )
+        }
+        monthly_commission_map = {
+            row["beneficiary_id"]: row["total_amount"]
+            for row in (
+                CommissionLog.objects.filter(
+                    beneficiary_id__in=user_ids,
+                    created_at__year=now.year,
+                    created_at__month=now.month,
+                )
+                .values("beneficiary_id")
+                .annotate(total_amount=Sum("commission_amount"))
+            )
+        }
+
+        for user in users:
+            active_invest = active_invest_map.get(user.id, {})
+            level_rows.append(
+                {
+                    "serial": serial,
+                    "level": level,
+                    "username": user.username,
+                    "referral_code": user.referral_code,
+                    "referred_by": user.referred_by.username if user.referred_by else "-",
+                    "joined": user.date_joined,
+                    "active_invest_count": active_invest.get("total_count", 0),
+                    "active_invest_amount": active_invest.get("total_amount", Decimal("0.00")),
+                    "running_month_commission": monthly_commission_map.get(user.id, Decimal("0.00")),
+                }
+            )
+            serial += 1
+
+        parent_ids = [user.id for user in users]
+
+    return render(
+        request,
+        "core/users_referral.html",
+        {
+            "page_title": "Users Referral",
+            "tree": tree,
+            "level_rows": level_rows,
+        },
+    )
+
+
+@login_required
+def add_money_page(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    payment_methods = PaymentMethod.objects.filter(is_active=True).order_by("name")
+
+    if request.method == "POST":
+        amount_raw = request.POST.get("amount")
+        payment_method_id = request.POST.get("payment_method_id")
+        transaction_reference = (request.POST.get("transaction_reference") or "").strip()
+        details = (request.POST.get("details") or "").strip()
+        proof_image = request.FILES.get("proof_image")
+
+        try:
+            amount = _decimal_or_error(amount_raw)
+            if amount <= 0:
+                raise ValueError("Amount must be greater than zero.")
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect("add-money")
+
+        selected_method = payment_methods.filter(id=payment_method_id).first()
+        if not selected_method:
+            messages.error(request, "Please select a valid payment method.")
+            return redirect("add-money")
+        if not details:
+            messages.error(request, "Payment details are required.")
+            return redirect("add-money")
+
+        ManualPaymentRequest.objects.create(
+            user=request.user,
+            amount=amount,
+            payment_method=selected_method.name,
+            transaction_reference=transaction_reference,
+            details=details,
+            proof_image=proof_image,
+        )
+        messages.success(request, "Payment request submitted successfully.")
+        return redirect(f"{reverse('add-money')}?submitted=1")
+
+    payment_requests = ManualPaymentRequest.objects.filter(user=request.user).order_by("-created_at")
+
+    return render(
+        request,
+        "core/add_money.html",
+        {
+            "page_title": "Add Money",
+            "payment_methods": payment_methods,
+            "payment_submitted": request.GET.get("submitted") == "1",
+            "payment_requests": payment_requests,
+        },
+    )
+
+
+@login_required
 def manual_payment(request: HttpRequest):
     settle_matured_investments(user=request.user)
     payment_methods = PaymentMethod.objects.filter(is_active=True).order_by("name")
@@ -503,54 +657,152 @@ def manual_withdrawal(request: HttpRequest):
             account_details=account_details,
         )
         messages.success(request, "Withdrawal request submitted successfully.")
-        return redirect("manual-withdrawal")
+        return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
 
     withdrawal_requests = ManualWithdrawalRequest.objects.filter(user=request.user).order_by("-created_at")
+
     return render(
         request,
-        "core/manual_withdrawal.html",
+        "core/withdrawal.html",
         {
+            "page_title": "Withdraw Money",
             "withdrawal_requests": withdrawal_requests,
             "withdrawal_methods": withdrawal_methods,
+            "withdrawal_submitted": request.GET.get("submitted") == "1",
         },
     )
 
 
 @login_required
-def investment_page(request: HttpRequest):
+def payment_withdrawal_transaction(request: HttpRequest):
     settle_matured_investments(user=request.user)
-    investment_wallet, _ = InvestmentWallet.objects.get_or_create(user=request.user)
-    if request.method == "POST":
-        package_id = request.POST.get("package_id")
-        package = InvestmentPackage.objects.filter(id=package_id, is_active=True).first()
-        if not package:
-            messages.error(request, "Invalid investment package selected.")
-            return redirect("investment-page")
 
-        try:
-            investment = create_package_investment(request.user, package)
-            messages.success(
-                request,
-                f"Investment #{investment.id} started for {package.duration_days} days.",
-            )
-        except ValueError as exc:
-            messages.error(request, str(exc))
-        return redirect("investment-page")
+    payment_requests = list(
+        ManualPaymentRequest.objects.filter(user=request.user).order_by("created_at", "id")
+    )
+    withdrawal_requests = list(
+        ManualWithdrawalRequest.objects.filter(user=request.user).order_by("created_at", "id")
+    )
 
-    packages = InvestmentPackage.objects.filter(is_active=True).order_by("name")
-    active_investments = request.user.investments.filter(status=Investment.Status.ACTIVE).order_by("-created_at")
-    completed_investments = request.user.investments.filter(status=Investment.Status.COMPLETED).order_by("-created_at")
-    return_average = completed_investments.aggregate(avg=Avg("principal_amount"))["avg"] or Decimal("0.00")
+    transactions = []
+
+    for item in payment_requests:
+        transactions.append(
+            {
+                "created_at": item.created_at,
+                "type": "add_money",
+                "request_id": item.id,
+                "request_code": item.request_code,
+                "amount": item.amount,
+                "method": item.payment_method,
+                "reference": item.transaction_reference,
+                "status": item.status,
+                "fee": Decimal("0.00"),
+                "net": item.amount,
+                "note": item.details,
+            }
+        )
+
+    for item in withdrawal_requests:
+        transactions.append(
+            {
+                "created_at": item.created_at,
+                "type": "withdrawal",
+                "request_id": item.id,
+                "request_code": item.request_code,
+                "amount": item.amount,
+                "method": item.payment_method,
+                "reference": item.account_details,
+                "status": item.status,
+                "fee": item.withdrawal_fee_amount,
+                "net": item.net_amount,
+                "note": item.admin_note,
+            }
+        )
+
+    transactions.sort(key=lambda row: row["created_at"], reverse=True)
+    for index, row in enumerate(transactions, start=1):
+        row["serial"] = index
+
     return render(
         request,
-        "core/investment_page.html",
+        "core/payment_withdrawal_transaction.html",
         {
-            "packages": packages,
-            "active_investments": active_investments,
-            "completed_investments": completed_investments,
-            "investment_wallet_balance": investment_wallet.balance,
-            "return_average": return_average,
+            "page_title": "Payment & Withdrawal Transactions",
+            "transactions": transactions,
         },
+    )
+
+
+def _build_investment_page_context(user):
+    investment_wallet, _ = InvestmentWallet.objects.get_or_create(user=user)
+    packages = InvestmentPackage.objects.filter(is_active=True).order_by("name")
+    active_investments_qs = user.investments.select_related("package").filter(
+        status=Investment.Status.ACTIVE
+    ).order_by("-created_at")
+    completed_investments_qs = user.investments.select_related("package").filter(
+        status=Investment.Status.COMPLETED
+    ).order_by("-created_at")
+    active_investments = list(active_investments_qs)
+    completed_investments = list(completed_investments_qs)
+
+    return_average = completed_investments_qs.aggregate(avg=Avg("principal_amount"))["avg"] or Decimal("0.00")
+    return {
+        "packages": packages,
+        "active_investments": active_investments,
+        "completed_investments": completed_investments,
+        "investment_wallet_balance": investment_wallet.balance,
+        "return_average": return_average,
+    }
+
+
+def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str):
+    if request.method != "POST":
+        return None
+
+    package_id = request.POST.get("package_id")
+    package = InvestmentPackage.objects.filter(id=package_id, is_active=True).first()
+    if not package:
+        messages.error(request, "Invalid investment package selected.")
+        return redirect(redirect_name)
+
+    try:
+        investment = create_package_investment(request.user, package)
+        messages.success(
+            request,
+            f"Investment {investment.investment_code} started for {package.duration_days} days.",
+        )
+        return redirect("investment-page")
+    except ValueError as exc:
+        messages.error(request, str(exc))
+    return redirect(redirect_name)
+
+
+@login_required
+def investment_page(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    post_response = _handle_investment_package_purchase(request, "investment-page")
+    if post_response:
+        return post_response
+
+    return render(
+        request,
+        "core/investment.html",
+        _build_investment_page_context(request.user),
+    )
+
+
+@login_required
+def investment_packages_page(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    post_response = _handle_investment_package_purchase(request, "investment-packages")
+    if post_response:
+        return post_response
+
+    return render(
+        request,
+        "core/package.html",
+        _build_investment_page_context(request.user),
     )
 
 
@@ -588,3 +840,4 @@ def withdrawal_method_info(request: HttpRequest):
             "withdrawal_fee_fixed": str(method.withdrawal_fee_fixed),
         }
     )
+

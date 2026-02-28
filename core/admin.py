@@ -43,8 +43,15 @@ class ProfitDistributionAdminForm(forms.ModelForm):
 admin.site.register(Wallet)
 admin.site.register(InvestmentWallet)
 admin.site.register(Investment)
-admin.site.register(InvestmentPackage)
 admin.site.register(CommissionRate)
+
+
+@admin.register(InvestmentPackage)
+class InvestmentPackageAdmin(admin.ModelAdmin):
+    list_display = ("name", "amount", "duration_days", "is_popular", "is_active", "created_at")
+    list_filter = ("is_popular", "is_active")
+    list_editable = ("is_popular", "is_active")
+    search_fields = ("name",)
 
 
 @admin.register(User)

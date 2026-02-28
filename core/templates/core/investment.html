@@ -1,0 +1,214 @@
+﻿{% extends 'core/user_dashboard_master.html' %}
+{% load static %}
+{% block title %}Packages{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">Investment Packages</h4>
+            <div class="page-title-right">
+                <ol class="breadcrumb m-0">
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Investments</a></li>
+                    <li class="breadcrumb-item active">Packages</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+
+
+<div class="row mt-4">
+    <div class="col-lg-3">
+        <div class="card card-height-100">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Wallet Summary</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Main Wallet</span>
+                        <strong>Tk {{ request.user.wallet.balance }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Investment Wallet</span>
+                        <strong>Tk {{ investment_wallet_balance }}</strong>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0">
+                        <span>Completed Average</span>
+                        <strong>Tk {{ return_average }}</strong>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-9">
+        <div class="card card-height-100">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Active Investments</h4>
+            </div>
+            <div class="card-body">
+                <div id="active-investments-gridjs"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-1">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Completed Investments</h4>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-nowrap align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Package</th>
+                                <th>Amount</th>
+                                <th>Duration</th>
+                                <th>Returned</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inv in completed_investments %}
+                            <tr>
+                                <td>{{ inv.investment_code }}</td>
+                                <td>{{ inv.package.name|default:"-" }}</td>
+                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>{{ inv.duration_days }} days</td>
+                                <td>{% if inv.principal_returned %}<span class="badge bg-success-subtle text-success">Yes</span>{% else %}<span class="badge bg-danger-subtle text-danger">No</span>{% endif %}</td>
+                                <td>{{ inv.status }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No completed investments yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const activeInvestmentsGridData = [
+        {% for inv in active_investments %}
+        [
+            "{{ inv.investment_code|default:'-'|escapejs }}",
+            "{{ inv.package.name|default:'-'|escapejs }}",
+            "Tk {{ inv.principal_amount|escapejs }}",
+            "{{ inv.duration_days|escapejs }} days",
+            "{{ inv.ends_at|date:'Y-m-d H:i'|escapejs }}",
+            "{{ inv.status|default:'-'|escapejs }}"
+        ],
+        {% endfor %}
+    ];
+
+    const activeInvestmentsGridContainer = document.getElementById("active-investments-gridjs");
+    if (activeInvestmentsGridContainer && window.gridjs) {
+        new gridjs.Grid({
+            columns: [
+                { name: "#" },
+                { name: "Package" },
+                { name: "Amount" },
+                { name: "Duration" },
+                { name: "Ends At" },
+                {
+                    name: "Status",
+                    formatter: function (value) {
+                        return gridjs.html('<span class="badge bg-success-subtle text-success">' + value + "</span>");
+                    }
+                }
+            ],
+            data: activeInvestmentsGridData,
+            search: true,
+            sort: true,
+            pagination: { limit: 5 },
+            language: {
+                noRecordsFound: "No active investments."
+            }
+        }).render(activeInvestmentsGridContainer);
+    }
+
+    const errorAlerts = Array.from(document.querySelectorAll(".alert-error, .alert-danger"));
+    if (errorAlerts.length) {
+        const errorHtml = errorAlerts
+            .map(function (item) { return item.textContent.trim(); })
+            .join("<br>");
+
+        Swal.fire({
+            title: "Error",
+            html: errorHtml,
+            icon: "error",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#f06548"
+        });
+
+        errorAlerts.forEach(function (item) { item.remove(); });
+    }
+
+    const successAlerts = Array.from(document.querySelectorAll(".alert-success"));
+    if (successAlerts.length) {
+        const successHtml = successAlerts
+            .map(function (item) { return item.textContent.trim(); })
+            .join("<br>");
+
+        Swal.fire({
+            title: "Success",
+            html: successHtml,
+            icon: "success",
+            confirmButtonText: "OK",
+            confirmButtonColor: "#0ab39c"
+        });
+
+        successAlerts.forEach(function (item) { item.remove(); });
+    }
+
+    const forms = document.querySelectorAll(".js-investment-buy-form");
+    forms.forEach(function (form) {
+        form.addEventListener("submit", function (event) {
+            event.preventDefault();
+            const packageName = form.dataset.packageName || "Package";
+            const packageAmount = form.dataset.packageAmount || "0";
+            const packageDuration = form.dataset.packageDuration || "0";
+
+            Swal.fire({
+                title: "Confirm Investment",
+                html: "Buy <b>" + packageName + "</b>?<br>Amount: <b>Tk " + packageAmount + "</b><br>Duration: <b>" + packageDuration + " days</b>",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Confirm",
+                cancelButtonText: "Cancel",
+                confirmButtonColor: "#0ab39c",
+                cancelButtonColor: "#f06548",
+            }).then(function (result) {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
+
+

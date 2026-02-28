@@ -1,0 +1,389 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="post" class="vertical-navs-step checkout-tab">
+                    {% csrf_token %}
+                    <div class="row gy-5">
+                        <div class="col-lg-3">
+                            <div class="nav flex-column custom-nav nav-pills" role="tablist" aria-orientation="vertical">
+                                <button class="nav-link active" id="v-pills-bill-info-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-info" type="button" role="tab" aria-controls="v-pills-bill-info" aria-selected="true">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 1</span>
+                                    Withdraw Info
+                                </button>
+                                <button class="nav-link" id="v-pills-bill-address-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-address" type="button" role="tab" aria-controls="v-pills-bill-address" aria-selected="false">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 2</span>
+                                    Instruction
+                                </button>
+                                <button class="nav-link" id="v-pills-payment-tab" data-bs-toggle="pill" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 3</span>
+                                    Request
+                                </button>
+                                <button class="nav-link" id="v-pills-finish-tab" data-bs-toggle="pill" data-bs-target="#v-pills-finish" type="button" role="tab" aria-controls="v-pills-finish" aria-selected="false">
+                                    <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 4</span>
+                                    Finish
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-7">
+                            <div class="px-lg-4">
+                                <div class="tab-content">
+                                    <div class="tab-pane fade show active" id="v-pills-bill-info" role="tabpanel" aria-labelledby="v-pills-bill-info-tab">
+                                        <h5>Withdraw Info</h5>
+                                        <p class="text-muted">Current Wallet Balance: Tk {{ request.user.wallet.balance }}</p>
+                                        <div class="row g-3">
+                                            <label for="amount" class="form-label">Amount</label>
+                                            <input type="number" class="form-control rounded-pill mb-3" id="amount" name="amount" step="0.01" min="0.01" required>
+
+                                            <label for="withdrawal_method" class="form-label">Withdraw Method</label>
+                                            <select
+                                                id="withdrawal_method"
+                                                name="withdrawal_method_id"
+                                                class="form-select rounded-pill mb-3"
+                                                aria-label="Withdraw method"
+                                                oninvalid="this.setCustomValidity('Withdraw Method is required')"
+                                                onchange="this.setCustomValidity('')"
+                                                required
+                                            >
+                                                <option value="" selected>Select withdraw method</option>
+                                                {% for method in withdrawal_methods %}
+                                                    <option value="{{ method.id }}">{{ method.name }}</option>
+                                                {% empty %}
+                                                    <option value="" disabled>No active withdraw method</option>
+                                                {% endfor %}
+                                            </select>
+                                            <div id="withdrawMethodError" class="text-danger small mt-1" style="display:none;"></div>
+                                        </div>
+                                        <div class="d-flex align-items-start gap-3 mt-4">
+                                            <button type="button" class="btn btn-success btn-label right ms-auto nexttab" data-nexttab="v-pills-bill-address-tab">
+                                                <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Instruction
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="v-pills-bill-address" role="tabpanel" aria-labelledby="v-pills-bill-address-tab">
+                                        <h5>Withdraw Instruction</h5>
+                                        <p class="text-muted">Check method details and estimated fee.</p>
+                                        <div id="methodInstructionBox" class="alert alert-info" style="display:none;">
+                                            <p class="mb-1"><strong id="methodInstructionName"></strong></p>
+                                            <p id="methodInstructionAccount" class="mb-1"></p>
+                                            <p id="methodInstructionText" class="mb-0"></p>
+                                        </div>
+                                        <p id="methodInstructionEmpty" class="text-muted mb-0">Select a withdraw method in Step 1 to see instructions.</p>
+                                        <p id="withdrawalFeePreview" class="text-muted mt-3 mb-1">Withdrawal Fee: -</p>
+                                        <p id="withdrawalNetPreview" class="text-muted mb-0">Estimated Net Receive: -</p>
+
+                                        <div class="d-flex align-items-start gap-3 mt-4">
+                                            <button type="button" class="btn btn-light btn-label previestab" data-previous="v-pills-bill-info-tab">
+                                                <i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to Withdraw Info
+                                            </button>
+                                            <button type="button" class="btn btn-success btn-label right ms-auto nexttab" data-nexttab="v-pills-payment-tab">
+                                                <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Request
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="v-pills-payment" role="tabpanel" aria-labelledby="v-pills-payment-tab">
+                                        <h5>Withdrawal Request</h5>
+                                        <p class="text-muted">Provide your account details for payout.</p>
+                                        <div class="row gy-3">
+                                            <div class="col-md-12">
+                                                <label for="account_details" class="form-label">Account Details</label>
+                                                <textarea class="form-control" id="account_details" name="account_details" rows="4" placeholder="Your number/account and notes..." required></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex align-items-start gap-3 mt-4">
+                                            <button type="button" class="btn btn-light btn-label previestab" data-previous="v-pills-bill-address-tab">
+                                                <i class="ri-arrow-left-line label-icon align-middle fs-16 me-2"></i> Back to Instruction
+                                            </button>
+                                            <button type="submit" class="btn btn-success btn-label right ms-auto">
+                                                <i class="ri-check-line label-icon align-middle fs-16 ms-2"></i> Submit Request
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div class="tab-pane fade" id="v-pills-finish" role="tabpanel" aria-labelledby="v-pills-finish-tab">
+                                        <div class="text-center pt-4 pb-2">
+                                            {% for message in messages %}
+                                                {% if message.tags == 'success' %}
+                                                    <div class="mb-4">
+                                                        <lord-icon src="https://cdn.lordicon.com/lupuorrc.json" trigger="loop" colors="primary:#0ab39c,secondary:#405189" style="width:120px;height:120px"></lord-icon>
+                                                    </div>
+                                                    <h5>Your Withdrawal Request is Submitted!</h5>
+                                                    <p class="text-muted">{{ message }}</p>
+                                                    <div class="mt-3">
+                                                        <a href="{% url 'manual-withdrawal' %}" class="btn btn-primary btn-label">
+                                                            <i class="ri-refresh-line label-icon align-middle fs-16 me-2"></i> Another Withdrawal Request
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Your Withdrawal Requests</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Amount</th>
+                                <th>Method</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in withdrawal_requests %}
+                            <tr>
+                                <td>{{ item.request_code }}</td>
+                                <td>Tk {{ item.amount }}</td>
+                                <td>{{ item.payment_method }}</td>
+                                <td>{{ item.status }}</td>
+                                <td>{{ item.created_at|date:"d M Y, h:i A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center">No withdrawal request submitted yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var methodSelect = document.getElementById("withdrawal_method");
+    var amountInput = document.getElementById("amount");
+    var infoUrl = "{% url 'withdrawal-method-info' %}";
+    var methodBox = document.getElementById("methodInstructionBox");
+    var methodEmpty = document.getElementById("methodInstructionEmpty");
+    var methodName = document.getElementById("methodInstructionName");
+    var methodAccount = document.getElementById("methodInstructionAccount");
+    var methodInstruction = document.getElementById("methodInstructionText");
+    var withdrawMethodError = document.getElementById("withdrawMethodError");
+    var feePreview = document.getElementById("withdrawalFeePreview");
+    var netPreview = document.getElementById("withdrawalNetPreview");
+
+    var feePercent = 0;
+    var feeFixed = 0;
+
+    function setWithdrawMethodError(message) {
+        if (!withdrawMethodError) {
+            return;
+        }
+        withdrawMethodError.textContent = message;
+        withdrawMethodError.style.display = "block";
+    }
+
+    function clearWithdrawMethodError() {
+        if (!withdrawMethodError) {
+            return;
+        }
+        withdrawMethodError.textContent = "";
+        withdrawMethodError.style.display = "none";
+    }
+
+    function updateFeePreview() {
+        var amount = parseFloat(amountInput.value || "0");
+        if (!amount || amount <= 0) {
+            if (feePercent > 0) {
+                feePreview.textContent = "Withdrawal Fee: " + feePercent.toFixed(2) + "%";
+            } else if (feeFixed > 0) {
+                feePreview.textContent = "Withdrawal Fee: Fixed Tk " + feeFixed.toFixed(2);
+            } else {
+                feePreview.textContent = "Withdrawal Fee: -";
+            }
+            netPreview.textContent = "Estimated Net Receive: -";
+            return;
+        }
+
+        var fee = feePercent > 0 ? (amount * feePercent) / 100 : feeFixed;
+        var net = Math.max(0, amount - fee);
+        if (feePercent > 0) {
+            feePreview.textContent = "Withdrawal Fee: Tk " + fee.toFixed(2) + " (" + feePercent.toFixed(2) + "%)";
+        } else {
+            feePreview.textContent = "Withdrawal Fee: Fixed Tk " + fee.toFixed(2);
+        }
+        netPreview.textContent = "Estimated Net Receive: Tk " + net.toFixed(2);
+    }
+
+    async function fetchWithdrawalMethodInfo(methodId) {
+        var response = await fetch(infoUrl + "?id=" + encodeURIComponent(methodId));
+        var data = await response.json();
+        if (!response.ok || !data.ok) {
+            return null;
+        }
+        return data;
+    }
+
+    async function updateMethodInstruction() {
+        if (!methodSelect || !methodBox) {
+            return;
+        }
+        var methodId = methodSelect.value;
+        if (!methodId) {
+            methodBox.style.display = "none";
+            if (methodEmpty) {
+                methodEmpty.style.display = "block";
+            }
+            feePercent = 0;
+            feeFixed = 0;
+            updateFeePreview();
+            return;
+        }
+
+        try {
+            var data = await fetchWithdrawalMethodInfo(methodId);
+            if (!data) {
+                methodBox.style.display = "none";
+                if (methodEmpty) {
+                    methodEmpty.style.display = "block";
+                }
+                feePercent = 0;
+                feeFixed = 0;
+                updateFeePreview();
+                return;
+            }
+
+            feePercent = parseFloat(data.withdrawal_fee_percent || "0");
+            feeFixed = parseFloat(data.withdrawal_fee_fixed || "0");
+            methodName.textContent = data.name;
+            methodAccount.textContent = data.account_details ? "Account: " + data.account_details : "Account: Not provided";
+            methodInstruction.textContent = data.instruction ? "Instruction: " + data.instruction : "Instruction: Not provided";
+            methodBox.style.display = "block";
+            if (methodEmpty) {
+                methodEmpty.style.display = "none";
+            }
+            updateFeePreview();
+        } catch (error) {
+            methodBox.style.display = "none";
+            if (methodEmpty) {
+                methodEmpty.style.display = "block";
+            }
+            feePercent = 0;
+            feeFixed = 0;
+            updateFeePreview();
+        }
+    }
+
+    if (methodSelect) {
+        methodSelect.addEventListener("change", async function () {
+            clearWithdrawMethodError();
+            await updateMethodInstruction();
+        });
+    }
+
+    if (amountInput) {
+        amountInput.addEventListener("input", updateFeePreview);
+    }
+
+    document.querySelectorAll(".nexttab").forEach(function (button) {
+        button.addEventListener("click", async function () {
+            var nextTabId = button.getAttribute("data-nexttab");
+            if (nextTabId === "v-pills-bill-address-tab") {
+                if (!methodSelect || !methodSelect.value) {
+                    setWithdrawMethodError("Withdraw Method is required");
+                    return;
+                }
+                clearWithdrawMethodError();
+                try {
+                    var selectedMethod = await fetchWithdrawalMethodInfo(methodSelect.value);
+                    if (!selectedMethod) {
+                        setWithdrawMethodError("Selected withdraw method is invalid");
+                        return;
+                    }
+                } catch (error) {
+                    setWithdrawMethodError("Could not verify withdraw method. Please try again.");
+                    return;
+                }
+            }
+
+            var nextTab = document.getElementById(nextTabId);
+            if (nextTab) {
+                nextTab.click();
+            }
+        });
+    });
+
+    document.querySelectorAll(".previestab").forEach(function (button) {
+        button.addEventListener("click", function () {
+            var prevTabId = button.getAttribute("data-previous");
+            var prevTab = document.getElementById(prevTabId);
+            if (prevTab) {
+                prevTab.click();
+            }
+        });
+    });
+
+    function updateStepIcons() {
+        var stepButtons = Array.from(document.querySelectorAll(".custom-nav .nav-link"));
+        var activeIndex = stepButtons.findIndex(function (btn) {
+            return btn.classList.contains("active");
+        });
+        if (activeIndex < 0) {
+            return;
+        }
+        stepButtons.forEach(function (btn, index) {
+            var icon = btn.querySelector(".step-icon");
+            btn.classList.remove("done");
+            if (index < activeIndex) {
+                btn.classList.add("done");
+            }
+            if (!icon) {
+                return;
+            }
+            icon.classList.remove("ri-check-circle-fill");
+            icon.classList.add("ri-close-circle-fill");
+        });
+    }
+
+    document.querySelectorAll(".custom-nav .nav-link").forEach(function (tabBtn) {
+        tabBtn.addEventListener("shown.bs.tab", updateStepIcons);
+    });
+
+    updateMethodInstruction();
+
+    var withdrawalSubmitted = "{{ withdrawal_submitted|yesno:'true,false' }}" === "true";
+    if (withdrawalSubmitted) {
+        var finishTab = document.getElementById("v-pills-finish-tab");
+        if (finishTab) {
+            finishTab.click();
+        }
+    }
+
+    updateStepIcons();
+});
+</script>
+{% endblock %}
