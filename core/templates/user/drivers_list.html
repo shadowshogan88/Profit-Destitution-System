@@ -1,0 +1,1527 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/drivers_list by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:19:05 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+	<!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dreams POS is a powerful Bootstrap based Inventory Management Admin Template designed for businesses, offering seamless invoicing, project tracking, and estimates.">
+    <meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
+    <meta name="author" content="Dreams Technologies">
+    <title>Drivers List | Laundry POS - Bootstrap 5 Admin Dashboard</title>
+
+    <script type="a42f936a51cfcfdc99ef7586-text/javascript">
+        const baseUrl = 'index-2.html';
+        window.IMG_BASE_PATH = 'img/index.html';
+        window.BASE_PATH = 'index-2.html';
+    </script>
+
+    
+    <!-- Favicon -->
+    <link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="icon"><link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="shortcut icon">
+    <!-- Apple Icon -->
+    <meta rel="apple-touch-icon" name="apple-touch-icon" content="img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/bootstrap.min.css' %}">
+    <!-- Theme Script -->
+    <script src="{% static 'user/js/theme-script.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+    <!-- Lucide Icon CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/lucide/lucide.css' %}">
+
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/simplebar/simplebar.min.css' %}">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/select2/css/select2.min.css' %}">
+    <!-- Datatable CSS -->
+	<link rel="stylesheet" href="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.css' %}">
+
+
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/flatpickr/flatpickr.min.css' %}">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+
+<body><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/content?id=5f8N4swhI_nAOG011IgChf5a8T79w8GnTJRM7AirvqA-1772637510.4942527-1.0.1.1-YgXzs6OHBDR7GtdgPWcVgO7MSd4QKWjZylbVazVzFEo" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+    <!-- Begin Wrapper -->
+    <div class="main-wrapper">
+
+        
+<!-- Sidenav Menu Start -->
+<div class="sidebar">
+    <div class="twocol-mini">
+        <a href="index.html" class="logo-small">
+            <img src="{% static 'user/img/logo-small.svg' %}" alt="logo-small">        </a>
+        <div class="sidebar-left">
+            <div class="nav flex-column align-items-center sidebar-nav" data-simplebar>
+                <a href="index.html" class="nav-link ">
+                    <i class="icon-layout-dashboard"></i>
+                    Dashboard
+                </a>
+                <a href="pos_create.html" class="nav-link ">
+                    <i class="icon-monitor-smartphone"></i>
+                    POS
+                </a>
+                <a href="orders.html" class="nav-link ">
+                    <i class="icon-shopping-cart"></i>
+                    Orders
+                </a>
+                <a href="products.html"
+                    class="nav-link ">
+                    <i class="icon-package-2"></i>
+                    Products
+                </a>
+                <a href="invoices.html" class="nav-link ">
+                    <i class="icon-badge-dollar-sign"></i>
+                    Invoices
+                </a>
+                <a href="customers.html"
+                    class="nav-link ">
+                    <i class="icon-user"></i>
+                    Customers
+                </a>
+                <a href="drivers_list.html"
+                    class="nav-link active">
+                    <i class="icon-bike"></i>
+                    Drivers
+                </a>
+                <a href="staff_list.html"
+                    class="nav-link ">
+                    <i class="icon-users-round"></i>
+                    Staff
+                </a>
+                <a href="earning_report.html"
+                    class="nav-link ">
+                    <i class="icon-chart-bar-big"></i>
+                    Reports
+                </a>
+                <a href="store_settings.html" class="nav-link  d-md-none d-lg-none">
+                    <i class="icon-settings"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+        <a href="login.html" class="sidebar-log-out">
+            <i class="icon-log-out"></i>
+        </a>
+    </div>
+</div>
+<!-- Sidenav Menu End -->
+
+                    <!-- ========================
+        Start Page Content
+    ========================= -->
+
+    <div class="page-wrapper">
+
+        <!-- Start Content -->
+        <div class="content">
+
+                <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+
+                    <!-- Logo Normal -->
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="{% static 'user/img/logo.svg' %}" alt="logo"></span>
+                        <span
+                            class="logo-sm"><img src="{% static 'user/img/logo-small.svg' %}" alt="small logo"></span>
+                    </span>
+
+                    <!-- Logo Dark -->
+                    <span class="logo-dark">
+                        <span
+                            class="logo-lg"><img src="{% static 'user/img/logo-white.svg' %}" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Search -->
+                <div class="d-flex">
+                    <h3 class="mb-0">Drivers List</h3>
+                </div>
+
+                            </div>
+
+            <div class="d-flex align-items-center header-list">
+
+                <!-- Upgrade Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="#" class="btn btn-sm btn-primary-gradient d-inline-flex align-items-center">
+                        <i class="icon-crown me-1"></i>Upgrade
+                    </a>
+                </div>
+
+                <div class="avatar-list-stacked avatar-group-sm d-none d-md-flex">
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="border border-white" alt="user"></span>
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-02.jpg' %}" class="border border-white" alt="user"></span>
+                    <a class="avatar bg-white avatar-rounded text-dark fs-16" href="#">+</a>
+                </div>
+
+                <!-- Notification Button -->
+                <div class="header-item d-none d-md-flex">
+
+                    <div class="dropdown dropend">
+                        <a href="#" class="topbar-link btn btn-icon"  data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i class="icon-bell fs-16"></i><span class="position-absolute report-badge bg-success"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-xl notification-dropdown">
+                            <div class="d-flex align-items-center justify-content-between notification-header">
+                                <h5 class="mb-0">Notifications</h5>
+                                <a href="#" class="link-primary">Mark all as unread</a>
+                            </div>
+                            <div class="notification-body" data-simplebar>
+
+                                <div class="tab-pane fade show active" id="all-notification">
+
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Today</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-purple border border-purple">
+                                                        <i class="icon-shopping-cart"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1">New laundry order from<span class="text-dark fw-medium"> David Belcher</span> (5 items) pending.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>20 Min Ago</p>
+                                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                                            <button type="button" class="btn btn-sm btn-primary rounded">Accept</button>
+                                                            <button type="button" class="btn btn-sm btn-white rounded">Decline</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-orange border border-orange">
+                                                        <i class="icon-shopping-basket"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #568</span> washing completed and moved to drying.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>35 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-primary border border-primary text-primary">
+                                                        <i class="icon-badge-dollar-sign"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">₹1,200</span> received via UPI for Order<span class="text-dark fw-medium"> #566</span>.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>40 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-pink border border-pink">
+                                                        <i class="icon-baggage-claim"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ready for delivery</span></p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>45 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Yesterday</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-success border border-success text-success">
+                                                        <i class="icon-shopping-bag"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #560</span> delivered successfully to customer.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-indigo border border-indigo text-indigo">
+                                                        <i class="icon-inbox"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ironing completed and ready for packing.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="store_settings.html" class="topbar-link btn btn-icon" aria-label="settings">
+                        <i class="icon-settings fs-16"></i>
+                    </a>
+                </div>
+
+                <!-- Light/Dark Mode Button -->
+                <div class="header-item">
+                    <button class="topbar-link btn btn-icon light-dark-mode" type="button"
+                        aria-label="light/dark mode">
+                        <i class="icon-moon fs-16"></i>
+                    </button>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a class="topbar-link avatar avatar-sm dropdown-toggle drop-arrow-none" href="#"
+                        data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
+                        <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle d-flex" alt="user-image">                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-3">
+                        <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar avatar-sm flex-shrink-0">
+                                    <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle" alt="user">                                </span>
+                                <div class="ms-2">
+                                    <h5 class="mb-1 fs-14">Shaun Farley</h5>
+                                    <span class="d-block fs-13">Manager</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item-->
+                        <a href="login.html" class="dropdown-item">
+                            <i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i>
+                            <span class="align-middle text-danger">Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="icon-menu"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+
+            <!-- Start Content Wrap -->
+            <div class="content-wrap">
+
+                <!-- Page Header -->
+                <div class="d-flex align-items-center flex-wrap gap-3 border-bottom pb-4 mb-4">
+                    <div class="flex-grow-1">
+                        <div class="d-inline-flex align-items-center p-1 bg-light border rounded-pill">
+                            <a href="drivers_list.html"
+                                class="px-3 py-1 fw-semibold d-inline-flex align-items-center rounded-pill bg-white"><i
+                                    class="icon-list me-2"></i>List View</a>
+                            <a href="drivers_grid.html"
+                                class="px-3 py-1 fw-semibold d-inline-flex align-items-center rounded-pill"><i
+                                    class="icon-layout-panel-left me-2"></i>Grid View</a>
+                        </div>
+                    </div>
+                    <div class="gap-3 d-flex align-items-center flex-wrap">
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle btn btn-dark d-inline-flex align-items-center"
+                                data-bs-toggle="dropdown">
+                                <i class="icon-arrow-down-to-line me-1"></i>Export
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-3">
+                                <li>
+                                    <a href="#" class="dropdown-item rounded">Export as PDF</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dropdown-item rounded">Export as Excel</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Page Header -->
+
+                <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between mb-4">
+
+                    <!-- customers dropdown -->
+                    <div class="dropdown">
+                        <a href="#"
+                            class="dropdown-toggle btn btn-white d-flex align-items-center justify-content-between"
+                            data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i class="icon-user text-dark me-2"></i>All Drivers
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg p-3">
+                            <h6 class="fs-14 fw-semibold mb-3">Drivers</h6>
+                            <div class="input-icon-end input-icon position-relative mb-3">
+                                <span class="input-icon-addon">
+                                    <i class="icon-search text-dark"></i>
+                                </span>
+                                <input type="text" class="form-control form-control-md" placeholder="Search">
+                            </div>
+                            <ul class="list-unstyled mb-0">
+                                <li class="dropdown-item rounded">
+                                    <label class="d-flex align-items-center">
+                                        <input class="form-check-input m-0 me-2" type="checkbox">Benjamin Scott
+                                    </label>
+                                </li>
+                                <li class="dropdown-item rounded">
+                                    <label class="d-flex align-items-center">
+                                        <input class="form-check-input m-0 me-2" type="checkbox">Matthew Parker
+                                    </label>
+                                </li>
+                                <li class="dropdown-item rounded">
+                                    <label class="d-flex align-items-center">
+                                        <input class="form-check-input m-0 me-2" type="checkbox">Samuel Harris
+                                    </label>
+                                </li>
+                                <li class="dropdown-item rounded">
+                                    <label class="d-flex align-items-center">
+                                        <input class="form-check-input m-0 me-2" type="checkbox">Olivia Carter
+                                    </label>
+                                </li>
+                                <li class="dropdown-item rounded">
+                                    <label class="d-flex align-items-center">
+                                        <input class="form-check-input m-0 me-2" type="checkbox">Riley Cooper
+                                    </label>
+                                </li>
+                                <li class="dropdown-item rounded">
+                                    <label class="d-flex align-items-center">
+                                        <input class="form-check-input m-0 me-2" type="checkbox">Avery Parker
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                        <!-- column -->
+                        <div class="dropdown">
+                            <a href="#" class="btn btn-icon btn-white" data-bs-toggle="dropdown"
+                                data-bs-auto-close="outside" aria-label="column"><i class="icon-columns-3"></i></a>
+                            <div class="dropdown-menu dropdown-menu-start dropdown-menu-lg p-3">
+                                <h6 class="fs-14 fw-semibold mb-3">Column</h6>
+                                <div class="input-icon-end input-icon position-relative mb-3">
+                                    <span class="input-icon-addon">
+                                        <i class="icon-search text-dark"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-md" placeholder="Search">
+                                </div>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox" checked>Driver
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox">Email
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox">Mobile
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox" checked>Status
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- sort by -->
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle btn btn-white d-inline-flex align-items-center"
+                                data-bs-toggle="dropdown">
+                                Sort by : Newest
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end p-3">
+                                <h6 class="fs-14 fw-semibold mb-3">Sort By</h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Newest</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Oldest</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Ascending</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Descending</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- table search -->
+                        <div class="search-input">
+                            <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
+                        </div>
+
+                        <a href="#" class="btn btn-primary d-inline-flex align-items-center"
+                            data-bs-toggle="offcanvas" data-bs-target="#add_driver"><i
+                                class="icon-plus me-1"></i>New Driver</a>
+
+                    </div>
+                </div>
+
+                <!-- table start -->
+                <div class="table-responsive table-nowrap">
+                    <table class="table mb-0 border datatable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="no-sort">Driver</th>
+                                <th class="no-sort">Email</th>
+                                <th class="no-sort">Mobile</th>
+                                <th class="no-sort">Status</th>
+                                <th class="no-sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-01.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#"
+                                                    class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Benjamin Scott</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b8daddd6d2d9d5d1d6f8ddc0d9d5c8d4dd96dbd7d5">[email&#160;protected]</a></td>
+                                <td>+1 58544 78987</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-02.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Matthew
+                                                    Parker</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="325f534672574a535f425e571c515d5f">[email&#160;protected]</a></td>
+                                <td>+1 45478 54588</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-03.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Samuel
+                                                    Harris</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d6a5b7bb96b3aeb7bba6bab3f8b5b9bb">[email&#160;protected]</a></td>
+                                <td>+1 33658 54589</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-04.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Riley
+                                                    Cooper</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="37455e5b524e77524f565a475b521954585a">[email&#160;protected]</a></td>
+                                <td>+1 47854 54590</td>
+                                <td>
+                                    <span class="badge badge-soft-danger">Inactive</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-05.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Avery
+                                                    Parker</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2a4b5c4f58536a4f524b475a464f04494547">[email&#160;protected]</a></td>
+                                <td>+1 58974 54591</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-06.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Quinn
+                                                    Bailey</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8d9ddc1c6c6e8cdd0c9c5d8c4cd86cbc7c5">[email&#160;protected]</a></td>
+                                <td>+1 96587 54592</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-07.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Cameron
+                                                    Lee</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a0c3c1cdc5d2cfcee0c5d8c1cdd0ccc58ec3cfcd">[email&#160;protected]</a></td>
+                                <td>+1 31245 54593</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-08.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Jamie
+                                                    Brooks</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="244e45494d4164415c45495448410a474b49">[email&#160;protected]</a></td>
+                                <td>+1 47854 54594</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-09.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Alex
+                                                    Campbell</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4d2c2128350d28352c203d2128632e2220">[email&#160;protected]</a></td>
+                                <td>+1 14524 54595</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <a href="#" class="avatar online avatar-rounded" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                            <img src="{% static 'user/img/drivers/driver-10.jpg' %}" class="img-fluid" alt="img">                                        </a>
+                                        <div class="ms-2">
+                                            <h6 class="fw-semibold mb-1 fs-14"><a href="#" class="text-dark" data-bs-toggle="offcanvas" data-bs-target="#view_details">Casey
+                                                    Adams</a></h6>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ccafadbfa9b58ca9b4ada1bca0a9e2afa3a1">[email&#160;protected]</a></td>
+                                <td>+1 22145 54596</td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button"
+                                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                            aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#view_details"><i
+                                                        class="icon-users me-2"></i>View Details</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i
+                                                        class="icon-pencil-line me-2"></i>Edit Driver</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center"
+                                                    data-bs-toggle="modal" data-bs-target="#delete_modal"><i
+                                                        class="icon-trash-2 me-2"></i>Delete Driver </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table end -->
+
+            </div>
+            <!-- End Content Wrap -->
+
+        </div>
+        <!-- End Content -->
+
+    </div>
+
+    <!-- ========================
+        End Page Content
+    ========================= -->
+    </div>
+    <!-- End Wrapper -->
+
+    
+
+
+
+
+
+
+    <!-- Delete Modal  -->
+    <div class="modal fade" id="delete_modal">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="mb-4">
+                        <span class="avatar avatar-lg rounded-circle bg-danger">
+                            <i class="icon-trash fs-24"></i>
+                        </span>
+                    </div>
+                    <h4 class="mb-1">Delete Confirmation</h4>
+                    <p class="mb-4">Are you sure you want to delete? </p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="#" class="btn btn-light w-100" data-bs-dismiss="modal">Close</a>
+                        <a href="drivers_list.html" class="btn btn-danger w-100">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Delete Modal  -->
+
+    <!-- Add drivers -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="add_driver">
+        <div class="offcanvas-header d-flex align-items-center justify-content-between">
+            <h4 class="offcanvas-title mb-0">Add New Driver</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas"
+                aria-label="Close"><i class="icon-x"></i></button>
+        </div>
+        <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/drivers_list" class="d-flex flex-column overflow-y-auto h-100">
+            <div class="offcanvas-body pb-0">
+                <div class="row gx-3 pb-4 border-bottom mb-4">
+                    <div class="col-md-12">
+                        <h5 class="mb-3">Personal Info</h5>
+                        <div class="mb-3 d-flex align-items-center flex-wrap gap-3">
+                            <div class="avatar avatar-3xl border bg-light">
+                                <i class="icon-images fs-28 text-dark"></i>
+                            </div>
+                            <div>
+                                <label class="form-label">Profile Photo<span class="text-danger"> *</span></label>
+                                <p class="fs-13 mb-3">Image should be with in 5 MB</p>
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        class="btn btn-icon btn-sm btn-white rounded-circle position-relative me-2">
+                                        <input type="file"
+                                            class="form-control position-absolute w-100 h-100 top-0 start-0 opacity-0">
+                                        <i class="icon-pencil-line"></i>
+                                    </div>
+                                    <a href="#" class="btn btn-icon btn-sm btn-white rounded-circle text-danger"><i
+                                            class="icon-trash-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Driver Name<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <div class="input-group input-group-flat w-auto">
+                                <input type="text" class="form-control p-2" data-provider="flatpickr"
+                                    data-date-format="d/m/Y" placeholder="Select Date">
+                                <span class="input-group-text">
+                                    <i class="icon-calendar-days"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 1<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 2<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">County</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>United States of America</option>
+                                <option>Australia</option>
+                                <option>Canada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Florida</option>
+                                <option>Queensland</option>
+                                <option>Ontario</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-0">
+                            <label class="form-label">City</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Miami</option>
+                                <option>Brisbane</option>
+                                <option>Toronto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-0">
+                            <label class="form-label">Postal Code<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="33128">
+                        </div>
+                    </div>
+                </div>
+                <div class="pb-3 border-bottom mb-3">
+                    <h5 class="fs-18 fw-bold mb-3">Driver Details</h5>
+                    <div class="row gx-3">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">License No</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">License Expiry Date</label>
+                                <div class="input-group input-group-flat w-auto">
+                                    <input type="text" class="form-control p-2" data-provider="flatpickr"
+                                        data-date-format="d/m/Y" placeholder="Select Date">
+                                    <span class="input-group-text">
+                                        <i class="icon-calendar-days"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Insurance Policy No</label>
+                                <input type="text" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Insurance Expiry Date</label>
+                                <div class="input-group input-group-flat w-auto">
+                                    <input type="text" class="form-control p-2" data-provider="flatpickr"
+                                        data-date-format="d/m/Y" placeholder="Select Date">
+                                    <span class="input-group-text">
+                                        <i class="icon-calendar-days"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-0">
+                                <label class="form-label">About Driver</label>
+                                <textarea name="address_line_1" class="form-control rounded mb-2" id="about_driver" rows="4"></textarea>
+                                <span>Add Minimum 200 Characters</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fs-18 fw-bold mb-3">Login Details</h5>
+                    <div class="row gx-3">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Email<span class="text-danger"> *</span></label>
+                                <input type="email" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Password<span class="text-danger"> *</span></label>
+                                <div class="input-group input-group-flat pass-group w-auto">
+                                    <input type="password" class="form-control pass-input">
+                                    <span class="input-group-text toggle-password ">
+                                        <i class="icon-eye-off"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
+                <button type="button" class="btn btn-dark d-flex align-items-center w-100"><i
+                        class="icon-x me-1"></i>Cancel</button>
+                <button type="submit" class="btn btn-primary d-flex align-items-center w-100"><i
+                        class="icon-circle-check me-1"></i>Submit</button>
+            </div>
+        </form>
+    </div>
+    <!-- End Add drivers -->
+
+    <!-- Edit drivers -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="edit_driver">
+        <div class="offcanvas-header d-flex align-items-center justify-content-between">
+            <h4 class="offcanvas-title mb-0">Edit Driver</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas"
+                aria-label="Close"><i class="icon-x"></i></button>
+        </div>
+        <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/drivers_list" class="d-flex flex-column overflow-y-auto h-100">
+            <div class="offcanvas-body pb-0">
+                <div class="row gx-3 pb-4 border-bottom mb-4">
+                    <div class="col-md-12">
+                        <h5 class="mb-3">Personal Info</h5>
+                        <div class="mb-3 d-flex align-items-center flex-wrap gap-3">
+                            <div class="avatar avatar-3xl border bg-light">
+                                <img src="{% static 'user/img/drivers/driver-01.jpg' %}" alt="driver-01">                            </div>
+                            <div>
+                                <label class="form-label">Profile Photo<span class="text-danger"> *</span></label>
+                                <p class="fs-13 mb-3">Image should be with in 5 MB</p>
+                                <div class="d-flex align-items-center">
+                                    <div
+                                        class="btn btn-icon btn-sm btn-white rounded-circle position-relative me-2">
+                                        <input type="file"
+                                            class="form-control position-absolute w-100 h-100 top-0 start-0 opacity-0">
+                                        <i class="icon-pencil-line"></i>
+                                    </div>
+                                    <a href="#" class="btn btn-icon btn-sm btn-white rounded-circle text-danger"><i
+                                            class="icon-trash-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Driver Name<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="Benjamin Scott">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" value="+1 54544 54587">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Date of Birth</label>
+                            <div class="input-group input-group-flat w-auto">
+                                <input type="text" class="form-control p-2" data-provider="flatpickr"
+                                    data-date-format="d/m/Y" value="05/02/1995">
+                                <span class="input-group-text">
+                                    <i class="icon-calendar-days"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 1<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="301 Market Street">
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 2<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="Riverside Drive">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">County</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>United States of America</option>
+                                <option>Australia</option>
+                                <option>Canada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Florida</option>
+                                <option>Queensland</option>
+                                <option>Ontario</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-0">
+                            <label class="form-label">City</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Miami</option>
+                                <option>Brisbane</option>
+                                <option>Toronto</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-0">
+                            <label class="form-label">Postal Code<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="33128">
+                        </div>
+                    </div>
+                </div>
+                <div class="pb-3 border-bottom mb-3">
+                    <h5 class="fs-18 fw-bold mb-3">Driver Details</h5>
+                    <div class="row gx-3">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">License No</label>
+                                <input type="text" class="form-control" value="DL56558">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">License Expiry Date</label>
+                                <div class="input-group input-group-flat w-auto">
+                                    <input type="text" class="form-control p-2" data-provider="flatpickr"
+                                        data-date-format="d/m/Y" value="08/12/2030">
+                                    <span class="input-group-text">
+                                        <i class="icon-calendar-days"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Insurance Policy No</label>
+                                <input type="text" class="form-control" value="USPOL9834A72">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Insurance Expiry Date</label>
+                                <div class="input-group input-group-flat w-auto">
+                                    <input type="text" class="form-control p-2" data-provider="flatpickr"
+                                        data-date-format="d/m/Y" value="08/12/2032">
+                                    <span class="input-group-text">
+                                        <i class="icon-calendar-days"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="mb-0">
+                                <label class="form-label">About Driver</label>
+                                <textarea name="address_line_1" class="form-control rounded mb-2" id="about_driver"
+                                    rows="4">Trained delivery driver known for fast, accurate, and safe deliveries. With strong navigation skills and a customer first attitude, he ensures every package reaches its destination on time.</textarea>
+                                <span>Add Minimum 200 Characters</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h5 class="fs-18 fw-bold mb-3">Login Details</h5>
+                    <div class="row gx-3">
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Email<span class="text-danger"> *</span></label>
+                                <input type="email" class="form-control" value="benjamin@example.com">
+                            </div>
+                        </div>
+                        <div class="col-lg-6 col-md-12">
+                            <div class="mb-3">
+                                <label class="form-label">Password<span class="text-danger"> *</span></label>
+                                <div class="input-group input-group-flat pass-group w-auto">
+                                    <input type="password" class="form-control pass-input" value="123456">
+                                    <span class="input-group-text toggle-password ">
+                                        <i class="icon-eye-off"></i>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-12">
+                            <div class="mb-3">
+                                <label class="form-label">Status</label>
+                                <select class="select">
+                                    <option>Select</option>
+                                    <option selected>Active</option>
+                                    <option>Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
+                <button type="button" class="btn btn-dark d-flex align-items-center w-100"><i
+                        class="icon-x me-1"></i>Cancel</button>
+                <button type="submit" class="btn btn-primary d-flex align-items-center w-100"><i
+                        class="icon-circle-check me-1"></i>Save Changes</button>
+            </div>
+        </form>
+    </div>
+    <!-- End Edit drivers -->
+
+    <!-- View Details -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="view_details">
+        <div class="offcanvas-header d-flex align-items-center justify-content-between">
+            <h4 class="offcanvas-title mb-0">Driver Details</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close"><i class="icon-x"></i></button>
+        </div>
+        <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/drivers_list" class="d-flex flex-column overflow-y-auto h-100">
+            <div class="offcanvas-body p-0">
+                <div class="border-bottom p-4">
+                <div class="mb-4 d-flex align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-center">
+                        <span class="avatar avatar-xxl border me-3 flex-shrink-0">
+                            <img src="{% static 'user/img/drivers/driver-01.jpg' %}" alt="customer" class="img-fluid">                        </span>
+                        <div>
+                            <h6 class="fs-14 fw-semibold mb-1">Benjamin Scott</h6>
+                            <p class="fs-13 mb-1">DOB : 25 Jan 1991</p>
+                            <a href="#" class="link-orange fw-semibold text-decoration-underline">Change Password</a>
+                        </div>
+                    </div>
+                    <span class="badge badge-soft-success">Active</span>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="d-flex align-items-center"><i class="icon-mail text-gray-9 me-1"></i>Email</span>
+                        <span class=" text-dark"><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3153545f5b505c585f715449505c415d541f525e5c">[email&#160;protected]</a></span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone</span>
+                        <span class=" text-dark"> +1 33658 54589</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="d-flex align-items-center"><i class="icon-map-pin-check-inside text-gray-9 me-1"></i>Address</span>
+                        <span class="text-wrap-1 text-dark">301 Market Street, Riverside Drive, FL 33128, USA</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="d-flex align-items-center"><i class="icon-user text-gray-9 me-1"></i>Gender</span>
+                        <span class=" text-dark">Male</span>
+                    </div>
+                </div>
+                </div>
+                <div class="border-bottom p-4">
+                    <h5 class="fw-bold mb-2">Driver Details</h5>
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div>
+                                <p class="fs-13 mb-1">License No</p>
+                                <p class="fs-14 text-dark fw-medium">DL56558</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>
+                                <p class="fs-13 mb-1">License Expiry Date</p>
+                                <p class="fs-14 text-dark fw-medium">25 May 2026</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>
+                                <p class="fs-13 mb-1">Insurance Policy No</p>
+                                <p class="fs-14 text-dark fw-medium mb-0">USPOL9834A72</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div>
+                                <p class="fs-13 mb-1">Insurance Expiry Date</p>
+                                <p class="fs-14 text-dark fw-medium mb-0">22 Apr 2029</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <h6 class="fw-bold fs-16 mb-2">
+                        About Driver
+                    </h6>
+                    <p class="mb-0">
+                        Trained delivery driver known for fast, accurate, and safe deliveries. With strong navigation skills and a customer first attitude, he ensures every package reaches its destination on time.
+                    </p>
+                </div>
+            </div>
+            <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
+                <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-toggle="offcanvas" data-bs-target="#edit_driver"><i class="icon-pencil-line me-1"></i>Edit Driver</button>
+            </div>
+        </form>
+    </div>
+    <!-- View Details -->
+
+
+
+
+
+
+
+
+
+
+
+    
+    <!-- jQuery -->
+    <script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="{% static 'user/js/jquery-3.7.1.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'user/js/bootstrap.bundle.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+
+
+	<!-- Simplebar JS -->
+	<script src="{% static 'user/plugins/simplebar/simplebar.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+	<!-- Datatable JS -->
+    <script src="{% static 'user/plugins/datatables/js/jquery.dataTables.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>	<script src="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+    <!-- Select2 Js -->
+    <script src="{% static 'user/plugins/select2/js/select2.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+    <!-- Flatpickr JS -->
+	<script src="{% static 'user/plugins/flatpickr/flatpickr.min.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+
+
+    <!-- Main JS -->
+    <script src="{% static 'user/js/script.js' %}" type="a42f936a51cfcfdc99ef7586-text/javascript"></script>
+<script src="../../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="a42f936a51cfcfdc99ef7586-|49" defer></script></body>
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/drivers_list by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:19:18 GMT -->
+</html>
+

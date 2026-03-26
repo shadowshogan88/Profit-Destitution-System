@@ -140,10 +140,14 @@ def create_investment(user: User, principal_amount: Decimal, from_wallet: bool =
 
 
 @transaction.atomic
-def create_package_investment(user: User, package: InvestmentPackage) -> Investment:
-    amount = to_2dp(package.amount)
+def create_package_investment(
+    user: User,
+    package: InvestmentPackage,
+    amount: Decimal,
+) -> Investment:
+    amount = to_2dp(amount)
     if amount <= 0:
-        raise ValueError("Package amount must be greater than zero")
+        raise ValueError("Investment amount must be greater than zero")
     if package.duration_days <= 0:
         raise ValueError("Package duration must be greater than zero")
 
@@ -237,10 +241,7 @@ def distribute_commission_upward(
 
     for level in range(1, target_max_level + 1):
         rate_percent = rates[level]
-        if level == 1:
-            profit_base = profit_chunk
-        else:
-            profit_base = computed[level - 1]["commission_amount"]
+        profit_base = profit_chunk
         commission_amount = to_2dp((profit_base * rate_percent) / Decimal("100"))
 
         computed[level] = {

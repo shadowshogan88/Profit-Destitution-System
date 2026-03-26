@@ -1,0 +1,514 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/delivery_settings by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:20:09 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+	<!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dreams POS is a powerful Bootstrap based Inventory Management Admin Template designed for businesses, offering seamless invoicing, project tracking, and estimates.">
+    <meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
+    <meta name="author" content="Dreams Technologies">
+    <title>Delivery Settings | Laundry POS - Bootstrap 5 Admin Dashboard</title>
+
+    <script type="5a20c5ecce45fe562767f5da-text/javascript">
+        const baseUrl = 'index-2.html';
+        window.IMG_BASE_PATH = 'img/index.html';
+        window.BASE_PATH = 'index-2.html';
+    </script>
+
+    
+    <!-- Favicon -->
+    <link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="icon"><link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="shortcut icon">
+    <!-- Apple Icon -->
+    <meta rel="apple-touch-icon" name="apple-touch-icon" content="img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/bootstrap.min.css' %}">
+    <!-- Theme Script -->
+    <script src="{% static 'user/js/theme-script.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+    <!-- Lucide Icon CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/lucide/lucide.css' %}">
+
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/simplebar/simplebar.min.css' %}">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/select2/css/select2.min.css' %}">
+    <!-- Datatable CSS -->
+	<link rel="stylesheet" href="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.css' %}">
+
+
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+
+<body><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/content?id=Ae9qrDk42U4iTdUo_aNptQgmfZyxYvaBy02JXoNjU24-1772637575.0218716-1.0.1.1-lVbqDbd5ukYvwthfsPJTbQgPSTENBnhp158zfPJ7jm8" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+    <!-- Begin Wrapper -->
+    <div class="main-wrapper">
+
+        
+<!-- Sidenav Menu Start -->
+<div class="sidebar">
+    <div class="twocol-mini">
+        <a href="index.html" class="logo-small">
+            <img src="{% static 'user/img/logo-small.svg' %}" alt="logo-small">        </a>
+        <div class="sidebar-left">
+            <div class="nav flex-column align-items-center sidebar-nav" data-simplebar>
+                <a href="index.html" class="nav-link ">
+                    <i class="icon-layout-dashboard"></i>
+                    Dashboard
+                </a>
+                <a href="pos_create.html" class="nav-link ">
+                    <i class="icon-monitor-smartphone"></i>
+                    POS
+                </a>
+                <a href="orders.html" class="nav-link ">
+                    <i class="icon-shopping-cart"></i>
+                    Orders
+                </a>
+                <a href="products.html"
+                    class="nav-link ">
+                    <i class="icon-package-2"></i>
+                    Products
+                </a>
+                <a href="invoices.html" class="nav-link ">
+                    <i class="icon-badge-dollar-sign"></i>
+                    Invoices
+                </a>
+                <a href="customers.html"
+                    class="nav-link ">
+                    <i class="icon-user"></i>
+                    Customers
+                </a>
+                <a href="drivers_list.html"
+                    class="nav-link ">
+                    <i class="icon-bike"></i>
+                    Drivers
+                </a>
+                <a href="staff_list.html"
+                    class="nav-link ">
+                    <i class="icon-users-round"></i>
+                    Staff
+                </a>
+                <a href="earning_report.html"
+                    class="nav-link ">
+                    <i class="icon-chart-bar-big"></i>
+                    Reports
+                </a>
+                <a href="store_settings.html" class="nav-link active d-md-none d-lg-none">
+                    <i class="icon-settings"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+        <a href="login.html" class="sidebar-log-out">
+            <i class="icon-log-out"></i>
+        </a>
+    </div>
+</div>
+<!-- Sidenav Menu End -->
+
+                    <!-- ========================
+        Start Page Content
+    ========================= -->
+
+    <div class="page-wrapper">
+
+        <!-- Start Content -->
+        <div class="content">
+
+                <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+
+                    <!-- Logo Normal -->
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="{% static 'user/img/logo.svg' %}" alt="logo"></span>
+                        <span
+                            class="logo-sm"><img src="{% static 'user/img/logo-small.svg' %}" alt="small logo"></span>
+                    </span>
+
+                    <!-- Logo Dark -->
+                    <span class="logo-dark">
+                        <span
+                            class="logo-lg"><img src="{% static 'user/img/logo-white.svg' %}" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Search -->
+                <div class="d-flex">
+                    <h3 class="mb-0">Delivery Settings</h3>
+                </div>
+
+                            </div>
+
+            <div class="d-flex align-items-center header-list">
+
+                <!-- Upgrade Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="#" class="btn btn-sm btn-primary-gradient d-inline-flex align-items-center">
+                        <i class="icon-crown me-1"></i>Upgrade
+                    </a>
+                </div>
+
+                <div class="avatar-list-stacked avatar-group-sm d-none d-md-flex">
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="border border-white" alt="user"></span>
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-02.jpg' %}" class="border border-white" alt="user"></span>
+                    <a class="avatar bg-white avatar-rounded text-dark fs-16" href="#">+</a>
+                </div>
+
+                <!-- Notification Button -->
+                <div class="header-item d-none d-md-flex">
+
+                    <div class="dropdown dropend">
+                        <a href="#" class="topbar-link btn btn-icon"  data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i class="icon-bell fs-16"></i><span class="position-absolute report-badge bg-success"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-xl notification-dropdown">
+                            <div class="d-flex align-items-center justify-content-between notification-header">
+                                <h5 class="mb-0">Notifications</h5>
+                                <a href="#" class="link-primary">Mark all as unread</a>
+                            </div>
+                            <div class="notification-body" data-simplebar>
+
+                                <div class="tab-pane fade show active" id="all-notification">
+
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Today</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-purple border border-purple">
+                                                        <i class="icon-shopping-cart"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1">New laundry order from<span class="text-dark fw-medium"> David Belcher</span> (5 items) pending.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>20 Min Ago</p>
+                                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                                            <button type="button" class="btn btn-sm btn-primary rounded">Accept</button>
+                                                            <button type="button" class="btn btn-sm btn-white rounded">Decline</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-orange border border-orange">
+                                                        <i class="icon-shopping-basket"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #568</span> washing completed and moved to drying.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>35 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-primary border border-primary text-primary">
+                                                        <i class="icon-badge-dollar-sign"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">₹1,200</span> received via UPI for Order<span class="text-dark fw-medium"> #566</span>.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>40 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-pink border border-pink">
+                                                        <i class="icon-baggage-claim"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ready for delivery</span></p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>45 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Yesterday</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-success border border-success text-success">
+                                                        <i class="icon-shopping-bag"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #560</span> delivered successfully to customer.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-indigo border border-indigo text-indigo">
+                                                        <i class="icon-inbox"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ironing completed and ready for packing.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="store_settings.html" class="topbar-link btn btn-icon" aria-label="settings">
+                        <i class="icon-settings fs-16"></i>
+                    </a>
+                </div>
+
+                <!-- Light/Dark Mode Button -->
+                <div class="header-item">
+                    <button class="topbar-link btn btn-icon light-dark-mode" type="button"
+                        aria-label="light/dark mode">
+                        <i class="icon-moon fs-16"></i>
+                    </button>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a class="topbar-link avatar avatar-sm dropdown-toggle drop-arrow-none" href="#"
+                        data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
+                        <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle d-flex" alt="user-image">                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-3">
+                        <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar avatar-sm flex-shrink-0">
+                                    <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle" alt="user">                                </span>
+                                <div class="ms-2">
+                                    <h5 class="mb-1 fs-14">Shaun Farley</h5>
+                                    <span class="d-block fs-13">Manager</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item-->
+                        <a href="login.html" class="dropdown-item">
+                            <i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i>
+                            <span class="align-middle text-danger">Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="icon-menu"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+
+            <!-- Start Content Wrap -->
+            <div class="content-wrap">
+
+                <!-- row start -->
+                <div class="row justify-content-center">
+
+                    <div class="col-xl-10">
+
+                        <!-- row start -->
+                        <div class="row justify-content-center">
+                            <div class="col-lg-3">
+                                
+<!-- Settings Sidebar -->
+<div class="settings-sidebar d-flex align-items-start">
+    <ul class="nav flex-column nav-pills w-100">
+        <li>
+            <a href="store_settings.html" class="nav-link "><i class="icon-warehouse me-2"></i>Store Settings</a>
+        </li>
+        <li>
+            <a href="tax_settings.html" class="nav-link "><i class="icon-diamond-percent me-2"></i>Tax</a>
+        </li>
+        <li>
+            <a href="print_settings.html" class="nav-link "><i class="icon-printer me-2"></i>Print</a>
+        </li>
+        <li>
+            <a href="payment_settings.html" class="nav-link "><i class="icon-circle-dollar-sign me-2"></i>Payment Types</a>
+        </li>
+        <li>
+            <a href="delivery_settings.html" class="nav-link active"><i class="icon-bike me-2"></i>Delivery</a>
+        </li>
+        <li>
+            <a href="permissions_settings.html" class="nav-link "><i class="icon-user-cog me-2"></i>Roles & Permissions</a>
+        </li>
+        <li>
+            <a href="notifications_settings.html" class="nav-link "><i class="icon-bell me-2"></i>Notifications</a>
+        </li>
+        <li>
+            <a href="integrations_settings.html" class="nav-link mb-0 "><i class="icon-pin me-2"></i>Integrations / API</a>
+        </li>
+    </ul>
+</div>
+<!-- /Settings Sidebar -->                            </div>
+                            <div class="col-lg-9">
+
+                                <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/delivery_settings">
+
+                                    <!-- card start -->
+                                    <div class="card mb-0">
+
+                                        <div class="card-header">
+                                            <h4 class="d-inline-flex align-items-center mb-0"><i class="icon-bike me-2"></i>Delivery</h4>
+                                        </div>
+
+                                        <div class="card-body">
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="form-check form-switch mb-3 d-flex align-items-center justify-content-between ps-0">
+                                                        <label class="form-check-label fs-16 fw-bold text-dark" for="switchCheckChecked">Free Delivery</label>
+                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckChecked" checked>
+                                                    </div>
+                                                    <div class="mb-0">
+                                                        <label class="form-label">Free Delivery Over ($)<span class="text-danger ms-1">*</span></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+                                                </div><!-- card-body -->
+                                            </div><!-- card end -->
+
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="form-check form-switch mb-3 d-flex align-items-center justify-content-between ps-0">
+                                                        <label class="form-check-label fs-16 fw-bold text-dark" for="switchCheckChecked1">Fixed Delivery Charges</label>
+                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckChecked1" checked>
+                                                    </div>
+                                                    <div class="mb-0">
+                                                        <label class="form-label">Fixed Delivery Amount ($)<span class="text-danger ms-1">*</span></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+                                                </div><!-- card-body -->
+                                            </div><!-- card end -->
+
+                                            <div class="card mb-0">
+                                                <div class="card-body">
+                                                    <div class="form-check form-switch mb-3 d-flex align-items-center justify-content-between ps-0">
+                                                        <label class="form-check-label fs-16 fw-bold text-dark" for="switchCheckChecked2">Kilometer Based Delivery Charges</label>
+                                                        <input class="form-check-input" type="checkbox" role="switch" id="switchCheckChecked2" checked>
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Per KM Delivery Charge ($)<span class="text-danger ms-1">*</span></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label class="form-label">Minimum Delivery Over ($)<span class="text-danger ms-1">*</span></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+                                                    <div class="mb-0">
+                                                        <label class="form-label">Minimum Distance for Free Delivery (KM)<span class="text-danger ms-1">*</span></label>
+                                                        <input type="text" class="form-control">
+                                                    </div>
+                                                </div><!-- card-body -->
+                                            </div><!-- card end -->
+
+                                        </div> <!-- end card body -->
+
+                                        <div class="card-footer">
+                                            <div class="d-flex align-items-center justify-content-end gap-2 pt-1">
+                                                <button type="button" class="btn btn-dark"><i class="icon-x me-1"></i>Cancel</button>
+                                                <button type="submit" class="btn btn-primary"><i class="icon-circle-check me-1"></i>Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- card end -->
+                                </form>
+
+                            </div>
+                        </div>
+                        <!-- row end -->
+
+                    </div><!-- col-end -->
+
+                </div>
+                <!-- row end -->
+
+            </div>
+            <!-- End Content Wrap -->
+
+        </div>
+        <!-- End Content -->
+
+    </div>
+
+    <!-- ========================
+        End Page Content
+    ========================= -->
+    </div>
+    <!-- End Wrapper -->
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <!-- jQuery -->
+    <script src="{% static 'user/js/jquery-3.7.1.min.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'user/js/bootstrap.bundle.min.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+
+
+	<!-- Simplebar JS -->
+	<script src="{% static 'user/plugins/simplebar/simplebar.min.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+	<!-- Datatable JS -->
+    <script src="{% static 'user/plugins/datatables/js/jquery.dataTables.min.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>	<script src="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+    <!-- Select2 Js -->
+    <script src="{% static 'user/plugins/select2/js/select2.min.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+
+
+
+    <!-- Main JS -->
+    <script src="{% static 'user/js/script.js' %}" type="5a20c5ecce45fe562767f5da-text/javascript"></script>
+<script src="../../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="5a20c5ecce45fe562767f5da-|49" defer></script></body>
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/delivery_settings by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:20:09 GMT -->
+</html>
+

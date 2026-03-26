@@ -1,17 +1,21 @@
 ﻿import json
 from decimal import Decimal, InvalidOperation
 
+import csv
+
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.messages.views import SuccessMessageMixin
+from django.db import transaction
 from django.db.models import Avg, Count, Sum
-from django.http import HttpRequest, JsonResponse
+from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
@@ -23,7 +27,10 @@ from .models import (
     ManualPaymentRequest,
     ManualWithdrawalRequest,
     PaymentMethod,
+    ProfitDistribution,
     ProfitDistributionEntry,
+    UnsettledBalanceAccount,
+    UnsettledBalanceEntry,
     WithdrawalMethod,
     Wallet,
     WalletTransaction,
@@ -31,6 +38,7 @@ from .models import (
 from .services import (
     create_investment,
     create_package_investment,
+    distribute_profit_to_active_investors,
     realize_profit,
     settle_matured_investments,
 )
@@ -431,8 +439,72 @@ def register_with_referral(request: HttpRequest):
 
 
 def logout_user(request: HttpRequest):
+    request.session.pop("is_locked", None)
+    request.session.pop("lock_next", None)
     logout(request)
-    return redirect("login")
+    return render(request, "registration/logout.html")
+
+
+@login_required
+def set_lock_screen(request: HttpRequest):
+    if request.method != "POST":
+        return JsonResponse({"ok": False, "error": "POST required"}, status=405)
+    next_url = (request.POST.get("next") or "").strip()
+    if next_url and url_has_allowed_host_and_scheme(
+        url=next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        request.session["lock_next"] = next_url
+    request.session["is_locked"] = True
+    return JsonResponse({"ok": True})
+
+
+@login_required
+def lock_screen(request: HttpRequest):
+    request.session["is_locked"] = True
+    referer_path = ""
+    referer = request.META.get("HTTP_REFERER") or ""
+    if referer:
+        try:
+            referer_path = referer.split(request.build_absolute_uri("/").rstrip("/"), 1)[-1]
+            if not referer_path.startswith("/"):
+                referer_path = ""
+        except Exception:
+            referer_path = ""
+
+    raw_next_url = (
+        request.POST.get("next")
+        or request.GET.get("next")
+        or request.session.get("lock_next")
+        or referer_path
+        or reverse("dashboard")
+    )
+    if url_has_allowed_host_and_scheme(
+        url=raw_next_url,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure(),
+    ):
+        next_url = raw_next_url
+    else:
+        next_url = reverse("dashboard")
+
+    if request.method == "POST":
+        password = request.POST.get("password") or ""
+        if request.user.check_password(password):
+            request.session["is_locked"] = False
+            request.session.pop("lock_next", None)
+            messages.success(request, "Screen unlocked.")
+            return redirect(next_url)
+        messages.error(request, "Invalid password. Try again.")
+
+    return render(
+        request,
+        "core/lockscreen.html",
+        {
+            "next_url": next_url,
+        },
+    )
 
 
 @login_required
@@ -831,16 +903,21 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
         return None
 
     package_id = request.POST.get("package_id")
+    amount_raw = request.POST.get("amount")
     package = InvestmentPackage.objects.filter(id=package_id, is_active=True).first()
     if not package:
         messages.error(request, "Invalid investment package selected.")
         return redirect(redirect_name)
 
     try:
-        investment = create_package_investment(request.user, package)
+        amount = _decimal_or_error(amount_raw)
+        if amount <= 0:
+            raise ValueError("Amount must be greater than zero.")
+        investment = create_package_investment(request.user, package, amount)
         messages.success(
             request,
-            f"Investment {investment.investment_code} started for {package.duration_days} days.",
+            f"Investment {investment.investment_code} started for Tk {amount} "
+            f"and {package.duration_days} days.",
         )
         return redirect("investment-page")
     except ValueError as exc:
@@ -873,6 +950,594 @@ def investment_packages_page(request: HttpRequest):
         request,
         "core/package.html",
         _build_investment_page_context(request.user),
+    )
+
+
+@login_required
+def admin_profit_distribution(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("user-dashboard")
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        if action == "distribute_profit":
+            amount_raw = request.POST.get("total_amount")
+            note = (request.POST.get("note") or "").strip()
+            try:
+                amount = _decimal_or_error(amount_raw)
+                if amount <= 0:
+                    raise ValueError("Amount must be greater than zero.")
+                distribution = distribute_profit_to_active_investors(
+                    total_amount=amount,
+                    created_by=request.user,
+                    note=note,
+                )
+                if distribution.distributed_amount > 0:
+                    messages.success(
+                        request,
+                        f"Distribution #{distribution.pk} completed. "
+                        f"Gross {distribution.distributed_amount}, "
+                        f"referral {distribution.total_referral_commission}, "
+                        f"unsettled {distribution.total_unsettled_commission}, "
+                        f"won profit {distribution.total_won_profit}.",
+                    )
+                else:
+                    messages.warning(
+                        request,
+                        f"Distribution #{distribution.pk} saved, but no active running package found.",
+                    )
+            except ValueError as exc:
+                messages.error(request, str(exc))
+
+        elif action in {"approve_payment", "reject_payment"}:
+            request_id = request.POST.get("payment_request_id")
+            admin_note = (request.POST.get("admin_note") or "").strip()
+            try:
+                with transaction.atomic():
+                    payment_req = (
+                        ManualPaymentRequest.objects.select_for_update()
+                        .select_related("user")
+                        .get(pk=request_id)
+                    )
+                    if payment_req.status != ManualPaymentRequest.Status.PENDING:
+                        messages.error(request, "This add money request is not pending.")
+                    else:
+                        payment_req.admin_note = admin_note
+                        if action == "approve_payment":
+                            payment_req.status = ManualPaymentRequest.Status.APPROVED
+                            payment_req.save(update_fields=["status", "admin_note", "updated_at"])
+                            messages.success(
+                                request,
+                                f"Add money request #{payment_req.pk} approved.",
+                            )
+                        else:
+                            payment_req.status = ManualPaymentRequest.Status.REJECTED
+                            payment_req.save(update_fields=["status", "admin_note", "updated_at"])
+                            messages.success(
+                                request,
+                                f"Add money request #{payment_req.pk} rejected.",
+                            )
+            except ManualPaymentRequest.DoesNotExist:
+                messages.error(request, "Add money request not found.")
+
+        elif action in {"approve_withdrawal", "reject_withdrawal"}:
+            request_id = request.POST.get("withdrawal_request_id")
+            admin_note = (request.POST.get("admin_note") or "").strip()
+            try:
+                with transaction.atomic():
+                    withdrawal_req = (
+                        ManualWithdrawalRequest.objects.select_for_update()
+                        .select_related("user")
+                        .get(pk=request_id)
+                    )
+                    if withdrawal_req.status != ManualWithdrawalRequest.Status.PENDING:
+                        messages.error(request, "This withdrawal request is not pending.")
+                    elif action == "reject_withdrawal":
+                        if withdrawal_req.wallet_debited:
+                            messages.error(
+                                request,
+                                "This withdrawal was already debited. Reject is not allowed.",
+                            )
+                        else:
+                            withdrawal_req.status = ManualWithdrawalRequest.Status.REJECTED
+                            withdrawal_req.admin_note = admin_note
+                            withdrawal_req.save(update_fields=["status", "admin_note", "updated_at"])
+                            messages.success(
+                                request,
+                                f"Withdrawal request #{withdrawal_req.pk} rejected.",
+                            )
+                    else:
+                        if withdrawal_req.wallet_debited:
+                            messages.error(
+                                request,
+                                "This withdrawal request was already approved.",
+                            )
+                        else:
+                            wallet, _ = Wallet.objects.select_for_update().get_or_create(
+                                user=withdrawal_req.user
+                            )
+                            if wallet.balance < withdrawal_req.amount:
+                                messages.error(
+                                    request,
+                                    f"Insufficient wallet balance for {withdrawal_req.user.username}.",
+                                )
+                            else:
+                                wallet.balance = wallet.balance - withdrawal_req.amount
+                                wallet.save(update_fields=["balance", "updated_at"])
+                                WalletTransaction.objects.create(
+                                    user=withdrawal_req.user,
+                                    tx_type=WalletTransaction.TxType.DEBIT,
+                                    amount=withdrawal_req.amount,
+                                    description=(
+                                        f"Manual withdrawal approved (Request #{withdrawal_req.pk}, "
+                                        f"fee {withdrawal_req.withdrawal_fee_amount}, "
+                                        f"net {withdrawal_req.net_amount})"
+                                    ),
+                                )
+                                withdrawal_req.status = ManualWithdrawalRequest.Status.APPROVED
+                                withdrawal_req.wallet_debited = True
+                                withdrawal_req.debited_at = timezone.now()
+                                withdrawal_req.admin_note = admin_note
+                                withdrawal_req.save(
+                                    update_fields=[
+                                        "status",
+                                        "wallet_debited",
+                                        "debited_at",
+                                        "admin_note",
+                                        "updated_at",
+                                    ]
+                                )
+                                messages.success(
+                                    request,
+                                    f"Withdrawal request #{withdrawal_req.pk} approved.",
+                                )
+            except ManualWithdrawalRequest.DoesNotExist:
+                messages.error(request, "Withdrawal request not found.")
+
+    current_total_invested = Investment.objects.aggregate(total=Sum("principal_amount"))["total"] or Decimal("0.00")
+
+    return render(
+        request,
+        "core/admin_profit_distribution.html",
+        {
+            "page_title": "Admin Profit Distribution",
+            "current_total_invested": current_total_invested,
+        },
+    )
+
+
+@login_required
+def admin_pending_add_money(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("user-dashboard")
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action in {"approve_payment", "reject_payment"}:
+            request_id = request.POST.get("payment_request_id")
+            admin_note = (request.POST.get("admin_note") or "").strip()
+            try:
+                with transaction.atomic():
+                    payment_req = (
+                        ManualPaymentRequest.objects.select_for_update()
+                        .select_related("user")
+                        .get(pk=request_id)
+                    )
+                    if payment_req.status != ManualPaymentRequest.Status.PENDING:
+                        messages.error(request, "This add money request is not pending.")
+                    else:
+                        payment_req.admin_note = admin_note
+                        if action == "approve_payment":
+                            payment_req.status = ManualPaymentRequest.Status.APPROVED
+                            payment_req.save(update_fields=["status", "admin_note", "updated_at"])
+                            messages.success(
+                                request,
+                                f"Add money request #{payment_req.pk} approved.",
+                            )
+                        else:
+                            payment_req.status = ManualPaymentRequest.Status.REJECTED
+                            payment_req.save(update_fields=["status", "admin_note", "updated_at"])
+                            messages.success(
+                                request,
+                                f"Add money request #{payment_req.pk} rejected.",
+                            )
+            except ManualPaymentRequest.DoesNotExist:
+                messages.error(request, "Add money request not found.")
+
+    pending_add_money = ManualPaymentRequest.objects.filter(
+        status=ManualPaymentRequest.Status.PENDING
+    ).select_related("user").order_by("created_at", "id")
+
+    return render(
+        request,
+        "core/admin_pending_add_money.html",
+        {
+            "page_title": "Pending Add Money Requests",
+            "pending_add_money": pending_add_money,
+        },
+    )
+
+
+@login_required
+def admin_pending_withdrawals(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("user-dashboard")
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action in {"approve_withdrawal", "reject_withdrawal"}:
+            request_id = request.POST.get("withdrawal_request_id")
+            admin_note = (request.POST.get("admin_note") or "").strip()
+            try:
+                with transaction.atomic():
+                    withdrawal_req = (
+                        ManualWithdrawalRequest.objects.select_for_update()
+                        .select_related("user")
+                        .get(pk=request_id)
+                    )
+                    if withdrawal_req.status != ManualWithdrawalRequest.Status.PENDING:
+                        messages.error(request, "This withdrawal request is not pending.")
+                    elif action == "reject_withdrawal":
+                        if withdrawal_req.wallet_debited:
+                            messages.error(
+                                request,
+                                "This withdrawal was already debited. Reject is not allowed.",
+                            )
+                        else:
+                            withdrawal_req.status = ManualWithdrawalRequest.Status.REJECTED
+                            withdrawal_req.admin_note = admin_note
+                            withdrawal_req.save(update_fields=["status", "admin_note", "updated_at"])
+                            messages.success(
+                                request,
+                                f"Withdrawal request #{withdrawal_req.pk} rejected.",
+                            )
+                    else:
+                        if withdrawal_req.wallet_debited:
+                            messages.error(
+                                request,
+                                "This withdrawal request was already approved.",
+                            )
+                        else:
+                            wallet, _ = Wallet.objects.select_for_update().get_or_create(
+                                user=withdrawal_req.user
+                            )
+                            if wallet.balance < withdrawal_req.amount:
+                                messages.error(
+                                    request,
+                                    f"Insufficient wallet balance for {withdrawal_req.user.username}.",
+                                )
+                            else:
+                                wallet.balance = wallet.balance - withdrawal_req.amount
+                                wallet.save(update_fields=["balance", "updated_at"])
+                                WalletTransaction.objects.create(
+                                    user=withdrawal_req.user,
+                                    tx_type=WalletTransaction.TxType.DEBIT,
+                                    amount=withdrawal_req.amount,
+                                    description=(
+                                        f"Manual withdrawal approved (Request #{withdrawal_req.pk}, "
+                                        f"fee {withdrawal_req.withdrawal_fee_amount}, "
+                                        f"net {withdrawal_req.net_amount})"
+                                    ),
+                                )
+                                withdrawal_req.status = ManualWithdrawalRequest.Status.APPROVED
+                                withdrawal_req.wallet_debited = True
+                                withdrawal_req.debited_at = timezone.now()
+                                withdrawal_req.admin_note = admin_note
+                                withdrawal_req.save(
+                                    update_fields=[
+                                        "status",
+                                        "wallet_debited",
+                                        "debited_at",
+                                        "admin_note",
+                                        "updated_at",
+                                    ]
+                                )
+                                messages.success(
+                                    request,
+                                    f"Withdrawal request #{withdrawal_req.pk} approved.",
+                                )
+            except ManualWithdrawalRequest.DoesNotExist:
+                messages.error(request, "Withdrawal request not found.")
+
+    pending_withdrawals = ManualWithdrawalRequest.objects.filter(
+        status=ManualWithdrawalRequest.Status.PENDING
+    ).select_related("user").order_by("created_at", "id")
+
+    return render(
+        request,
+        "core/admin_pending_withdrawals.html",
+        {
+            "page_title": "Pending Withdrawal Requests",
+            "pending_withdrawals": pending_withdrawals,
+        },
+    )
+
+
+@login_required
+def investment_reports(request: HttpRequest):
+    if request.user.is_staff:
+        return redirect("admin-investment-reports")
+
+    investments = Investment.objects.select_related("package").filter(user=request.user)
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    if date_from:
+        investments = investments.filter(created_at__date__gte=date_from)
+    if date_to:
+        investments = investments.filter(created_at__date__lte=date_to)
+    investments = investments.order_by("-created_at")
+    return render(
+        request,
+        "core/investment_reports.html",
+        {
+            "page_title": "Investment Reports",
+            "investments": investments,
+            "is_admin_view": False,
+            "date_from": date_from,
+            "date_to": date_to,
+        },
+    )
+
+
+@login_required
+def admin_investment_reports(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("investment-reports")
+
+    investments = Investment.objects.select_related("package", "user")
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    if date_from:
+        investments = investments.filter(created_at__date__gte=date_from)
+    if date_to:
+        investments = investments.filter(created_at__date__lte=date_to)
+    investments = investments.order_by("-created_at")
+    return render(
+        request,
+        "core/investment_reports.html",
+        {
+            "page_title": "Investment Reports",
+            "investments": investments,
+            "is_admin_view": True,
+            "date_from": date_from,
+            "date_to": date_to,
+        },
+    )
+
+
+@login_required
+def transaction_reports(request: HttpRequest):
+    if request.user.is_staff:
+        return redirect("admin-transaction-reports")
+
+    wallet_transactions = WalletTransaction.objects.filter(user=request.user)
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    if date_from:
+        wallet_transactions = wallet_transactions.filter(created_at__date__gte=date_from)
+    if date_to:
+        wallet_transactions = wallet_transactions.filter(created_at__date__lte=date_to)
+    wallet_transactions = wallet_transactions.order_by("-created_at")
+    return render(
+        request,
+        "core/transaction_reports.html",
+        {
+            "page_title": "Transaction Reports",
+            "wallet_transactions": wallet_transactions,
+            "is_admin_view": False,
+            "date_from": date_from,
+            "date_to": date_to,
+        },
+    )
+
+
+@login_required
+def admin_transaction_reports(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("transaction-reports")
+
+    payments = ManualPaymentRequest.objects.all()
+    withdrawals = ManualWithdrawalRequest.objects.all()
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    if date_from:
+        payments = payments.filter(created_at__date__gte=date_from)
+        withdrawals = withdrawals.filter(created_at__date__gte=date_from)
+    if date_to:
+        payments = payments.filter(created_at__date__lte=date_to)
+        withdrawals = withdrawals.filter(created_at__date__lte=date_to)
+
+    rows = []
+    for item in payments.select_related("user"):
+        rows.append(
+            {
+                "created_at": item.created_at,
+                "type": "Add Money",
+                "request_code": item.request_code,
+                "username": item.user.username,
+                "amount": item.amount,
+                "method": item.payment_method,
+                "reference": item.transaction_reference,
+                "status": item.status,
+                "fee": Decimal("0.00"),
+                "net": item.amount,
+                "note": item.details,
+            }
+        )
+    for item in withdrawals.select_related("user"):
+        rows.append(
+            {
+                "created_at": item.created_at,
+                "type": "Withdrawal",
+                "request_code": item.request_code,
+                "username": item.user.username,
+                "amount": item.amount,
+                "method": item.payment_method,
+                "reference": item.account_details,
+                "status": item.status,
+                "fee": item.withdrawal_fee_amount,
+                "net": item.net_amount,
+                "note": item.admin_note,
+            }
+        )
+
+    rows.sort(key=lambda row: row["created_at"], reverse=True)
+    return render(
+        request,
+        "core/transaction_reports.html",
+        {
+            "page_title": "Transaction Reports",
+            "rows": rows,
+            "is_admin_view": True,
+            "date_from": date_from,
+            "date_to": date_to,
+        },
+    )
+
+
+@login_required
+def admin_profit_distribution_reports(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("dashboard")
+
+    reports = ProfitDistribution.objects.select_related("created_by")
+    unsettled_account = UnsettledBalanceAccount.objects.filter(name="Unsettled Balance").first()
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    if date_from:
+        reports = reports.filter(created_at__date__gte=date_from)
+    if date_to:
+        reports = reports.filter(created_at__date__lte=date_to)
+    reports = reports.order_by("-created_at")
+    unsettled_total = reports.aggregate(total=Sum("total_unsettled_commission"))["total"] or Decimal("0.00")
+
+    return render(
+        request,
+        "core/profit_distribution_reports.html",
+        {
+            "page_title": "Profit Distribution Reports",
+            "reports": reports,
+            "date_from": date_from,
+            "date_to": date_to,
+            "unsettled_account_balance": unsettled_account.balance if unsettled_account else Decimal("0.00"),
+            "filtered_unsettled_total": unsettled_total,
+        },
+    )
+
+
+@login_required
+def admin_profit_distribution_details(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("dashboard")
+
+    entries = ProfitDistributionEntry.objects.select_related(
+        "distribution",
+        "user",
+        "investment",
+    )
+    unsettled_entries = UnsettledBalanceEntry.objects.select_related(
+        "source_user",
+        "investment",
+        "distribution",
+    )
+    unsettled_account = UnsettledBalanceAccount.objects.filter(name="Unsettled Balance").first()
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    if date_from:
+        entries = entries.filter(created_at__date__gte=date_from)
+        unsettled_entries = unsettled_entries.filter(created_at__date__gte=date_from)
+    if date_to:
+        entries = entries.filter(created_at__date__lte=date_to)
+        unsettled_entries = unsettled_entries.filter(created_at__date__lte=date_to)
+    entries = entries.order_by("-created_at")
+    unsettled_entries = unsettled_entries.order_by("-created_at")
+    unsettled_total = unsettled_entries.aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
+
+    return render(
+        request,
+        "core/profit_distribution_details.html",
+        {
+            "page_title": "Profit Distribution Details",
+            "entries": entries,
+            "date_from": date_from,
+            "date_to": date_to,
+            "unsettled_entries": unsettled_entries,
+            "unsettled_total": unsettled_total,
+            "unsettled_account_balance": unsettled_account.balance if unsettled_account else Decimal("0.00"),
+        },
+    )
+
+
+@login_required
+def admin_unsettled_balance_reports(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("dashboard")
+
+    entries = UnsettledBalanceEntry.objects.select_related(
+        "source_user",
+        "investment",
+        "distribution",
+    )
+    unsettled_account = UnsettledBalanceAccount.objects.filter(name="Unsettled Balance").first()
+    date_from = (request.GET.get("date_from") or "").strip()
+    date_to = (request.GET.get("date_to") or "").strip()
+    distribution_id = (request.GET.get("distribution_id") or "").strip()
+    export = (request.GET.get("export") or "").strip().lower()
+    if date_from:
+        entries = entries.filter(created_at__date__gte=date_from)
+    if date_to:
+        entries = entries.filter(created_at__date__lte=date_to)
+    if distribution_id:
+        entries = entries.filter(distribution_id=distribution_id)
+    entries = entries.order_by("-created_at")
+    filtered_total = entries.aggregate(total=Sum("amount"))["total"] or Decimal("0.00")
+    distribution_choices = (
+        UnsettledBalanceEntry.objects.exclude(distribution_id__isnull=True)
+        .values_list("distribution_id", flat=True)
+        .distinct()
+        .order_by("-distribution_id")
+    )
+
+    if export == "csv":
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="unsettled_balance_reports.csv"'
+        writer = csv.writer(response)
+        writer.writerow(
+            ["#", "Distribution", "Source User", "Investment", "Amount", "Missing Levels", "Description", "Date"]
+        )
+        for index, item in enumerate(entries, start=1):
+            writer.writerow(
+                [
+                    index,
+                    item.distribution_id or "-",
+                    item.source_user.username if item.source_user else "-",
+                    item.investment.investment_code if item.investment else "-",
+                    item.amount,
+                    (
+                        f"L{item.missing_from_level} to L{item.missing_to_level}"
+                        if item.missing_from_level and item.missing_to_level
+                        else "-"
+                    ),
+                    item.description,
+                    timezone.localtime(item.created_at).strftime("%d %b %Y, %I:%M %p"),
+                ]
+            )
+        return response
+
+    return render(
+        request,
+        "core/unsettled_balance_reports.html",
+        {
+            "page_title": "Unsettled Balance Reports",
+            "entries": entries,
+            "date_from": date_from,
+            "date_to": date_to,
+            "distribution_id": distribution_id,
+            "distribution_choices": distribution_choices,
+            "unsettled_account_balance": unsettled_account.balance if unsettled_account else Decimal("0.00"),
+            "filtered_total": filtered_total,
+        },
     )
 
 

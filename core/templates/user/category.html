@@ -1,0 +1,860 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/category by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:19:58 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+	<!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dreams POS is a powerful Bootstrap based Inventory Management Admin Template designed for businesses, offering seamless invoicing, project tracking, and estimates.">
+    <meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
+    <meta name="author" content="Dreams Technologies">
+    <title>Category | Laundry POS - Bootstrap 5 Admin Dashboard</title>
+
+    <script type="b19af6a7a0b218c4e85fc236-text/javascript">
+        const baseUrl = 'index-2.html';
+        window.IMG_BASE_PATH = 'img/index.html';
+        window.BASE_PATH = 'index-2.html';
+    </script>
+
+    
+    <!-- Favicon -->
+    <link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="icon"><link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="shortcut icon">
+    <!-- Apple Icon -->
+    <meta rel="apple-touch-icon" name="apple-touch-icon" content="img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/bootstrap.min.css' %}">
+    <!-- Theme Script -->
+    <script src="{% static 'user/js/theme-script.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+    <!-- Lucide Icon CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/lucide/lucide.css' %}">
+
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/simplebar/simplebar.min.css' %}">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/select2/css/select2.min.css' %}">
+    <!-- Datatable CSS -->
+	<link rel="stylesheet" href="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.css' %}">
+
+
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+
+<body><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/content?id=SgzxAwZVepcexobxOeCWfAOhOgUbaMUrXbW8wplDrao-1772637550.6040926-1.0.1.1-J7b1BjaNVgogvXQgCiJizvHBhGRbKkdlURa27xEfgZs" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+    <!-- Begin Wrapper -->
+    <div class="main-wrapper">
+
+        
+<!-- Sidenav Menu Start -->
+<div class="sidebar">
+    <div class="twocol-mini">
+        <a href="index.html" class="logo-small">
+            <img src="{% static 'user/img/logo-small.svg' %}" alt="logo-small">        </a>
+        <div class="sidebar-left">
+            <div class="nav flex-column align-items-center sidebar-nav" data-simplebar>
+                <a href="index.html" class="nav-link ">
+                    <i class="icon-layout-dashboard"></i>
+                    Dashboard
+                </a>
+                <a href="pos_create.html" class="nav-link ">
+                    <i class="icon-monitor-smartphone"></i>
+                    POS
+                </a>
+                <a href="orders.html" class="nav-link ">
+                    <i class="icon-shopping-cart"></i>
+                    Orders
+                </a>
+                <a href="products.html"
+                    class="nav-link active">
+                    <i class="icon-package-2"></i>
+                    Products
+                </a>
+                <a href="invoices.html" class="nav-link ">
+                    <i class="icon-badge-dollar-sign"></i>
+                    Invoices
+                </a>
+                <a href="customers.html"
+                    class="nav-link ">
+                    <i class="icon-user"></i>
+                    Customers
+                </a>
+                <a href="drivers_list.html"
+                    class="nav-link ">
+                    <i class="icon-bike"></i>
+                    Drivers
+                </a>
+                <a href="staff_list.html"
+                    class="nav-link ">
+                    <i class="icon-users-round"></i>
+                    Staff
+                </a>
+                <a href="earning_report.html"
+                    class="nav-link ">
+                    <i class="icon-chart-bar-big"></i>
+                    Reports
+                </a>
+                <a href="store_settings.html" class="nav-link  d-md-none d-lg-none">
+                    <i class="icon-settings"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+        <a href="login.html" class="sidebar-log-out">
+            <i class="icon-log-out"></i>
+        </a>
+    </div>
+</div>
+<!-- Sidenav Menu End -->
+
+                    <!-- ========================
+        Start Page Content
+    ========================= -->
+
+    <div class="page-wrapper">
+
+        <!-- Start Content -->
+        <div class="content">
+
+                <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+
+                    <!-- Logo Normal -->
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="{% static 'user/img/logo.svg' %}" alt="logo"></span>
+                        <span
+                            class="logo-sm"><img src="{% static 'user/img/logo-small.svg' %}" alt="small logo"></span>
+                    </span>
+
+                    <!-- Logo Dark -->
+                    <span class="logo-dark">
+                        <span
+                            class="logo-lg"><img src="{% static 'user/img/logo-white.svg' %}" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Search -->
+                <div class="d-flex">
+                    <h3 class="mb-0">Products</h3>
+                </div>
+
+                            </div>
+
+            <div class="d-flex align-items-center header-list">
+
+                <!-- Upgrade Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="#" class="btn btn-sm btn-primary-gradient d-inline-flex align-items-center">
+                        <i class="icon-crown me-1"></i>Upgrade
+                    </a>
+                </div>
+
+                <div class="avatar-list-stacked avatar-group-sm d-none d-md-flex">
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="border border-white" alt="user"></span>
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-02.jpg' %}" class="border border-white" alt="user"></span>
+                    <a class="avatar bg-white avatar-rounded text-dark fs-16" href="#">+</a>
+                </div>
+
+                <!-- Notification Button -->
+                <div class="header-item d-none d-md-flex">
+
+                    <div class="dropdown dropend">
+                        <a href="#" class="topbar-link btn btn-icon"  data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i class="icon-bell fs-16"></i><span class="position-absolute report-badge bg-success"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-xl notification-dropdown">
+                            <div class="d-flex align-items-center justify-content-between notification-header">
+                                <h5 class="mb-0">Notifications</h5>
+                                <a href="#" class="link-primary">Mark all as unread</a>
+                            </div>
+                            <div class="notification-body" data-simplebar>
+
+                                <div class="tab-pane fade show active" id="all-notification">
+
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Today</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-purple border border-purple">
+                                                        <i class="icon-shopping-cart"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1">New laundry order from<span class="text-dark fw-medium"> David Belcher</span> (5 items) pending.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>20 Min Ago</p>
+                                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                                            <button type="button" class="btn btn-sm btn-primary rounded">Accept</button>
+                                                            <button type="button" class="btn btn-sm btn-white rounded">Decline</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-orange border border-orange">
+                                                        <i class="icon-shopping-basket"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #568</span> washing completed and moved to drying.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>35 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-primary border border-primary text-primary">
+                                                        <i class="icon-badge-dollar-sign"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">₹1,200</span> received via UPI for Order<span class="text-dark fw-medium"> #566</span>.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>40 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-pink border border-pink">
+                                                        <i class="icon-baggage-claim"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ready for delivery</span></p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>45 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Yesterday</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-success border border-success text-success">
+                                                        <i class="icon-shopping-bag"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #560</span> delivered successfully to customer.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-indigo border border-indigo text-indigo">
+                                                        <i class="icon-inbox"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ironing completed and ready for packing.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="store_settings.html" class="topbar-link btn btn-icon" aria-label="settings">
+                        <i class="icon-settings fs-16"></i>
+                    </a>
+                </div>
+
+                <!-- Light/Dark Mode Button -->
+                <div class="header-item">
+                    <button class="topbar-link btn btn-icon light-dark-mode" type="button"
+                        aria-label="light/dark mode">
+                        <i class="icon-moon fs-16"></i>
+                    </button>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a class="topbar-link avatar avatar-sm dropdown-toggle drop-arrow-none" href="#"
+                        data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
+                        <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle d-flex" alt="user-image">                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-3">
+                        <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar avatar-sm flex-shrink-0">
+                                    <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle" alt="user">                                </span>
+                                <div class="ms-2">
+                                    <h5 class="mb-1 fs-14">Shaun Farley</h5>
+                                    <span class="d-block fs-13">Manager</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item-->
+                        <a href="login.html" class="dropdown-item">
+                            <i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i>
+                            <span class="align-middle text-danger">Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="icon-menu"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+
+            <!-- Start Content Wrap -->
+            <div class="content-wrap">
+
+                <!-- Reports Nav -->
+                <ul class="nav nav-tabs nav-tab-solid nav-solid-dark nav-tabs-rounded gap-2 mb-4">
+                    <li class="nav-item">
+                        <a href="products.html" class="nav-link d-flex align-items-center">
+                            <i class="icon-box me-2"></i>Products
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="services.html" class="nav-link d-flex align-items-center">
+                            <i class="icon-sparkles me-2"></i>Services
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="category.html" class="nav-link d-flex align-items-center active">
+                            <i class="icon-circle-check-big me-2"></i>Categories
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="addons.html" class="nav-link d-flex align-items-center">
+                            <i class="icon-washing-machine me-2"></i>Add Ons
+                        </a>
+                    </li>
+                </ul>
+                <!-- End Reports Nav -->
+
+                <div class="d-flex align-items-center flex-wrap gap-3 justify-content-between mb-4">
+                    <div class="d-flex align-items-center flex-wrap gap-3">
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle btn btn-white d-flex align-items-center justify-content-between" data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                                <i class="icon-circle-check-big text-dark me-2"></i>All Categories
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-lg p-3">
+                                <h6 class="fs-14 fw-semibold mb-3">Categories</h6>
+                                <div class="input-icon-end input-icon position-relative mb-3">
+                                    <span class="input-icon-addon">
+                                        <i class="icon-search text-dark"></i>
+                                    </span>
+                                    <input type="text" class="form-control form-control-md" placeholder="Search">
+                                </div>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox" checked>Accessories
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox" checked>Scarf
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox">Dresses
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox">Coats
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox">Trousers
+                                        </label>
+                                    </li>
+                                    <li class="dropdown-item rounded">
+                                        <label class="d-flex align-items-center">
+                                            <input class="form-check-input m-0 me-2" type="checkbox">Suits
+                                        </label>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        </div>
+
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                        <!-- sort by -->
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle btn btn-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                Sort by : Newest
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end p-3">
+                                <h6 class="fs-14 fw-semibold mb-3">Sort By</h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Newest</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Oldest</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Ascending</a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="dropdown-item rounded">Descending</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- table search -->
+                        <div class="search-input">
+                            <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
+                        </div>
+
+                        <a href="#" data-bs-toggle="modal" data-bs-target="#add_category" class="btn btn-primary d-inline-flex align-items-center"><i class="icon-plus me-2"></i>New Categories</a>
+
+                        <div class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle btn btn-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                <i class="icon-arrow-down-to-line me-1"></i>Export
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-3">
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded">Export as PDF</a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded">Export as Excel</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- table start -->
+                <div class="table-responsive table-nowrap">
+                    <table class="table mb-0 border datatable">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="no-sort">Categories</th>
+                                <th class="no-sort">Status</th>
+                                <th class="no-sort"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Accessories</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Scarf</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Dresses</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Coats</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-danger">Inactive</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Trousers</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Suits</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Knitwear</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Quilt Cleaning</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Women’s Wear</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <h6 class="fs-14 fw-semibold mb-0">Ethnic Wear</h6>
+                                </td>
+                                <td>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropstart">
+                                        <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                            <i class="icon-ellipsis-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu p-3">
+                                            <li>
+                                                <a href="#" data-bs-toggle="modal" data-bs-target="#edit_category" class="dropdown-item rounded d-flex align-items-center"><i class="icon-pencil-line me-2"></i>Edit Category</a>
+                                            </li>
+                                            <li>
+                                                <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Category</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- table end -->
+
+            </div>
+            <!-- End Content Wrap -->
+
+        </div>
+        <!-- End Content -->
+
+    </div>
+
+    <!-- ========================
+        End Page Content
+    ========================= -->
+    </div>
+    <!-- End Wrapper -->
+
+    
+
+
+    <!-- Add Category -->
+    <div class="modal fade" id="add_category">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-1">
+                    <h4 class="modal-title">Create Category</h4>
+                    <button type="button" class="btn-close btn-close-modal position-relative" data-bs-dismiss="modal" aria-label="Close"><i class="icon-x"></i></button>
+                </div>
+                <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/category">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Name<span class="text-danger"> *</span></label>
+                                    <input type="text" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status<span class="text-danger"> *</span></label>
+                                    <select class="select">
+                                        <option>Select</option>
+                                        <option>Active</option>
+                                        <option>Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between gap-2 pt-1">
+                            <button type="button" class="btn btn-dark w-100" data-bs-dismiss="modal"><i class="icon-x me-1"></i>Cancel</button>
+                            <button type="submit" class="btn btn-primary w-100"><i class="icon-circle-check me-1"></i>Create New</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Add Category End -->
+
+    <!-- Edit Category -->
+    <div class="modal fade" id="edit_category">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-0 pb-1">
+                    <h4 class="modal-title">Edit Category</h4>
+                    <button type="button" class="btn-close btn-close-modal position-relative" data-bs-dismiss="modal" aria-label="Close"><i class="icon-x"></i></button>
+                </div>
+                <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/category">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label">Name<span class="text-danger"> *</span></label>
+                                    <input type="text" class="form-control" value="Accessories">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Status<span class="text-danger"> *</span></label>
+                                    <select class="select">
+                                        <option>Select</option>
+                                        <option selected>Active</option>
+                                        <option>Inactive</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between gap-2 pt-1">
+                            <button type="button" class="btn btn-dark w-100" data-bs-dismiss="modal"><i class="icon-x me-1"></i>Cancel</button>
+                            <button type="submit" class="btn btn-primary w-100"><i class="icon-circle-check me-1"></i>Save</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- Edit Category End -->
+
+    <!-- Delete Modal  -->
+    <div class="modal fade" id="delete_modal">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="mb-4">
+                        <span class="avatar avatar-lg rounded-circle bg-danger">
+                            <i class="icon-trash fs-24"></i>
+                        </span>
+                    </div>
+                    <h4 class="mb-1">Delete Confirmation</h4>
+                    <p class="mb-4">Are you sure you want to delete? </p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="javascript:void(0);" class="btn btn-light w-100" data-bs-dismiss="modal">Close</a>
+                        <a href="category.html" class="btn btn-danger w-100">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Delete Modal  -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <!-- jQuery -->
+    <script src="{% static 'user/js/jquery-3.7.1.min.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'user/js/bootstrap.bundle.min.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+
+
+	<!-- Simplebar JS -->
+	<script src="{% static 'user/plugins/simplebar/simplebar.min.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+	<!-- Datatable JS -->
+    <script src="{% static 'user/plugins/datatables/js/jquery.dataTables.min.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>	<script src="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+    <!-- Select2 Js -->
+    <script src="{% static 'user/plugins/select2/js/select2.min.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+
+
+
+    <!-- Main JS -->
+    <script src="{% static 'user/js/script.js' %}" type="b19af6a7a0b218c4e85fc236-text/javascript"></script>
+<script src="../../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="b19af6a7a0b218c4e85fc236-|49" defer></script></body>
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/category by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:19:58 GMT -->
+</html>
+

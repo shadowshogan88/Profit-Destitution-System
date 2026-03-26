@@ -1,0 +1,143 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" onclick="window.print()">Print / Save PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Date From</label>
+                        <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date To</label>
+                        <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" id="reportSearch" placeholder="Search in table...">
+                    </div>
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-success w-100">Filter</button>
+                        <a href="{% if is_admin_view %}{% url 'admin-investment-reports' %}{% else %}{% url 'investment-reports' %}{% endif %}" class="btn btn-light w-100">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0 report-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Code</th>
+                                {% if is_admin_view %}
+                                <th>User</th>
+                                {% endif %}
+                                <th>Package</th>
+                                <th>Amount</th>
+                                <th>Duration</th>
+                                <th>Starts</th>
+                                <th>Ends</th>
+                                <th>Status</th>
+                                <th>Profit</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for inv in investments %}
+                            <tr>
+                                <td>{{ inv.investment_code|default:"-" }}</td>
+                                {% if is_admin_view %}
+                                <td>{{ inv.user.username }}</td>
+                                {% endif %}
+                                <td>{{ inv.package.name|default:"-" }}</td>
+                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>{{ inv.duration_days }} days</td>
+                                <td>{{ inv.starts_at|date:"d M Y, h:i A" }}</td>
+                                <td>{{ inv.ends_at|date:"d M Y, h:i A" }}</td>
+                                <td>{{ inv.status }}</td>
+                                <td>Tk {{ inv.profit_realized }}</td>
+                                <td>{{ inv.created_at|date:"d M Y, h:i A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="{% if is_admin_view %}10{% else %}9{% endif %}" class="text-center text-muted">
+                                    No investments found.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var input = document.getElementById("reportSearch");
+    var table = document.querySelector(".report-table");
+    if (!input || !table) {
+        return;
+    }
+    input.addEventListener("input", function () {
+        var query = input.value.toLowerCase();
+        var rows = Array.from(table.querySelectorAll("tbody tr"));
+        rows.forEach(function (row) {
+            if (row.querySelector("td")) {
+                var text = row.textContent.toLowerCase();
+                row.style.display = text.indexOf(query) !== -1 ? "" : "none";
+            }
+        });
+    });
+});
+</script>
+
+<style>
+@media print {
+    body {
+        background: #fff;
+    }
+    #layout-wrapper, .app-menu, #page-topbar, .vertical-overlay, .footer, .btn {
+        display: none !important;
+    }
+    .main-content {
+        margin: 0 !important;
+    }
+    .page-content, .container-fluid, .card, .card-body {
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .report-table {
+        font-size: 12px;
+    }
+    .report-table th, .report-table td {
+        padding: 6px 8px !important;
+    }
+    .page-title-box {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

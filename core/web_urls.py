@@ -17,6 +17,9 @@ urlpatterns = [
     path("manual-withdrawal/method-info/", views.withdrawal_method_info, name="withdrawal-method-info"),
     path("investments/", views.investment_page, name="investment-page"),
     path("investments/packages/", views.investment_packages_page, name="investment-packages"),
+    path("admin/profit-distribution/", views.admin_profit_distribution, name="admin-profit-distribution"),
+    path("investment-reports/", views.investment_reports, name="investment-reports"),
+    path("transaction-reports/", views.transaction_reports, name="transaction-reports"),
     path("register/", views.referral_code_entry, name="referral-entry"),
     path("register/create/", views.register_with_referral, name="register-with-referral"),
     path(
@@ -28,6 +31,8 @@ urlpatterns = [
         name="login",
     ),
     path("logout/", views.logout_user, name="logout"),
+    path("lock-screen/", views.lock_screen, name="lock-screen"),
+    path("lock-screen/set/", views.set_lock_screen, name="lock-screen-set"),
     path("user-dashboard/", views.user_dashboard, name="user-dashboard"),
     path("dashboard/", views.dashboard, name="dashboard"),
     path("profile/", views.page_profile, name="page-profile"),

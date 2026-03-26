@@ -28,19 +28,19 @@
                     <div class="row gy-5">
                         <div class="col-lg-3">
                             <div class="nav flex-column custom-nav nav-pills" role="tablist" aria-orientation="vertical">
-                                <button class="nav-link active" id="v-pills-bill-info-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-info" type="button" role="tab" aria-controls="v-pills-bill-info" aria-selected="true">
+                                <button class="nav-link active" id="v-pills-bill-info-tab" data-bs-target="#v-pills-bill-info" type="button" role="tab" aria-controls="v-pills-bill-info" aria-selected="true">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 1</span>
                                     Payment Info
                                 </button>
-                                <button class="nav-link" id="v-pills-bill-address-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-address" type="button" role="tab" aria-controls="v-pills-bill-address" aria-selected="false">
+                                <button class="nav-link" id="v-pills-bill-address-tab" data-bs-target="#v-pills-bill-address" type="button" role="tab" aria-controls="v-pills-bill-address" aria-selected="false">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 2</span>
                                     Payment Instruction
                                 </button>
-                                <button class="nav-link" id="v-pills-payment-tab" data-bs-toggle="pill" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
+                                <button class="nav-link" id="v-pills-payment-tab" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 3</span>
                                     Payment
                                 </button>
-                                <button class="nav-link" id="v-pills-finish-tab" data-bs-toggle="pill" data-bs-target="#v-pills-finish" type="button" role="tab" aria-controls="v-pills-finish" aria-selected="false">
+                                <button class="nav-link" id="v-pills-finish-tab" data-bs-target="#v-pills-finish" type="button" role="tab" aria-controls="v-pills-finish" aria-selected="false">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 4</span>
                                     Finish
                                 </button>
@@ -77,14 +77,14 @@
                                         </div>
                                         <div class="d-flex align-items-start gap-3 mt-4">
                                             <button type="button" class="btn btn-success btn-label right ms-auto nexttab" data-nexttab="v-pills-bill-address-tab">
-                                                <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Go to Shipping
+                                                <i class="ri-arrow-right-line label-icon align-middle fs-16 ms-2"></i>Payment Instruction
                                             </button>
                                         </div>
                                     </div>
 
                                     <div class="tab-pane fade" id="v-pills-bill-address" role="tabpanel" aria-labelledby="v-pills-bill-address-tab">
                                         <h5>Payment Instruction</h5>
-                                        <p class="text-muted">Fill all information below</p>
+                                        <p class="text-muted">Follow all Instruction below</p>
                                         <div id="methodInstructionBox" class="alert alert-info" style="display:none;">
                                             <p class="mb-1"><strong id="methodInstructionName"></strong></p>
                                             <p id="methodInstructionAccount" class="mb-1"></p>
@@ -285,6 +285,14 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function activateStep(tabId) {
+        var trigger = document.getElementById(tabId);
+        if (!trigger || !window.bootstrap || !bootstrap.Tab) {
+            return;
+        }
+        bootstrap.Tab.getOrCreateInstance(trigger).show();
+    }
+
     document.querySelectorAll(".nexttab").forEach(function (button) {
         button.addEventListener("click", async function () {
             var nextTabId = button.getAttribute("data-nexttab");
@@ -305,20 +313,14 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
             }
-            var nextTab = document.getElementById(nextTabId);
-            if (nextTab) {
-                nextTab.click();
-            }
+            activateStep(nextTabId);
         });
     });
 
     document.querySelectorAll(".previestab").forEach(function (button) {
         button.addEventListener("click", function () {
             var prevTabId = button.getAttribute("data-previous");
-            var prevTab = document.getElementById(prevTabId);
-            if (prevTab) {
-                prevTab.click();
-            }
+            activateStep(prevTabId);
         });
     });
 
@@ -347,15 +349,18 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.querySelectorAll(".custom-nav .nav-link").forEach(function (tabBtn) {
+        tabBtn.addEventListener("click", function (event) {
+            if (event.isTrusted) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        });
         tabBtn.addEventListener("shown.bs.tab", updateStepIcons);
     });
 
     var paymentSubmitted = "{{ payment_submitted|yesno:'true,false' }}" === "true";
     if (paymentSubmitted) {
-        var finishTab = document.getElementById("v-pills-finish-tab");
-        if (finishTab) {
-            finishTab.click();
-        }
+        activateStep("v-pills-finish-tab");
     }
 
     updateStepIcons();

@@ -1,0 +1,1272 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/index by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:18:18 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+	<!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dreams POS is a powerful Bootstrap based Inventory Management Admin Template designed for businesses, offering seamless invoicing, project tracking, and estimates.">
+    <meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
+    <meta name="author" content="Dreams Technologies">
+    <title>Dashboard | Laundry POS - Bootstrap 5 Admin Dashboard</title>
+
+    <script type="47e15c946c3931fa21288c21-text/javascript">
+        const baseUrl = 'index-2.html';
+        window.IMG_BASE_PATH = 'img/index.html';
+        window.BASE_PATH = 'index-2.html';
+    </script>
+
+    
+    <!-- Favicon -->
+    <link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="icon"><link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="shortcut icon">
+    <!-- Apple Icon -->
+    <meta rel="apple-touch-icon" name="apple-touch-icon" content="img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/bootstrap.min.css' %}">
+    <!-- Theme Script -->
+    <script src="{% static 'user/js/theme-script.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Lucide Icon CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/lucide/lucide.css' %}">
+    <!-- Daterangepikcer CSS -->
+	<link rel="stylesheet" href="{% static 'user/plugins/daterangepicker/daterangepicker.css' %}">
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/simplebar/simplebar.min.css' %}">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/select2/css/select2.min.css' %}">
+    <!-- Datatable CSS -->
+	<link rel="stylesheet" href="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.css' %}">
+    <!-- Slick CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/slick/slick.css' %}">    <link rel="stylesheet" href="{% static 'user/plugins/slick/slick-theme.css' %}">
+    <!-- ChartC3 CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/c3-chart/c3.min.css' %}">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/flatpickr/flatpickr.min.css' %}">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+
+<body><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/content?id=vJV5TnNFI77yu1JxvHA4T_PXk14e5ZW0B.xDGJH27tU-1772637503.7607284-1.0.1.1-W_8tS5eU1GDpzFsLYiWTywAwCptbtaOQFik6m3jniWI" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+    <!-- Begin Wrapper -->
+    <div class="main-wrapper">
+
+        
+<!-- Sidenav Menu Start -->
+<div class="sidebar">
+    <div class="twocol-mini">
+        <a href="index.html" class="logo-small">
+            <img src="{% static 'user/img/logo-small.svg' %}" alt="logo-small">        </a>
+        <div class="sidebar-left">
+            <div class="nav flex-column align-items-center sidebar-nav" data-simplebar>
+                <a href="index.html" class="nav-link active">
+                    <i class="icon-layout-dashboard"></i>
+                    Dashboard
+                </a>
+                <a href="pos_create.html" class="nav-link ">
+                    <i class="icon-monitor-smartphone"></i>
+                    POS
+                </a>
+                <a href="orders.html" class="nav-link ">
+                    <i class="icon-shopping-cart"></i>
+                    Orders
+                </a>
+                <a href="products.html"
+                    class="nav-link ">
+                    <i class="icon-package-2"></i>
+                    Products
+                </a>
+                <a href="invoices.html" class="nav-link ">
+                    <i class="icon-badge-dollar-sign"></i>
+                    Invoices
+                </a>
+                <a href="customers.html"
+                    class="nav-link ">
+                    <i class="icon-user"></i>
+                    Customers
+                </a>
+                <a href="drivers_list.html"
+                    class="nav-link ">
+                    <i class="icon-bike"></i>
+                    Drivers
+                </a>
+                <a href="staff_list.html"
+                    class="nav-link ">
+                    <i class="icon-users-round"></i>
+                    Staff
+                </a>
+                <a href="earning_report.html"
+                    class="nav-link ">
+                    <i class="icon-chart-bar-big"></i>
+                    Reports
+                </a>
+                <a href="store_settings.html" class="nav-link  d-md-none d-lg-none">
+                    <i class="icon-settings"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+        <a href="login.html" class="sidebar-log-out">
+            <i class="icon-log-out"></i>
+        </a>
+    </div>
+</div>
+<!-- Sidenav Menu End -->
+
+                    <!-- ========================
+        Start Page Content
+    ========================= -->
+
+    <div class="page-wrapper">
+
+        <!-- Start Content -->
+        <div class="content">
+
+                <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+
+                    <!-- Logo Normal -->
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="{% static 'user/img/logo.svg' %}" alt="logo"></span>
+                        <span
+                            class="logo-sm"><img src="{% static 'user/img/logo-small.svg' %}" alt="small logo"></span>
+                    </span>
+
+                    <!-- Logo Dark -->
+                    <span class="logo-dark">
+                        <span
+                            class="logo-lg"><img src="{% static 'user/img/logo-white.svg' %}" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Search -->
+                <div class="d-flex">
+                    <h3 class="mb-0">Dashboard</h3>
+                </div>
+
+                                <!-- No.of Orders -->
+                <div class=" d-none d-lg-flex">
+                    <a href="orders.html" class="btn btn-num-orders">
+                        <i class="icon-shopping-cart me-2"></i><span>No of Orders : 15</span>
+                    </a>
+                </div>
+                            </div>
+
+            <div class="d-flex align-items-center header-list">
+
+                <!-- Upgrade Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="#" class="btn btn-sm btn-primary-gradient d-inline-flex align-items-center">
+                        <i class="icon-crown me-1"></i>Upgrade
+                    </a>
+                </div>
+
+                <div class="avatar-list-stacked avatar-group-sm d-none d-md-flex">
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="border border-white" alt="user"></span>
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-02.jpg' %}" class="border border-white" alt="user"></span>
+                    <a class="avatar bg-white avatar-rounded text-dark fs-16" href="#">+</a>
+                </div>
+
+                <!-- Notification Button -->
+                <div class="header-item d-none d-md-flex">
+
+                    <div class="dropdown dropend">
+                        <a href="#" class="topbar-link btn btn-icon"  data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i class="icon-bell fs-16"></i><span class="position-absolute report-badge bg-success"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-xl notification-dropdown">
+                            <div class="d-flex align-items-center justify-content-between notification-header">
+                                <h5 class="mb-0">Notifications</h5>
+                                <a href="#" class="link-primary">Mark all as unread</a>
+                            </div>
+                            <div class="notification-body" data-simplebar>
+
+                                <div class="tab-pane fade show active" id="all-notification">
+
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Today</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-purple border border-purple">
+                                                        <i class="icon-shopping-cart"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1">New laundry order from<span class="text-dark fw-medium"> David Belcher</span> (5 items) pending.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>20 Min Ago</p>
+                                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                                            <button type="button" class="btn btn-sm btn-primary rounded">Accept</button>
+                                                            <button type="button" class="btn btn-sm btn-white rounded">Decline</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-orange border border-orange">
+                                                        <i class="icon-shopping-basket"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #568</span> washing completed and moved to drying.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>35 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-primary border border-primary text-primary">
+                                                        <i class="icon-badge-dollar-sign"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">₹1,200</span> received via UPI for Order<span class="text-dark fw-medium"> #566</span>.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>40 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-pink border border-pink">
+                                                        <i class="icon-baggage-claim"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ready for delivery</span></p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>45 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Yesterday</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-success border border-success text-success">
+                                                        <i class="icon-shopping-bag"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #560</span> delivered successfully to customer.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-indigo border border-indigo text-indigo">
+                                                        <i class="icon-inbox"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ironing completed and ready for packing.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="store_settings.html" class="topbar-link btn btn-icon" aria-label="settings">
+                        <i class="icon-settings fs-16"></i>
+                    </a>
+                </div>
+
+                <!-- Light/Dark Mode Button -->
+                <div class="header-item">
+                    <button class="topbar-link btn btn-icon light-dark-mode" type="button"
+                        aria-label="light/dark mode">
+                        <i class="icon-moon fs-16"></i>
+                    </button>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a class="topbar-link avatar avatar-sm dropdown-toggle drop-arrow-none" href="#"
+                        data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
+                        <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle d-flex" alt="user-image">                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-3">
+                        <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar avatar-sm flex-shrink-0">
+                                    <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle" alt="user">                                </span>
+                                <div class="ms-2">
+                                    <h5 class="mb-1 fs-14">Shaun Farley</h5>
+                                    <span class="d-block fs-13">Manager</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item-->
+                        <a href="login.html" class="dropdown-item">
+                            <i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i>
+                            <span class="align-middle text-danger">Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="icon-menu"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+
+            <!-- Start Content Wrap -->
+            <div class="content-wrap">
+
+                <!-- Start Order -->
+                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-4">
+                    <div class="daterangepick custom-date form-control w-auto d-flex align-items-center justify-content-between">
+                        <i class="icon-calendar-fold text-dark fs-14 me-2"></i>
+                        <span class="reportrange-picker"></span>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="dropdown">
+                            <a href="#" class="dropdown-toggle btn btn-dark d-inline-flex align-items-center"
+                                data-bs-toggle="dropdown">
+                                <i class="icon-arrow-down-to-line me-2"></i>Export
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-3">
+                                <li>
+                                    <a href="#" class="dropdown-item rounded">Export as PDF</a>
+                                </li>
+                                <li>
+                                    <a href="#" class="dropdown-item rounded">Export as Excel</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="pos_create.html" class="btn btn-primary d-inline-flex align-items-center"><i class="icon-plus me-2 fw-semibold"></i>New Order</a>
+                    </div>
+                </div>
+                <!-- End Order -->
+
+                <!-- Start Total -->
+                <div class="row mb-4 g-4">
+                    <div class="col-xxl-8 col-xl-8">
+
+                        <!-- start row -->
+                        <div class="row mb-3 g-3">
+
+                            <!-- Item 1 -->
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="card dash-card mb-0">
+                                    <div class="card-body d-flex align-items-center justify-content-between gap-2 flex-wrap pe-1">
+                                        <div>
+                                            <h6 class="mb-3">Total Revenue</h6>
+                                            <h2 class="mb-2">$48,574</h2>
+                                            <span class="badge bg-soft-success text-dark">32%</span>
+                                        </div>
+                                        <div class="d-flex align-items-center flex-column gap-2">
+                                            <div class="avatar avatar-lg rounded-circle bg-primary">
+                                                <i class="icon-badge-dollar-sign"></i>
+                                            </div>
+                                            <div id="bar-chart-2"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div id="chart-bar-stacked" class="chart-set"></div> -->
+
+                            <!-- Item 2 -->
+                            <div class="col-lg-6 col-md-6 col-sm-6">
+                                <div class="card dash-card mb-0">
+                                    <div class="card-body d-flex align-items-center justify-content-between gap-2 flex-wrap pe-1">
+                                        <div>
+                                            <h6 class="mb-3">Total Orders</h6>
+                                            <h2 class="mb-2">2,152</h2>
+                                            <span class="badge bg-soft-success text-dark">12%</span>
+                                        </div>
+                                        <div class="d-flex align-items-center flex-column gap-2">
+                                            <div class="avatar avatar-lg rounded-circle bg-warning">
+                                                <i class="icon-box"></i>
+                                            </div>
+                                            <div id="bar-chart-3"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="col-lg-4 d-none">
+                                <div class="card dash-card mb-0">
+                                    <div class="card-body d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                        <div>
+                                            <h6 class="mb-3">Total Products</h6>
+                                            <h2 class="mb-2">459</h2>
+                                            <span class="badge bg-soft-success text-dark">-21%</span>
+                                        </div>
+                                        <div class="d-lg-flex align-items-end flex-column gap-2">
+                                            <div class="avatar avatar-lg rounded-circle bg-success">
+                                                <i class="icon-award"></i>
+                                            </div>
+                                            <div id="bar-chart-4"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <!-- end row -->
+
+                        <!-- start row -->
+                        <div class="card mb-0">
+                            <div class="card-header pb-0 border-0">
+                                <h5 class="mb-0">Quick Links</h5>
+                            </div>
+                            <div class="card-body">
+
+                                <!-- start row -->
+                                <div class="link-item link-item-slider">
+
+                                    <!-- Item 1  -->
+                                    <div class="slide-item">
+                                        <div class="card rounded-lg bg-light mb-0">
+                                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                                <a href="orders.html" class="d-flex align-items-center gap-3">
+                                                    <span class="avatar avatar-md rounded-circle bg-white">
+                                                        <img src="{% static 'user/img/icons/cart-icon-1.svg' %}" alt="icon" class="img-fluid cart-icon">                                                    </span>
+                                                    <p class="fw-semibold text-dark mb-0">Orders</p>
+                                                </a>
+                                                <a href="orders.html" class="link"><i class="icon-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 2  -->
+                                    <div class="slide-item">
+                                        <div class="card rounded-lg bg-light mb-0">
+                                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                                <a href="products.html" class="d-flex align-items-center gap-3">
+                                                    <span class="avatar avatar-md rounded-circle bg-white">
+                                                        <img src="{% static 'user/img/icons/cart-icon-2.svg' %}" alt="icon" class="img-fluid cart-icon">                                                    </span>
+                                                    <p class="fw-semibold text-dark mb-0">Products</p>
+                                                </a>
+                                                <a href="products.html" class="link"><i class="icon-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 3  -->
+                                    <div class="slide-item">
+                                        <div class="card rounded-lg bg-light mb-0">
+                                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                                <a href="invoices.html" class="d-flex align-items-center gap-3">
+                                                    <span class="avatar avatar-md rounded-circle bg-white">
+                                                        <img src="{% static 'user/img/icons/cart-icon-3.svg' %}" alt="icon" class="img-fluid cart-icon">                                                    </span>
+                                                    <p class="fw-semibold text-dark mb-0">Invoices</p>
+                                                </a>
+                                                <a href="invoices.html" class="link"><i class="icon-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 4  -->
+                                    <div class="slide-item">
+                                        <div class="card rounded-lg bg-light mb-0">
+                                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                                <a href="customers.html" class="d-flex align-items-center gap-3">
+                                                    <span class="avatar avatar-md rounded-circle bg-white">
+                                                        <img src="{% static 'user/img/icons/cart-icon-4.svg' %}" alt="icon" class="img-fluid cart-icon">                                                    </span>
+                                                    <p class="fw-semibold text-dark mb-0">Customer</p>
+                                                </a>
+                                                <a href="customers.html" class="link"><i class="icon-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Item 5  -->
+                                    <div class="slide-item">
+                                        <div class="card rounded-lg bg-light mb-0">
+                                            <div class="card-body d-flex align-items-center justify-content-between p-3">
+                                                <a href="drivers_list.html" class="d-flex align-items-center gap-3">
+                                                    <span class="avatar avatar-md rounded-circle bg-white">
+                                                        <img src="{% static 'user/img/icons/cart-icon-5.svg' %}" alt="icon" class="img-fluid cart-icon">                                                    </span>
+                                                    <p class="fw-semibold text-dark mb-0">Drivers</p>
+                                                </a>
+                                                <a href="drivers_list.html" class="link"><i class="icon-chevron-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- end row -->
+
+                            </div>
+                        </div>
+                        <!-- end row -->
+
+                    </div>
+
+                    <div class="col-xl-4 col-lg-12">
+                        <div class="card customer-item mb-0">
+                            <div class="card-body">
+                                <h5 class="mb-4 d-flex align-items-center justify-content-between title">Top Customers<a href="customers.html" class="text-white text-decoration-underline">View All</a></h5>
+                                <div class="avatar-list-stacked avatar-group-sm mb-4">
+                                    <span class="avatar avatar-rounded one"><img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="border border-white" alt="user"></span>
+                                    <span class="avatar avatar-rounded two"><img src="{% static 'user/img/profiles/avatar-02.jpg' %}" class="border border-white" alt="user"></span>
+                                    <span class="avatar avatar-rounded three"><img src="{% static 'user/img/profiles/avatar-04.jpg' %}" class="border border-white" alt="user"></span>
+                                    <span class="avatar avatar-rounded four"><img src="{% static 'user/img/profiles/avatar-03.jpg' %}" class="border border-white" alt="user"></span>
+                                    <span class="avatar avatar-rounded five"><img src="{% static 'user/img/profiles/avatar-05.jpg' %}" class="border border-white" alt="user"></span>
+                                </div>
+                                <div class="user-details mb-3">
+                                    <span>Anastasia Yesenenko</span>
+                                    <h4 class="my-1">$459</h4>
+                                    <p class="mb-0">15+ Orders</p>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-center gap-2 text-white position-relative z-1">
+                                    <span class="badge bg-white text-dark">12%</span> Increased from last month
+                                </div>
+                            </div>
+                            <img src="{% static 'user/img/icons/rounded-icon.svg' %}" alt="rounded-icon" class="img-fluid element-1">                        </div>
+                    </div>
+                </div>
+                <!-- Start Total -->
+
+                <!-- Start Graph -->
+                <div class="row">
+                    <div class="col-xl-7 col-lg-7">
+                        <div class="card flex-fill">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <h5 class="mb-0">Order Statistics  </h5>
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm btn-white d-inline-flex align-items-center fw-medium" data-bs-toggle="dropdown">
+                                            Weekly
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end p-3">
+                                            <ul class="list-unstyled mb-0">
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item rounded">Weekly</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item rounded">Monthly</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item rounded">Yearly</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                                    <div class="order-graph d-flex align-items-center gap-3">
+                                        <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary"></span> Completed</p>
+                                        <p class="order-color d-flex align-items-center gap-2"> <span class="bg-secondary"></span> Pending</p>
+                                    </div>
+                                    <span class="badge bg-white text-dark border fw-medium">Total Orders : 4145</span>
+                                </div>
+                                <div id="revenue-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+
+                    <div class="col-xl-5 col-lg-5">
+                        <div class="card flex-fill">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <h5 class="mb-0">Real Time Reveue</h5>
+                                    <div class="dropdown">
+                                        <a href="javascript:void(0);" class="dropdown-toggle btn btn-sm btn-white d-inline-flex align-items-center fw-medium" data-bs-toggle="dropdown">
+                                            Today
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end p-3">
+                                            <ul class="list-unstyled mb-0">
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item rounded">Monthly</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item rounded">Weekly</a>
+                                                </li>
+                                                <li>
+                                                    <a href="javascript:void(0);" class="dropdown-item rounded">Today</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="statistic-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+
+                    <div class="col-xl-4 col-lg-6 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <h5 class="mb-0">Order Overview</h5>
+                                    <a href="order_report.html" class="link text-decoration-underline fw-semibold"> View All </a>
+                                </div>
+                                <div class="mb-2" id="order-chart"></div>
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 order-graph">
+                                    <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary round"></span> Approved</p>
+                                    <p class="order-color d-flex align-items-center gap-2"> <span class="bg-info round"></span> Pending</p>
+                                    <p class="order-color d-flex align-items-center gap-2"> <span class="bg-pink round"></span> Verified</p>
+                                    <p class="order-color d-flex align-items-center gap-2"> <span class="bg-orange round"></span> Delivered</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+
+                    <div class="col-xl-4 col-lg-6 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <h5 class="mb-0">Most Ordered Products</h5>
+                                    <a href="products.html" class="link text-decoration-underline fw-semibold"> View All </a>
+                                </div>
+                                <div class="mb-2" id="bar-chart-1"></div>
+                                <div class="product-graph">
+                                    <h6> <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary round"></span> Evening Dress </p> 214 </h6>
+                                    <h6> <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary-7 round"></span> Blouse </p> 192 </h6>
+                                    <h6> <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary-5 round"></span> Dress Shorten </p> 151 </h6>
+                                    <h6> <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary-3 round"></span> Long Coat </p> 120 </h6>
+                                    <h6 class="mb-0"> <p class="order-color d-flex align-items-center gap-2"> <span class="bg-primary-1 round"></span> Suit 2pc</p> 98 </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+
+                    <div class="col-xl-4 d-flex">
+                        <div class="card flex-fill">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4 d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <h5 class="mb-0">Top Categories</h5>
+                                    <a href="#" class="link text-decoration-underline fw-semibold"> View All </a>
+                                </div>
+
+                                <div id="revenue-chart-1"></div>
+                                <div class="product-graph bar-graph d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                    <h6> <p class="order-color d-flex align-items-start gap-1 flex-column"> Evening Dress <span class="badge bg-white text-primary border border-primary"> 60%</span></p>  </h6>
+                                    <h6> <p class="order-color d-flex align-items-start gap-1 flex-column"> Laundry <span class="badge bg-white text-warning border border-warning"> 20%</span></p>  </h6>
+                                    <h6> <p class="order-color d-flex align-items-start gap-1 flex-column"> Dry Cleaning <span class="badge bg-white text-info border border-info"> 30%</span></p>  </h6>
+                                    <h6> <p class="order-color d-flex align-items-start gap-1 flex-column"> Wash & Fold <span class="badge bg-white text-success border border-success"> 20%</span></p>  </h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- End Graph -->
+
+                <!-- Start Table -->
+                <div class="row row-gap-4">
+                    <div class="col-xxl-8 col-xl-7 col-lg-7 d-flex">
+                        <div class="card flex-fill mb-0">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4">
+                                    <h5 class="mb-0 d-flex align-items-center justify-content-between w-100">Recent Orders<a href="orders.html" class="text-decoration-underline fs-14 fw-semibold">View All</a> </h5>
+                                </div>
+
+                                <!-- table start -->
+                                <div class="table-responsive table-nowrap">
+                                    <table class="table mb-0 border">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Order ID</th>
+                                                <th>Order Date</th>
+                                                <th class="no-sort">Customer</th>
+                                                <th>Pickup</th>
+                                                <th>Delivery</th>
+                                                <th>Price</th>
+                                                <th class="no-sort">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#view_order" class="text-dark fw-semibold">OD1245</a></td>
+                                                <td>25 Dec 2026</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-sm avatar-rounded flex-shrink-0 me-2">
+                                                            <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" alt="orders" class="img-fluid">                                                        </a>
+                                                        <h6 class="fs-14 fw-semibold mb-0"><a href="#">Adrian James</a></h6>
+                                                    </div>
+                                                </td>
+                                                <td>12 Jan 2026</td>
+                                                <td>14 Jan 2026</td>
+                                                <td>$350</td>
+                                                <td><span class="badge badge-soft-success text-dark">Approved</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#view_order" class="text-dark fw-semibold">OD5678</a></td>
+                                                <td>12 Nov 2026</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-sm avatar-rounded flex-shrink-0 me-2">
+                                                            <img src="{% static 'user/img/profiles/avatar-02.jpg' %}" alt="orders" class="img-fluid">                                                        </a>
+                                                        <h6 class="fs-14 fw-semibold mb-0"><a href="#">Sue Allen</a></h6>
+                                                    </div>
+                                                </td>
+                                                <td>03 Feb 2026</td>
+                                                <td>06 Feb 2026</td>
+                                                <td>$420</td>
+                                                <td><span class="badge badge-soft-success text-dark">Approved</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#view_order" class="text-dark fw-semibold">OD9012</a></td>
+                                                <td>03 Nov 2026</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-sm avatar-rounded flex-shrink-0 me-2">
+                                                            <img src="{% static 'user/img/profiles/avatar-03.jpg' %}" alt="orders" class="img-fluid">                                                        </a>
+                                                        <h6 class="fs-14 fw-semibold mb-0"><a href="#">Frank Barrett</a></h6>
+                                                    </div>
+                                                </td>
+                                                <td>14 Mar 2026</td>
+                                                <td>16 Mar 2026</td>
+                                                <td>$965</td>
+                                                <td><span class="badge badge-soft-purple text-dark">Verified</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#view_order" class="text-dark fw-semibold">OD3456</a></td>
+                                                <td>18 Oct 2026</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-sm avatar-rounded flex-shrink-0 me-2">
+                                                            <img src="{% static 'user/img/profiles/avatar-04.jpg' %}" alt="customer" class="img-fluid">                                                        </a>
+                                                        <h6 class="fs-14 fw-semibold mb-0"><a href="#">Kelley Davis</a></h6>
+                                                    </div>
+                                                </td>
+                                                <td>25 Apr 2026</td>
+                                                <td>28 Apr 2026</td>
+                                                <td>$458</td>
+                                                <td><span class="badge badge-soft-cyan text-dark">Delivered</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#view_order" class="text-dark fw-semibold">OD7789</a></td>
+                                                <td>07 Sep 2026</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-sm avatar-rounded flex-shrink-0 me-2">
+                                                            <img src="{% static 'user/img/profiles/avatar-07.jpg' %}" alt="orders" class="img-fluid">                                                        </a>
+                                                        <h6 class="fs-14 fw-semibold mb-0"><a href="#">Ron Jude</a></h6>
+                                                    </div>
+                                                </td>
+                                                <td>28 Jul 2026</td>
+                                                <td>29 Jul 2026</td>
+                                                <td>$365</td>
+                                                <td><span class="badge badge-soft-success text-dark">Approved</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td><a href="#" data-bs-toggle="modal" data-bs-target="#view_order" class="text-dark fw-semibold">OD7890</a></td>
+                                                <td>29 Sep 2026</td>
+                                                <td>
+                                                    <div class="d-flex align-items-center">
+                                                        <a href="#" class="avatar avatar-sm avatar-rounded flex-shrink-0 me-2">
+                                                            <img src="{% static 'user/img/profiles/avatar-05.jpg' %}" alt="orders" class="img-fluid">                                                        </a>
+                                                        <h6 class="fs-14 fw-semibold mb-0"><a href="#">Jim Vickers</a></h6>
+                                                    </div>
+                                                </td>
+                                                <td>06 May 2026</td>
+                                                <td>08 May 2026</td>
+                                                <td>$320</td>
+                                                <td><span class="badge badge-soft-danger text-dark">Rejected</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- table end -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-4 col-xl-5 col-lg-5 d-flex">
+                        <div class="card flex-fill mb-0">
+                            <div class="card-body">
+                                <div class="card-header pt-0 ps-0 pe-0 mb-4">
+                                    <h5 class="mb-0 d-flex align-items-center justify-content-between w-100">Drivers<a href="drivers_list.html" class="text-decoration-underline fs-14 fw-semibold">View All</a> </h5>
+                                </div>
+
+                                <!-- Item 1 -->
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="avatar border bg-light rounded-circle flex-shrink-0">
+                                            <img src="{% static 'user/img/profiles/avatar-02.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1"><a href="#">Sue Allen</a></h6>
+                                            <span class="d-flex align-items-center"><i class="icon-phone me-1 fs-13"></i>Phone : +1 54544 54587</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-white border text-dark d-inline-flex align-items-center gap-1"> <span class="dot bg-success"></span> Online</span>
+                                </div>
+
+                                <!-- Item 2 -->
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="avatar border bg-light rounded-circle flex-shrink-0">
+                                            <img src="{% static 'user/img/profiles/avatar-03.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1"><a href="#">Matthew Parker</a></h6>
+                                            <span class="d-flex align-items-center"><i class="icon-phone me-1 fs-13"></i>Phone : +1 45478 54588</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-white border text-dark d-inline-flex align-items-center gap-1"> <span class="dot bg-success"></span> Online</span>
+                                </div>
+
+                                <!-- Item 3 -->
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="avatar border bg-light rounded-circle flex-shrink-0">
+                                            <img src="{% static 'user/img/profiles/avatar-04.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1"><a href="#">Samuel Harris</a></h6>
+                                            <span class="d-flex align-items-center"><i class="icon-phone me-1 fs-13"></i>Phone : +1 33658 54589</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-white border text-dark d-inline-flex align-items-center gap-1"> <span class="dot bg-success"></span> Online</span>
+                                </div>
+
+                                <!-- Item 4 -->
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="avatar border bg-light rounded-circle flex-shrink-0">
+                                            <img src="{% static 'user/img/profiles/avatar-05.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1"><a href="#">Riley Cooper</a></h6>
+                                            <span class="d-flex align-items-center"><i class="icon-phone me-1 fs-13"></i>Phone : +1 47854 54590</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-white border text-dark d-inline-flex align-items-center gap-1"> <span class="dot bg-success"></span> Online</span>
+                                </div>
+
+                                <!-- Item 5 -->
+                                <div class="d-flex align-items-center justify-content-between gap-2 mb-4 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="avatar border bg-light rounded-circle flex-shrink-0">
+                                            <img src="{% static 'user/img/profiles/avatar-07.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1"><a href="#">Avery Parker</a></h6>
+                                            <span class="d-flex align-items-center"><i class="icon-phone me-1 fs-13"></i>Phone : +1 58974 54591</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-white border text-dark d-inline-flex align-items-center gap-1"> <span class="dot bg-success"></span> Online</span>
+                                </div>
+
+                                <!-- Item 6 -->
+                                <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <a href="#" class="avatar border bg-light rounded-circle flex-shrink-0">
+                                            <img src="{% static 'user/img/profiles/avatar-08.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                        </a>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1"><a href="#">John Smith</a></h6>
+                                            <span class="d-flex align-items-center"><i class="icon-phone me-1 fs-13"></i>Phone : +1 542344 5587</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge badge-white border text-dark d-inline-flex align-items-center gap-1"> <span class="dot bg-danger"></span> Offline</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- End Table -->
+
+            </div>
+            <!-- End Content Wrap -->
+
+        </div>
+        <!-- End Content -->
+
+    </div>
+
+    <!-- ========================
+        End Page Content
+    ========================= -->
+    </div>
+    <!-- End Wrapper -->
+
+    
+    <!-- View Order -->
+    <div class="modal fade" id="view_order">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header border-bottom p-4 pb-3">
+                    <h4 class="modal-title">Order Details</h4>
+                    <button type="button" class="btn-close btn-close-modal position-relative" data-bs-dismiss="modal" aria-label="Close"><i class="icon-x"></i></button>
+                </div>
+
+                <div class="modal-body p-4">
+                    <div class="mb-4">
+                        <div class="row g-3">
+                                <div class="col-lg-2 col-sm-4">
+                                <span class="d-block fs-13 mb-1">Order ID</span>
+                                <p class="fw-medium text-dark mb-0">OD1245</p>
+                            </div>
+                            <div class="col-lg-2 col-sm-4">
+                                <span class="d-block fs-13 mb-1">Amount</span>
+                                <p class="fw-medium text-dark mb-0">$565</p>
+                            </div>
+                            <div class="col-lg-2 col-sm-4">
+                                <span class="d-block fs-13 mb-1">No of Items</span>
+                                <p class="fw-medium text-dark mb-0">20</p>
+                            </div>
+                            <div class="col-lg-2 col-sm-4">
+                                <span class="d-block fs-13 mb-1">Status</span>
+                                <span class="badge badge-soft-info">Collected</span>
+                            </div>
+                            <div class="col-lg-2 col-sm-4">
+                                <span class="d-block fs-13 mb-1">Order Date</span>
+                                <p class="fw-medium text-dark mb-0">Dec 08, 2026 09:28 AM</p>
+                            </div>
+                            <div class="col-lg-2 col-sm-4">
+                                <div class="text-lg-end">
+                                    <img src="{% static 'user/img/icons/paid.svg' %}" alt="paid" class="img-fluid">                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="bg-light border rounded p-3 mb-4">
+                        <div class="order-wizard position-relative row g-3 g-lg-0 row-cols-1 row-cols-lg-5">
+                            <div class="order-item z-1 active text-center position-relative">
+                                <div class="order-icon avatar avatar-rounded mb-2">
+                                    <i class="icon-check fs-24"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 fw-semibold mb-2">Pending</h6>
+                                    <p class="fs-13 mb-0">2026-12-08 09:28:15</p>
+                                </div>
+                            </div>
+                            <div class="order-item z-1 active text-center position-relative">
+                                <div class="order-icon avatar avatar-rounded mb-2">
+                                    <i class="icon-check fs-24"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 fw-semibold mb-2">Approved</h6>
+                                    <p class="fs-13 mb-0">2026-12-08 09:28:15</p>
+                                </div>
+                            </div>
+                            <div class="order-item z-1 active text-center position-relative">
+                                <div class="order-icon avatar avatar-rounded mb-2">
+                                    <i class="icon-check fs-24"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 fw-semibold mb-2">Collected</h6>
+                                    <p class="fs-13 mb-0">2026-12-08 09:28:15</p>
+                                </div>
+                            </div>
+                            <div class="order-item z-1 text-center position-relative">
+                                <div class="order-icon avatar avatar-rounded mb-2">
+                                    <i class="icon-check fs-24"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 fw-semibold mb-0">Verified and Paid</h6>
+                                </div>
+                            </div>
+                            <div class="order-item z-1 text-center position-relative">
+                                <div class="order-icon avatar avatar-rounded mb-2">
+                                    <i class="icon-check fs-24"></i>
+                                </div>
+                                <div>
+                                    <h6 class="fs-14 fw-semibold mb-0">Delivered</h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h5 class="mb-3">Order Items</h5>
+
+                    <div class="row g-4">
+                        <div class="col-lg-6">
+                            <div class="accordion accordion-bordered" id="orderAccordion">
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button bg-transparent fw-bold fs-16" type="button" data-bs-toggle="collapse" data-bs-target="#cleaning" aria-expanded="true">
+                                            Dry Cleaning
+                                        </button>
+                                    </h2>
+                                    <div id="cleaning" class="accordion-collapse collapse show" data-bs-parent="#orderAccordion">
+                                        <div class="accordion-body border-0 pt-0">
+                                            <div class="mb-3">
+                                                <p class="mb-2">Evening Dress × 1 <span class="fw-medium text-dark float-end">$30</span></p>
+                                                <p class="mb-2">Jumpsuit × 1 <span class="fw-medium text-dark float-end">$11</span></p>
+                                                <p class="mb-2">Long Coat × 3 <span class="fw-medium text-dark float-end">$11</span></p>
+                                                <p class="mb-2">Dinner Suit × 3 <span class="fw-medium text-dark float-end">$11</span></p>
+                                                <p class="mb-2">Down Jacket × 1 <span class="fw-medium text-dark float-end">$11</span></p>
+                                                <h6 class="mb-0">Sub Total <span class="fw-medium text-dark float-end">$164</span></h6>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6 class="mb-3">Add Ons</h6>
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <span class="badge badge-soft-primary">Detergent  : Free</span>
+                                                    <span class="badge badge-soft-primary">Softener  : Free</span>
+                                                    <span class="badge badge-soft-primary">Dry  : High Hot</span>
+                                                    <span class="badge badge-soft-primary">Dryer Sheet : Yes</span>
+                                                    <span class="badge badge-soft-primary">Bleach  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Oxyclean  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Wash Seperately : Yes</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-0">
+                                                <h6 class="mb-3">Special Instruction</h6>
+                                                <p class="mb-0">Wash cold on temprature Between 30F and 60F</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button bg-transparent fw-bold fs-16" type="button" data-bs-toggle="collapse" data-bs-target="#laundry" aria-expanded="true">
+                                            Laundry
+                                        </button>
+                                    </h2>
+                                    <div id="laundry" class="accordion-collapse collapse" data-bs-parent="#orderAccordion">
+                                        <div class="accordion-body border-0 pt-0">
+                                            <div class="mb-3">
+                                                <p class="mb-2">Dress Shorten × 1 <span class="fw-medium text-dark float-end">$30</span></p>
+                                                <p class="mb-2">Skirt × 1 <span class="fw-medium text-dark float-end">$11</span></p>
+                                                <h6 class="mb-0">Sub Total <span class="fw-medium text-dark float-end">$41</span></h6>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6 class="mb-3">Add Ons</h6>
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <span class="badge badge-soft-primary">Detergent  : Free</span>
+                                                    <span class="badge badge-soft-primary">Softener  : Free</span>
+                                                    <span class="badge badge-soft-primary">Dry  : High Hot</span>
+                                                    <span class="badge badge-soft-primary">Dryer Sheet : Yes</span>
+                                                    <span class="badge badge-soft-primary">Bleach  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Oxyclean  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Wash Seperately : Yes</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-0">
+                                                <h6 class="mb-3">Special Instruction</h6>
+                                                <p class="mb-0">Wash cold on temprature Between 30F and 60F</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button bg-transparent fw-bold fs-16" type="button" data-bs-toggle="collapse" data-bs-target="#wet" aria-expanded="true">
+                                            Wet Cleaning
+                                        </button>
+                                    </h2>
+                                    <div id="wet" class="accordion-collapse collapse" data-bs-parent="#orderAccordion">
+                                        <div class="accordion-body border-0 pt-0">
+                                            <div class="mb-3">
+                                                <p class="mb-2">Pleated Skirt × 1 <span class="fw-medium text-dark float-end">$20</span></p>
+                                                <h6 class="mb-0">Sub Total <span class="fw-medium text-dark float-end">$20</span></h6>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6 class="mb-3">Add Ons</h6>
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <span class="badge badge-soft-primary">Detergent  : Free</span>
+                                                    <span class="badge badge-soft-primary">Softener  : Free</span>
+                                                    <span class="badge badge-soft-primary">Dry  : High Hot</span>
+                                                    <span class="badge badge-soft-primary">Dryer Sheet : Yes</span>
+                                                    <span class="badge badge-soft-primary">Bleach  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Oxyclean  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Wash Seperately : Yes</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-0">
+                                                <h6 class="mb-3">Special Instruction</h6>
+                                                <p class="mb-0">Wash cold on temprature Between 30F and 60F</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button bg-transparent fw-bold fs-16" type="button" data-bs-toggle="collapse" data-bs-target="#wash" aria-expanded="true">
+                                            Wash & Iron
+                                        </button>
+                                    </h2>
+                                    <div id="wash" class="accordion-collapse collapse" data-bs-parent="#orderAccordion">
+                                        <div class="accordion-body border-0 pt-0">
+                                            <div class="mb-3">
+                                                <p class="mb-2">Silk Trouser × 1 <span class="fw-medium text-dark float-end">$30</span></p>
+                                                <h6 class="mb-0">Sub Total <span class="fw-medium text-dark float-end">$30</span></h6>
+                                            </div>
+                                            <div class="mb-3">
+                                                <h6 class="mb-3">Add Ons</h6>
+                                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                                    <span class="badge badge-soft-primary">Detergent  : Free</span>
+                                                    <span class="badge badge-soft-primary">Softener  : Free</span>
+                                                    <span class="badge badge-soft-primary">Dry  : High Hot</span>
+                                                    <span class="badge badge-soft-primary">Dryer Sheet : Yes</span>
+                                                    <span class="badge badge-soft-primary">Bleach  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Oxyclean  : Yes</span>
+                                                    <span class="badge badge-soft-primary">Wash Seperately : Yes</span>
+                                                </div>
+                                            </div>
+                                            <div class="mb-0">
+                                                <h6 class="mb-3">Special Instruction</h6>
+                                                <p class="mb-0">Wash cold on temprature Between 30F and 60F</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="bg-warning-subtle rounded border border-warning p-3 mb-4">
+                                <div class="d-flex align-items-center justify-content-between mb-2">
+                                    <h5 class="mb-0">Order Notes</h5>
+                                    <a href="#" class="btn btn-icon btn-md btn-white p-0"><i class="icon-pencil-line"></i></a>
+                                </div>
+                                <p class="mb-0">Use mild detergent only No bleach on any clothes & Separate whites & colored clothes, Steam press shirts only, Fold clothes, do not hang.</p>
+                            </div>
+                            <div class="bg-white rounded border p-3 mb-4">
+                                <h5 class="mb-3">Customer</h5>
+                                <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom flex-wrap gap-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar avatar-lg avatar-rounded me-2">
+                                            <img src="{% static 'user/img/profiles/avatar-06.jpg' %}" alt="customer" class="img-fluid">                                        </div>
+                                        <div>
+                                            <h6 class="fs-14 fw-semibold mb-1">Kelley Davis</h6>
+                                            <p class="fs-13 mb-0">No of Order : 12</p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <span class="avatar avatar-sm avatar-rounded bg-light border text-dark me-2">
+                                            <i class="icon-phone fs-16"></i>
+                                        </span>
+                                        <p class="text-dark mb-0">+1 545698 54589</p>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between mb-3">
+                                    <h5 class="mb-0">Pickup / Delivery Address</h5>
+                                    <a href="#" class="btn btn-icon btn-md btn-white p-0"><i class="icon-pencil-line"></i></a>
+                                </div>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-2">
+                                            <h6 class="fs-14 fw-semibold mb-0">Pickup Address</h6>
+                                            <a href="#" class="link-orange">View Map</a>
+                                        </div>
+                                        <div class="mb-2">
+                                            <iframe class="rounded w-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2967.8862835683544!2d-73.98256668525309!3d41.93829486962529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89dd0ee3286615b7%3A0x42bfa96cc2ce4381!2s132%20Kingston%20St%2C%20Kingston%2C%20NY%2012401%2C%20USA!5e0!3m2!1sen!2sin!4v1670922579281!5m2!1sen!2sin"  allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map"></iframe>
+                                        </div>
+                                        <p class="text-dark mb-1">742 Evergreen Terrace, IL 62704</p>
+                                        <p class="mb-0">on Friday, Dec 2026, 11 AM - 12 PM </p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-1 mb-2">
+                                            <h6 class="fs-14 fw-semibold mb-0">Delivery Address</h6>
+                                            <a href="#" class="link-orange">View Map</a>
+                                        </div>
+                                        <div class="mb-2">
+                                            <iframe class="rounded w-100" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2967.8862835683544!2d-73.98256668525309!3d41.93829486962529!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89dd0ee3286615b7%3A0x42bfa96cc2ce4381!2s132%20Kingston%20St%2C%20Kingston%2C%20NY%2012401%2C%20USA!5e0!3m2!1sen!2sin!4v1670922579281!5m2!1sen!2sin"  allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map"></iframe>
+                                        </div>
+                                        <p class="text-dark mb-1">1600 Pennsylvania NW, DC 20500</p>
+                                        <p class="mb-0">on Sunday, Dec 2026, 01 PM - 02 PM </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="bg-white rounded border p-3 mb-0">
+                                <h5 class="mb-3">Payment Details</h5>
+                                <div class="row row-cols-lg-5 row-cols-2 g-2">
+                                    <div>
+                                        <p class="fs-13 mb-1">Payment Type</p>
+                                        <p class="fw-medium text-dark mb-0">Card</p>
+                                    </div>
+                                    <div>
+                                        <p class="fs-13 mb-1">Total</p>
+                                        <p class="fw-medium text-dark mb-0">$164</p>
+                                    </div>
+                                    <div>
+                                        <p class="fs-13 mb-1">Discount</p>
+                                        <p class="fw-medium text-dark mb-0">$16</p>
+                                    </div>
+                                    <div>
+                                        <p class="fs-13 mb-1">Tax</p>
+                                        <p class="fw-medium text-dark mb-0">$5 (10%)</p>
+                                    </div>
+                                    <div>
+                                        <p class="fs-13 mb-1">Coupon</p>
+                                        <p class="fw-medium text-dark mb-0">$0</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- View Order -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <!-- jQuery -->
+    <script src="{% static 'user/js/jquery-3.7.1.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'user/js/bootstrap.bundle.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Daterangepikcer JS -->
+    <script src="{% static 'user/js/moment.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>    <script src="{% static 'user/plugins/daterangepicker/daterangepicker.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Chart JS -->
+    <script src="{% static 'user/plugins/c3-chart/d3.v5.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>    <script src="{% static 'user/plugins/c3-chart/c3.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>    <script src="{% static 'user/plugins/c3-chart/chart-data.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- ApexChart JS -->
+    <script src="{% static 'user/plugins/apexchart/apexcharts.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>    <script src="{% static 'user/plugins/apexchart/chart-data.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+	<!-- Simplebar JS -->
+	<script src="{% static 'user/plugins/simplebar/simplebar.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+	<!-- Datatable JS -->
+    <script src="{% static 'user/plugins/datatables/js/jquery.dataTables.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>	<script src="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Select2 Js -->
+    <script src="{% static 'user/plugins/select2/js/select2.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Flatpickr JS -->
+	<script src="{% static 'user/plugins/flatpickr/flatpickr.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+    <!-- Slick Js -->
+    <script src="{% static 'user/plugins/slick/slick.min.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+
+    <!-- Main JS -->
+    <script src="{% static 'user/js/script.js' %}" type="47e15c946c3931fa21288c21-text/javascript"></script>
+<script src="../../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="47e15c946c3931fa21288c21-|49" defer></script></body>
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/index by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:18:34 GMT -->
+</html>
+

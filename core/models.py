@@ -6,6 +6,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import IntegrityError
 from django.db import models, transaction
+from django.db.models import Sum
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -49,6 +50,19 @@ class User(AbstractUser):
 
     def __str__(self) -> str:
         return self.username
+
+    @property
+    def total_invested_amount(self) -> Decimal:
+        total = self.investments.aggregate(total=Sum("principal_amount"))["total"]
+        return total or Decimal("0.00")
+
+    @property
+    def active_investments_count(self) -> int:
+        return self.investments.filter(status=Investment.Status.ACTIVE).count()
+
+    @property
+    def total_referrals(self) -> int:
+        return self.downlines.count()
 
 
 class Wallet(models.Model):

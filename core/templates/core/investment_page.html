@@ -61,9 +61,11 @@
                     <select id="package_id" name="package_id" required>
                         <option value="">Choose package</option>
                         {% for p in packages %}
-                            <option value="{{ p.id }}">{{ p.name }} - Tk {{ p.amount }} / {{ p.duration_days }} days</option>
+                            <option value="{{ p.id }}">{{ p.name }} - {{ p.duration_days }} days</option>
                         {% endfor %}
                     </select>
+                    <label for="amount">Amount (Tk)</label>
+                    <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="Enter amount" required>
                     <button type="submit">Start Investment</button>
                 </form>
             </section>

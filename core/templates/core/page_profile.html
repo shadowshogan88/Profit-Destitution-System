@@ -203,47 +203,6 @@
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-title mb-0">Recent Wallet Transactions</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-striped align-middle mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Description</th>
-                                <th>Date</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for tx in recent_wallet_transactions %}
-                            <tr>
-                                <td>{{ forloop.counter }}</td>
-                                <td>
-                                    {% if tx.tx_type == "CREDIT" %}
-                                    <span class="badge bg-success-subtle text-success">{{ tx.tx_type }}</span>
-                                    {% else %}
-                                    <span class="badge bg-danger-subtle text-danger">{{ tx.tx_type }}</span>
-                                    {% endif %}
-                                </td>
-                                <td>Tk {{ tx.amount }}</td>
-                                <td>{{ tx.description }}</td>
-                                <td>{{ tx.created_at|date:"d M Y, h:i A" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="text-center text-muted">No wallet transactions yet.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 {% endblock %}

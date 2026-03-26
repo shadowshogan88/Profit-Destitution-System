@@ -62,13 +62,17 @@
                         </div>
 
                         <div class="py-4">
-                            <h2>Tk {{ p.amount }} <span class="fs-13 text-muted">/ {{ p.duration_days }} days</span></h2>
+                            <h2>{{ p.duration_days }} <span class="fs-13 text-muted">days duration</span></h2>
                         </div>
 
                         <div class="text-center plan-btn mt-2">
-                            <form method="post" class="js-investment-buy-form" data-package-name="{{ p.name }}" data-package-amount="{{ p.amount }}" data-package-duration="{{ p.duration_days }}">
+                            <form method="post" class="js-investment-buy-form" data-package-name="{{ p.name }}" data-package-duration="{{ p.duration_days }}">
                                 {% csrf_token %}
                                 <input type="hidden" name="package_id" value="{{ p.id }}">
+                                <div class="mb-3">
+                                    <label class="form-label">Amount (Tk)</label>
+                                    <input type="number" name="amount" class="form-control text-center" min="0.01" step="0.01" placeholder="Enter amount" required>
+                                </div>
                                 <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="sa-dialog-three-btn-{{ p.id }}">Start Investment</button>
                             </form>
                         </div>
@@ -81,7 +85,7 @@
                         </div>
                         <div class="card-body pb-0">
                             <ul class="list-unstyled vstack gap-3 mb-0 text-start">
-                                <li>Principal: <span class="text-success fw-semibold">Tk {{ p.amount }}</span></li>
+                                <li>Suggested Amount: <span class="text-success fw-semibold">Tk {{ p.amount }}</span></li>
                                 <li>Duration: <span class="text-success fw-semibold">{{ p.duration_days }} Days</span></li>
                                 <li>Popular: <span class="text-success fw-semibold">{% if p.is_popular %}Yes{% else %}No{% endif %}</span></li>
                                 <li>Status: <span class="text-success fw-semibold">{% if p.is_active %}Active{% else %}Inactive{% endif %}</span></li>
@@ -142,8 +146,20 @@ document.addEventListener("DOMContentLoaded", function () {
         form.addEventListener("submit", function (event) {
             event.preventDefault();
             const packageName = form.dataset.packageName || "Package";
-            const packageAmount = form.dataset.packageAmount || "0";
             const packageDuration = form.dataset.packageDuration || "0";
+            const amountInput = form.querySelector("input[name='amount']");
+            const packageAmount = amountInput ? amountInput.value.trim() : "";
+
+            if (!packageAmount || Number(packageAmount) <= 0) {
+                Swal.fire({
+                    title: "Invalid Amount",
+                    text: "Please enter a valid amount greater than zero.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#f06548"
+                });
+                return;
+            }
 
             Swal.fire({
                 title: "Confirm Investment",

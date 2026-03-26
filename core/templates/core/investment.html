@@ -188,8 +188,20 @@ document.addEventListener("DOMContentLoaded", function () {
         form.addEventListener("submit", function (event) {
             event.preventDefault();
             const packageName = form.dataset.packageName || "Package";
-            const packageAmount = form.dataset.packageAmount || "0";
             const packageDuration = form.dataset.packageDuration || "0";
+            const amountInput = form.querySelector("input[name='amount']");
+            const packageAmount = amountInput ? amountInput.value.trim() : "";
+
+            if (!packageAmount || Number(packageAmount) <= 0) {
+                Swal.fire({
+                    title: "Invalid Amount",
+                    text: "Please enter a valid amount greater than zero.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#f06548"
+                });
+                return;
+            }
 
             Swal.fire({
                 title: "Confirm Investment",

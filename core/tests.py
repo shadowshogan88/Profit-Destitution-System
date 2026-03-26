@@ -4,7 +4,16 @@ from decimal import Decimal
 from django.test import TestCase
 from django.utils import timezone
 
-from .models import CommissionLog, InvestmentPackage, ProfitDistribution, ProfitDistributionEntry, User
+from .models import (
+    CommissionLog,
+    CommissionRate,
+    InvestmentPackage,
+    ProfitDistribution,
+    ProfitDistributionEntry,
+    UnsettledBalanceAccount,
+    UnsettledBalanceEntry,
+    User,
+)
 from .services import (
     create_investment,
     credit_wallet,
@@ -16,6 +25,17 @@ from .services import (
 
 
 class ReferralCommissionTests(TestCase):
+    def setUp(self):
+        CommissionRate.objects.bulk_create(
+            [
+                CommissionRate(level=1, rate_percent=Decimal("10.00")),
+                CommissionRate(level=2, rate_percent=Decimal("5.00")),
+                CommissionRate(level=3, rate_percent=Decimal("3.00")),
+                CommissionRate(level=4, rate_percent=Decimal("2.00")),
+                CommissionRate(level=5, rate_percent=Decimal("1.00")),
+            ]
+        )
+
     def test_commission_goes_upward_max_5_levels(self):
         u1 = User.objects.create_user(username="u1", password="x")
         u2 = User.objects.create_user(username="u2", password="x", referred_by=u1)
@@ -36,7 +56,7 @@ class ReferralCommissionTests(TestCase):
         u6.refresh_from_db()
         u7.refresh_from_db()
 
-        self.assertEqual(u7.wallet.balance, Decimal("100.00"))  # Investor profit
+        self.assertEqual(u7.wallet.balance, Decimal("79.00"))  # Investor gets net profit after referral commission
         self.assertEqual(u6.wallet.balance, Decimal("10.00"))  # L1 10%
         self.assertEqual(u5.wallet.balance, Decimal("5.00"))  # L2 5%
         self.assertEqual(u4.wallet.balance, Decimal("3.00"))  # L3 3%
@@ -46,6 +66,27 @@ class ReferralCommissionTests(TestCase):
 
         self.assertEqual(CommissionLog.objects.count(), 5)
 
+    def test_missing_uplines_go_to_unsettled_balance(self):
+        u1 = User.objects.create_user(username="root", password="x")
+        u2 = User.objects.create_user(username="child", password="x", referred_by=u1)
+
+        inv = create_investment(u2, Decimal("1000.00"), from_wallet=False)
+        realize_profit(inv, Decimal("100.00"))
+
+        u1.refresh_from_db()
+        u2.refresh_from_db()
+
+        self.assertEqual(u1.wallet.balance, Decimal("10.00"))
+        self.assertEqual(u2.wallet.balance, Decimal("79.00"))
+
+        unsettled_account = UnsettledBalanceAccount.objects.get(name="Unsettled Balance")
+        self.assertEqual(unsettled_account.balance, Decimal("11.00"))
+
+        unsettled_entry = UnsettledBalanceEntry.objects.latest("created_at")
+        self.assertEqual(unsettled_entry.amount, Decimal("11.00"))
+        self.assertEqual(unsettled_entry.missing_from_level, 2)
+        self.assertEqual(unsettled_entry.missing_to_level, 5)
+
     def test_package_investment_locks_and_returns_principal(self):
         user = User.objects.create_user(username="investor", password="x")
         package = InvestmentPackage.objects.create(name="Starter-7D", amount=Decimal("500.00"), duration_days=7)
@@ -54,7 +95,7 @@ class ReferralCommissionTests(TestCase):
         self.assertEqual(user.wallet.balance, Decimal("1000.00"))
         self.assertEqual(user.investment_wallet.balance, Decimal("0.00"))
 
-        inv = create_package_investment(user, package)
+        inv = create_package_investment(user, package, Decimal("500.00"))
         user.refresh_from_db()
         self.assertEqual(user.wallet.balance, Decimal("500.00"))
         self.assertEqual(user.investment_wallet.balance, Decimal("500.00"))
@@ -79,8 +120,8 @@ class ReferralCommissionTests(TestCase):
 
         credit_wallet(u1, Decimal("100.00"), "Seed")
         credit_wallet(u2, Decimal("300.00"), "Seed")
-        create_package_investment(u1, p1)
-        create_package_investment(u2, p2)
+        create_package_investment(u1, p1, Decimal("100.00"))
+        create_package_investment(u2, p2, Decimal("300.00"))
 
         distribution = distribute_profit_to_active_investors(Decimal("40.00"))
         u1.refresh_from_db()
@@ -89,7 +130,7 @@ class ReferralCommissionTests(TestCase):
         self.assertEqual(distribution.total_active_principal, Decimal("400.00"))
         self.assertEqual(distribution.distributed_amount, Decimal("40.00"))
         self.assertEqual(distribution.remainder_amount, Decimal("0.00"))
-        self.assertEqual(u1.wallet.balance, Decimal("10.00"))
-        self.assertEqual(u2.wallet.balance, Decimal("30.00"))
+        self.assertEqual(u1.wallet.balance, Decimal("7.90"))
+        self.assertEqual(u2.wallet.balance, Decimal("23.70"))
         self.assertEqual(ProfitDistribution.objects.count(), 1)
         self.assertEqual(ProfitDistributionEntry.objects.count(), 2)

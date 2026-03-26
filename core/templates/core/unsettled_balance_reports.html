@@ -1,0 +1,172 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-primary" onclick="window.print()">Print / Save PDF</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted mb-1">Current Unsettled Balance</p>
+                <h4 class="mb-0">Tk {{ unsettled_account_balance }}</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <p class="text-muted mb-1">Filtered Entries Total</p>
+                <h4 class="mb-0">Tk {{ filtered_total }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label">Date From</label>
+                        <input type="date" class="form-control" name="date_from" value="{{ date_from }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Date To</label>
+                        <input type="date" class="form-control" name="date_to" value="{{ date_to }}">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Distribution</label>
+                        <select class="form-select" name="distribution_id">
+                            <option value="">All</option>
+                            {% for item in distribution_choices %}
+                            <option value="{{ item }}" {% if distribution_id == item|stringformat:"s" %}selected{% endif %}>#{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" id="reportSearch" placeholder="Search in table...">
+                    </div>
+                    <div class="col-md-2 d-flex gap-2">
+                        <button type="submit" class="btn btn-success w-100">Filter</button>
+                    </div>
+                    <div class="col-md-12 d-flex gap-2">
+                        <a href="{% url 'admin-unsettled-balance-reports' %}" class="btn btn-light">Reset</a>
+                        <a href="?date_from={{ date_from }}&date_to={{ date_to }}&distribution_id={{ distribution_id }}&export=csv" class="btn btn-info">
+                            Export CSV
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0 report-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>Distribution</th>
+                                <th>Source User</th>
+                                <th>Investment</th>
+                                <th>Amount</th>
+                                <th>Missing Levels</th>
+                                <th>Description</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in entries %}
+                            <tr>
+                                <td>{{ forloop.counter }}</td>
+                                <td>#{{ item.distribution_id|default:"-" }}</td>
+                                <td>{{ item.source_user.username|default:"-" }}</td>
+                                <td>{{ item.investment.investment_code|default:"-" }}</td>
+                                <td><span class="badge bg-warning-subtle text-warning">Tk {{ item.amount }}</span></td>
+                                <td>
+                                    {% if item.missing_from_level and item.missing_to_level %}
+                                    L{{ item.missing_from_level }} to L{{ item.missing_to_level }}
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>{{ item.description }}</td>
+                                <td>{{ item.created_at|date:"d M Y, h:i A" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">No unsettled balance entries found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var input = document.getElementById("reportSearch");
+    var table = document.querySelector(".report-table");
+    if (!input || !table) {
+        return;
+    }
+    input.addEventListener("input", function () {
+        var query = input.value.toLowerCase();
+        var rows = Array.from(table.querySelectorAll("tbody tr"));
+        rows.forEach(function (row) {
+            if (row.querySelector("td")) {
+                var text = row.textContent.toLowerCase();
+                row.style.display = text.indexOf(query) !== -1 ? "" : "none";
+            }
+        });
+    });
+});
+</script>
+
+<style>
+@media print {
+    body {
+        background: #fff;
+    }
+    #layout-wrapper, .app-menu, #page-topbar, .vertical-overlay, .footer, .btn {
+        display: none !important;
+    }
+    .main-content {
+        margin: 0 !important;
+    }
+    .page-content, .container-fluid, .card, .card-body {
+        padding: 0 !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+    }
+    .report-table {
+        font-size: 12px;
+    }
+    .report-table th, .report-table td {
+        padding: 6px 8px !important;
+    }
+    .page-title-box {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

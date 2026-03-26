@@ -1,0 +1,1273 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/customers_grid by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:20:03 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
+<head>
+	<!-- Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dreams POS is a powerful Bootstrap based Inventory Management Admin Template designed for businesses, offering seamless invoicing, project tracking, and estimates.">
+    <meta name="keywords" content="inventory management, admin dashboard, bootstrap template, invoicing, estimates, business management, responsive admin, POS system">
+    <meta name="author" content="Dreams Technologies">
+    <title>Customers Grid | Laundry POS - Bootstrap 5 Admin Dashboard</title>
+
+    <script type="9a9461f1f80d89ef22349513-text/javascript">
+        const baseUrl = 'index-2.html';
+        window.IMG_BASE_PATH = 'img/index.html';
+        window.BASE_PATH = 'index-2.html';
+    </script>
+
+    
+    <!-- Favicon -->
+    <link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="icon"><link href="{% static 'user/img/favicon.png' %}" type="image/png" rel="shortcut icon">
+    <!-- Apple Icon -->
+    <meta rel="apple-touch-icon" name="apple-touch-icon" content="img/apple-icon.png">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/bootstrap.min.css' %}">
+    <!-- Theme Script -->
+    <script src="{% static 'user/js/theme-script.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+    <!-- Lucide Icon CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/lucide/lucide.css' %}">
+
+    <!-- Simplebar CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/simplebar/simplebar.min.css' %}">
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="{% static 'user/plugins/select2/css/select2.min.css' %}">
+    <!-- Datatable CSS -->
+	<link rel="stylesheet" href="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.css' %}">
+
+
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{% static 'user/css/style.css' %}">
+</head>
+
+<body><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/content?id=pDF2s.jug6QQctEJ6yEbeYt2oL6PjswpAeRNzG3hmCQ-1772637551.4251416-1.0.1.1-9PUwiHH0JZAUaqfl_6AkPIjx46iMJNydLc6axCuLhjw" aria-hidden="true" rel="nofollow noopener" style="display: none !important; visibility: hidden !important"></a>
+    <!-- Begin Wrapper -->
+    <div class="main-wrapper">
+
+        
+<!-- Sidenav Menu Start -->
+<div class="sidebar">
+    <div class="twocol-mini">
+        <a href="index.html" class="logo-small">
+            <img src="{% static 'user/img/logo-small.svg' %}" alt="logo-small">        </a>
+        <div class="sidebar-left">
+            <div class="nav flex-column align-items-center sidebar-nav" data-simplebar>
+                <a href="index.html" class="nav-link ">
+                    <i class="icon-layout-dashboard"></i>
+                    Dashboard
+                </a>
+                <a href="pos_create.html" class="nav-link ">
+                    <i class="icon-monitor-smartphone"></i>
+                    POS
+                </a>
+                <a href="orders.html" class="nav-link ">
+                    <i class="icon-shopping-cart"></i>
+                    Orders
+                </a>
+                <a href="products.html"
+                    class="nav-link ">
+                    <i class="icon-package-2"></i>
+                    Products
+                </a>
+                <a href="invoices.html" class="nav-link ">
+                    <i class="icon-badge-dollar-sign"></i>
+                    Invoices
+                </a>
+                <a href="customers.html"
+                    class="nav-link active">
+                    <i class="icon-user"></i>
+                    Customers
+                </a>
+                <a href="drivers_list.html"
+                    class="nav-link ">
+                    <i class="icon-bike"></i>
+                    Drivers
+                </a>
+                <a href="staff_list.html"
+                    class="nav-link ">
+                    <i class="icon-users-round"></i>
+                    Staff
+                </a>
+                <a href="earning_report.html"
+                    class="nav-link ">
+                    <i class="icon-chart-bar-big"></i>
+                    Reports
+                </a>
+                <a href="store_settings.html" class="nav-link  d-md-none d-lg-none">
+                    <i class="icon-settings"></i>
+                    Settings
+                </a>
+            </div>
+        </div>
+        <a href="login.html" class="sidebar-log-out">
+            <i class="icon-log-out"></i>
+        </a>
+    </div>
+</div>
+<!-- Sidenav Menu End -->
+
+                    <!-- ========================
+        Start Page Content
+    ========================= -->
+
+    <div class="page-wrapper">
+
+        <!-- Start Content -->
+        <div class="content">
+
+                <!-- Topbar Start -->
+    <header class="navbar-header">
+        <div class="topbar-menu">
+            <div class="d-flex align-items-center gap-2">
+
+                <!-- Logo -->
+                <a href="index.html" class="logo">
+
+                    <!-- Logo Normal -->
+                    <span class="logo-light">
+                        <span class="logo-lg"><img src="{% static 'user/img/logo.svg' %}" alt="logo"></span>
+                        <span
+                            class="logo-sm"><img src="{% static 'user/img/logo-small.svg' %}" alt="small logo"></span>
+                    </span>
+
+                    <!-- Logo Dark -->
+                    <span class="logo-dark">
+                        <span
+                            class="logo-lg"><img src="{% static 'user/img/logo-white.svg' %}" alt="dark logo"></span>
+                    </span>
+                </a>
+
+                <!-- Search -->
+                <div class="d-flex">
+                    <h3 class="mb-0">Customers</h3>
+                </div>
+
+                            </div>
+
+            <div class="d-flex align-items-center header-list">
+
+                <!-- Upgrade Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="#" class="btn btn-sm btn-primary-gradient d-inline-flex align-items-center">
+                        <i class="icon-crown me-1"></i>Upgrade
+                    </a>
+                </div>
+
+                <div class="avatar-list-stacked avatar-group-sm d-none d-md-flex">
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="border border-white" alt="user"></span>
+                    <span
+                        class="avatar avatar-rounded"><img src="{% static 'user/img/profiles/avatar-02.jpg' %}" class="border border-white" alt="user"></span>
+                    <a class="avatar bg-white avatar-rounded text-dark fs-16" href="#">+</a>
+                </div>
+
+                <!-- Notification Button -->
+                <div class="header-item d-none d-md-flex">
+
+                    <div class="dropdown dropend">
+                        <a href="#" class="topbar-link btn btn-icon"  data-bs-toggle="dropdown" data-bs-auto-close="outside">
+                            <i class="icon-bell fs-16"></i><span class="position-absolute report-badge bg-success"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-xl notification-dropdown">
+                            <div class="d-flex align-items-center justify-content-between notification-header">
+                                <h5 class="mb-0">Notifications</h5>
+                                <a href="#" class="link-primary">Mark all as unread</a>
+                            </div>
+                            <div class="notification-body" data-simplebar>
+
+                                <div class="tab-pane fade show active" id="all-notification">
+
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Today</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-purple border border-purple">
+                                                        <i class="icon-shopping-cart"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1">New laundry order from<span class="text-dark fw-medium"> David Belcher</span> (5 items) pending.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>20 Min Ago</p>
+                                                        <div class="d-flex align-items-center gap-2 mt-2">
+                                                            <button type="button" class="btn btn-sm btn-primary rounded">Accept</button>
+                                                            <button type="button" class="btn btn-sm btn-white rounded">Decline</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-orange border border-orange">
+                                                        <i class="icon-shopping-basket"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #568</span> washing completed and moved to drying.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>35 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-primary border border-primary text-primary">
+                                                        <i class="icon-badge-dollar-sign"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">₹1,200</span> received via UPI for Order<span class="text-dark fw-medium"> #566</span>.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>40 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                                <div class="notification-action">
+                                                    <a href="#" class="notification-read rounded-circle bg-success" data-bs-toggle="tooltip" title="" data-bs-original-title="Make as Read" aria-label="Make as Read"></a>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-pink border border-pink">
+                                                        <i class="icon-baggage-claim"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ready for delivery</span></p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>45 Min Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="notification-list">
+                                            <h6 class="fs-14 fw-semibold mb-3">Yesterday</h6>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-success border border-success text-success">
+                                                        <i class="icon-shopping-bag"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #560</span> delivered successfully to customer.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Item-->
+                                            <div class="notification-item">
+                                                <div class="d-flex">
+                                                    <div class="me-2 avatar avatar-rounded flex-shrink-0 badge-soft-indigo border border-indigo text-indigo">
+                                                        <i class="icon-inbox"></i>
+                                                    </div>
+                                                    <div class="flex-grow-1">
+                                                        <p class="mb-1"><span class="text-dark fw-medium">Order #562</span> ironing completed and ready for packing.</p>
+                                                        <p class="fs-13 mb-0 d-inline-flex align-items-center"><i class="icon-clock me-1"></i>1 Day Ago</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Button -->
+                <div class="header-item d-none d-md-flex">
+                    <a href="store_settings.html" class="topbar-link btn btn-icon" aria-label="settings">
+                        <i class="icon-settings fs-16"></i>
+                    </a>
+                </div>
+
+                <!-- Light/Dark Mode Button -->
+                <div class="header-item">
+                    <button class="topbar-link btn btn-icon light-dark-mode" type="button"
+                        aria-label="light/dark mode">
+                        <i class="icon-moon fs-16"></i>
+                    </button>
+                </div>
+
+                <!-- User Dropdown -->
+                <div class="dropdown profile-dropdown d-flex align-items-center justify-content-center">
+                    <a class="topbar-link avatar avatar-sm dropdown-toggle drop-arrow-none" href="#"
+                        data-bs-toggle="dropdown" data-bs-offset="0,22" aria-haspopup="false" aria-expanded="false">
+                        <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle d-flex" alt="user-image">                    </a>
+                    <div class="dropdown-menu dropdown-menu-end dropdown-menu-md p-3">
+                        <div class="d-flex align-items-center justify-content-between bg-light rounded mb-3 p-3">
+                            <div class="d-flex align-items-center">
+                                <span class="avatar avatar-sm flex-shrink-0">
+                                    <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" class="rounded-circle" alt="user">                                </span>
+                                <div class="ms-2">
+                                    <h5 class="mb-1 fs-14">Shaun Farley</h5>
+                                    <span class="d-block fs-13">Manager</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item-->
+                        <a href="login.html" class="dropdown-item">
+                            <i class="ti ti-logout me-1 fs-17 align-middle text-danger"></i>
+                            <span class="align-middle text-danger">Sign Out</span>
+                        </a>
+                    </div>
+                </div>
+                <!-- Sidebar Mobile Button -->
+                <a id="mobile_btn" class="mobile-btn" href="#sidebar">
+                    <i class="icon-menu"></i>
+                </a>
+
+            </div>
+        </div>
+    </header>
+    <!-- Topbar End -->
+
+            <!-- Start Content Wrap -->
+            <div class="content-wrap">
+
+                <!-- Page Header -->
+                <div class="d-flex align-items-center flex-wrap gap-3 pb-4 mb-4">
+                    <div class="flex-grow-1">
+                        <div class="d-inline-flex align-items-center p-1 bg-light border rounded-pill">
+                            <a href="customers.html" class="px-3 py-1 fw-semibold d-inline-flex align-items-center rounded-pill"><i class="icon-list me-2"></i>List View</a>
+                            <a href="customers.html" class="px-3 py-1 fw-semibold d-inline-flex align-items-center rounded-pill bg-white"><i class="icon-layout-panel-left me-2"></i>Grid View</a>
+                        </div>
+                    </div>
+                    <div class="gap-3 d-flex align-items-center flex-wrap">
+                            <!-- sort by -->
+                            <div class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle btn btn-white d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                Sort by : Newest
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-end p-3">
+                                <h6 class="fs-14 fw-semibold mb-3">Sort By</h6>
+                                <ul class="list-unstyled mb-0">
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item rounded">Newest</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item rounded">Oldest</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item rounded">Ascending</a>
+                                    </li>
+                                    <li>
+                                        <a href="javascript:void(0);" class="dropdown-item rounded">Descending</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <!-- table search -->
+                        <div class="search-input">
+                            <span class="btn-searchset"><i class="icon-search fs-14"></i></span>
+                            <input type="search" class="form-control form-control-sm" id="dt-search-0" placeholder="Search" aria-controls="DataTables_Table_0">
+                        </div>
+                        <div class="dropdown">
+                            <a href="javascript:void(0);" class="dropdown-toggle btn btn-dark d-inline-flex align-items-center" data-bs-toggle="dropdown">
+                                <i class="icon-arrow-down-to-line me-1"></i>Export
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-3">
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded">Export as PDF</a>
+                                </li>
+                                <li>
+                                    <a href="javascript:void(0);" class="dropdown-item rounded">Export as Excel</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="#" class="btn btn-primary d-inline-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#add_customer"><i class="icon-plus me-1"></i>New Customer</a>
+                    </div>
+                </div>
+                <!-- End Page Header -->
+
+                <!-- Grid View -->
+                <div class="row">
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Adrian James</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e58481978c848ba5809d8488958980cb868a88">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 54544 54587</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>25 Dec 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-02.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Sue Allen</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2556504065405d44485549400b464a48">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 45478 54588</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>12 Nov 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-03.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Frank Barrett</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="80e6f2e1eeebc0e5f8e1edf0ece5aee3efed">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 33658 54589</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>03 Nov 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-04.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Kelley Davis</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d9b2bcb5b5a099bca1b8b4a9b5bcf7bab6b4">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 47854 54590</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>18 Oct 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-05.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Jim Vickers</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a4cecdc9e4c1dcc5c9d4c8c18ac7cbc9">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 58974 54591</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>29 Sep 2026</span>
+                                    <span class="badge badge-soft-danger">Inactive</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-soft-danger rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <span class=" text-danger rounded-circle">NC</span>
+                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Nancy Chapman</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6c020d020f152c09140d011c0009420f0301">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 96587 54592</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>15 Sep 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-07.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Ron Jude</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="780a1716381d00191508141d561b1715">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 31245 54593</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>07 Sep 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-08.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Andrea Aponte</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3958575d4b795c41585449555c175a5654">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 47854 54594</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>22 Aug 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-09.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">David Belcher</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="d2b6b3a4bbb692b7aab3bfa2beb7fcb1bdbf">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 14524 54595</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>11 Aug 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-10.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Julie Kangas</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c2a8b7aeaba782a7baa3afb2aea7eca1adaf">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 22145 54596</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>30 Aug 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-soft-info  rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <span class="text-info rounded-circle flex-shrink-0">MA</span>
+                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Micheal Angela</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4a9ada7ac84a1bca5a9b4a8a1eaa7aba9">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 33658 54597</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>25 Dec 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                <div class="col-xl-3 col-lg-4 col-md-6">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center justify-content-between mb-3">
+                                <div class="d-flex align-items-center gap-2">
+                                    <a href="#" class="avatar avatar-md border bg-light rounded-circle flex-shrink-0" data-bs-toggle="offcanvas" data-bs-target="#view_details">
+                                        <img src="{% static 'user/img/profiles/avatar-11.jpg' %}" alt="customer" class="img-fluid rounded-circle">                                    </a>
+                                    <h6 class="fs-14 fw-semibold mb-0"><a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details">Cameron Lee</a></h6>
+                                </div>
+                                <div class="dropstart">
+                                    <button class="btn btn-icon btn-white" type="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Actions">
+                                        <i class="icon-ellipsis-vertical"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                        <li>
+                                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#view_details" class="dropdown-item rounded d-flex align-items-center"><i class="icon-users-round me-2"></i>View Details</a>
+                                        </li>
+                                        <li>
+                                            <a href="#" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-2"></i>Edit Customer</a>
+                                        </li>
+                                        <li>
+                                            <a href="javascript:void(0);" class="dropdown-item rounded d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#delete_modal"><i class="icon-trash-2 me-2"></i>Delete Customer</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                </div>
+                                <div class="pb-3 border-bottom mb-3">
+                                    <span class="d-flex align-items-center mb-2"><i class="icon-mail text-gray-9 me-1"></i>Email : <a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3655575b5376534e575b465a531855595b">[email&#160;protected]</a></span>
+                                    <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone : +1 33658 54598</span>
+                                </div>
+                                <div class="d-flex align-items-center justify-content-between gap-2">
+                                    <span class="d-flex align-items-center"><i class="icon-calendar-clock text-gray-9 me-1"></i>25 Dec 2026</span>
+                                    <span class="badge badge-soft-success">Active</span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+                </div>
+
+                <div class="text-center">
+                    <a href="#" class="btn btn-primary m-auto"><i class="icon-loader me-1"></i>Load More</a>
+                </div>
+                <!-- Grid View End-->
+
+            </div>
+            <!-- End Content Wrap -->
+
+        </div>
+        <!-- End Content -->
+
+    </div>
+
+    <!-- ========================
+        End Page Content
+    ========================= -->
+    </div>
+    <!-- End Wrapper -->
+
+    
+
+
+
+    <!-- Delete Modal  -->
+    <div class="modal fade" id="delete_modal">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <div class="mb-4">
+                        <span class="avatar avatar-lg rounded-circle bg-danger">
+                            <i class="icon-trash fs-24"></i>
+                        </span>
+                    </div>
+                    <h4 class="mb-1">Delete Confirmation</h4>
+                    <p class="mb-4">Are you sure you want to delete? </p>
+                    <div class="d-flex justify-content-center gap-2">
+                        <a href="javascript:void(0);" class="btn btn-light w-100" data-bs-dismiss="modal">Close</a>
+                        <a href="customers.html" class="btn btn-danger w-100">Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Delete Modal  -->
+
+    <!-- Add Customer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="add_customer">
+        <div class="offcanvas-header d-flex align-items-center justify-content-between">
+            <h4 class="offcanvas-title mb-0">Create Customer</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close"><i class="icon-x"></i></button>
+        </div>
+        <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/customers" class="d-flex flex-column overflow-y-auto h-100">
+            <div class="offcanvas-body pb-0">
+                <div class="row gx-3">
+                    <div class="col-md-12">
+                        <div class="mb-3 d-flex align-items-center flex-wrap gap-3">
+                            <div class="avatar avatar-3xl border bg-light">
+                                <i class="icon-images fs-28 text-dark"></i>
+                            </div>
+                            <div>
+                                <label class="form-label">Profile Photo<span class="text-danger"> *</span></label>
+                                <p class="fs-13 mb-3">Image should be with in 5 MB</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="btn btn-icon btn-sm btn-white rounded-circle position-relative me-2">
+                                        <input type="file" class="form-control position-absolute w-100 h-100 top-0 start-0 opacity-0">
+                                        <i class="icon-pencil-line"></i>
+                                    </div>
+                                    <a href="#" class="btn btn-icon btn-sm btn-white rounded-circle text-danger"><i class="icon-trash-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Customer Name<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 1<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 2</label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">County</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>United States of America</option>
+                                <option>Australia</option>
+                                <option>Canada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Florida</option>
+                                <option>Queensland</option>
+                                <option>Ontario</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Miami</option>
+                                <option>Brisbane</option>
+                                <option>Toronto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Postal Code<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
+                <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas"><i class="icon-x me-1"></i>Cancel</button>
+                <button type="submit" class="btn btn-primary d-flex align-items-center w-100"><i class="icon-circle-check me-1"></i>Submit</button>
+            </div>
+        </form>
+    </div>
+    <!-- End Add Customer -->
+
+    <!-- Edit Customer -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="edit_customer">
+        <div class="offcanvas-header d-flex align-items-center justify-content-between">
+            <h4 class="offcanvas-title mb-0">Edit Customer</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close"><i class="icon-x"></i></button>
+        </div>
+        <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/customers" class="d-flex flex-column overflow-y-auto h-100">
+            <div class="offcanvas-body pb-0">
+                <div class="row gx-3">
+                    <div class="col-md-12">
+                        <div class="mb-3 d-flex align-items-center flex-wrap gap-3">
+                            <div class="avatar avatar-3xl border bg-light flex-shrink-0">
+                                <img src="{% static 'user/img/profiles/avatar-01.jpg' %}" alt="customer" class="img-fluid">                            </div>
+                            <div>
+                                <label class="form-label">Profile Photo<span class="text-danger"> *</span></label>
+                                <p class="fs-13 mb-3">Image should be with in 5 MB</p>
+                                <div class="d-flex align-items-center">
+                                    <div class="btn btn-icon btn-sm btn-white rounded-circle position-relative me-2">
+                                        <input type="file" class="form-control position-absolute w-100 h-100 top-0 start-0 opacity-0">
+                                        <i class="icon-pencil-line"></i>
+                                    </div>
+                                    <a href="#" class="btn btn-icon btn-sm btn-white rounded-circle text-danger"><i class="icon-trash-2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Customer Name<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="Adrian James">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" class="form-control" value="+1 54544 54587">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="adrian@example.com">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 1<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control" value="301 Market Street">
+                        </div>
+                    </div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Address Line 2</label>
+                            <input type="text" class="form-control" value="Riverside Drive">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">County</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>United States of America</option>
+                                <option>Australia</option>
+                                <option>Canada</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">State</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Florida</option>
+                                <option>Queensland</option>
+                                <option>Ontario</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">City</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Miami</option>
+                                <option>Brisbane</option>
+                                <option>Toronto</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Postal Code<span class="text-danger"> *</span></label>
+                            <input type="text" class="form-control"value="33128">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Gender</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Male</option>
+                                <option>Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <div class="mb-3">
+                            <label class="form-label">Status</label>
+                            <select class="select">
+                                <option>Select</option>
+                                <option selected>Active</option>
+                                <option>Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
+                <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-dismiss="offcanvas"><i class="icon-x me-1"></i>Cancel</button>
+                <button type="submit" class="btn btn-primary d-flex align-items-center w-100"><i class="icon-circle-check me-1"></i>Save Changes</button>
+            </div>
+        </form>
+    </div>
+    <!-- End Add Customer -->
+
+    <!-- Customer Details -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="view_details">
+        <div class="offcanvas-header d-flex align-items-center justify-content-between">
+            <h4 class="offcanvas-title mb-0">Customer Details</h4>
+            <button type="button" class="btn-close btn-close-modal" data-bs-dismiss="offcanvas" aria-label="Close"><i class="icon-x"></i></button>
+        </div>
+        <form action="https://dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/customers" class="d-flex flex-column overflow-y-auto h-100">
+            <div class="offcanvas-body p-0">
+                <div class="border-bottom p-4">
+                <div class="mb-4 d-flex align-items-center justify-content-between gap-3">
+                    <div class="d-flex align-items-center">
+                        <span class="avatar avatar-xxl border me-3 flex-shrink-0">
+                            <img src="{% static 'user/img/profiles/avatar-09.jpg' %}" alt="customer" class="img-fluid">                        </span>
+                        <div>
+                            <h6 class="fs-14 fw-semibold mb-0">David Belcher</h6>
+                            <p class="fs-13 mb-0">Last Login : 25 Jan 2026</p>
+                        </div>
+                    </div>
+                    <span class="badge badge-soft-success">Active</span>
+                </div>
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="d-flex align-items-center"><i class="icon-mail text-gray-9 me-1"></i>Email</span>
+                        <span class="text-gray-9"><a href="https://dreamspos.dreamstechnologies.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="670306110e0327021f060a170b024904080a">[email&#160;protected]</a></span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="d-flex align-items-center"><i class="icon-phone text-gray-9 me-1"></i>Phone</span>
+                        <span class="text-gray-9">+1 14524 54595</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="d-flex align-items-center"><i class="icon-map-pin-check-inside text-gray-9 me-1"></i>Address</span>
+                        <span class="text-wrap-1 text-gray-9">301 Market Street, Riverside Drive, FL 33128, USA</span>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <span class="d-flex align-items-center"><i class="icon-user text-gray-9 me-1"></i>Gender</span>
+                        <span class="text-gray-9">Male</span>
+                    </div>
+                </div>
+                </div>
+                <div class="p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5>Orders</h5>
+                        <span class="badge bg-light text-gray-9 fw-semibold">No of Orders : 02</span>
+                    </div>
+                    <div class="border p-3 rounded mb-3">
+                        <div class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3 mb-3">
+                            <div>
+                                <h6 class="text-info fw-semibold mb-1">OD6EEG</h6>
+                                <span>Order On : 15 Sep 2026</span>
+                            </div>
+                            <div>
+                                <p class="mb-1">Order total</p>
+                                <span class="text-gray-9 fw-medium">$350</span>
+                            </div>
+                            <span class="badge bg-soft-info text-gray-9 fw-medium">Pending</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="mb-1">Pickup Date & Time</p>
+                                <span class="text-gray-9 fw-medium">17 Jun 2026, 11 AM - 12 PM</span>
+                            </div>
+                            <div>
+                                <p class="mb-1">Deliver  Date & Time</p>
+                                <span class="text-gray-9 fw-medium">19 Jun 2026, 05 AM - 06 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="border p-3 rounded">
+                        <div class="d-flex align-items-center justify-content-between border-bottom flex-wrap row-gap-3 pb-3 mb-3">
+                            <div>
+                                <h6 class="text-info fw-semibold mb-1">OD4567</h6>
+                                <span>Order On : 10 Sep 2026</span>
+                            </div>
+                            <div>
+                                <p class="mb-1">Order total</p>
+                                <span class="text-gray-9 fw-medium">$200</span>
+                            </div>
+                            <span class="badge bg-soft-success text-gray-9 fw-medium">Delivered</span>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <p class="mb-1">Pickup Date & Time</p>
+                                <span class="text-gray-9 fw-medium">11 Jun 2026, 09 AM - 10 AM</span>
+                            </div>
+                            <div>
+                                <p class="mb-1">Deliver  Date & Time</p>
+                                <span class="text-gray-9 fw-medium">13 Jun 2026, 08 AM - 09 PM</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="offcanvas-footer d-flex align-items-center gap-2 pt-2">
+                <button type="button" class="btn btn-dark d-flex align-items-center w-100" data-bs-toggle="offcanvas" data-bs-target="#edit_customer"><i class="icon-pencil-line me-1"></i>Edit Customer</button>
+            </div>
+        </form>
+    </div>
+    <!-- End Customer Details -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <!-- jQuery -->
+    <script data-cfasync="false" src="../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="{% static 'user/js/jquery-3.7.1.min.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+    <!-- Bootstrap Core JS -->
+    <script src="{% static 'user/js/bootstrap.bundle.min.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+
+
+	<!-- Simplebar JS -->
+	<script src="{% static 'user/plugins/simplebar/simplebar.min.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+	<!-- Datatable JS -->
+    <script src="{% static 'user/plugins/datatables/js/jquery.dataTables.min.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>	<script src="{% static 'user/plugins/datatables/dataTables.bootstrap5.min.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+    <!-- Select2 Js -->
+    <script src="{% static 'user/plugins/select2/js/select2.min.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+
+
+
+    <!-- Main JS -->
+    <script src="{% static 'user/js/script.js' %}" type="9a9461f1f80d89ef22349513-text/javascript"></script>
+<script src="../../../cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="9a9461f1f80d89ef22349513-|49" defer></script></body>
+
+<!-- Mirrored from dreamspos.dreamstechnologies.com/laundry-pos/cakephp/template/customers_grid by HTTrack Website Copier/3.x [XR&CO'2014], Wed, 04 Mar 2026 15:20:04 GMT -->
+</html>
+

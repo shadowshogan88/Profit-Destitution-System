@@ -23,6 +23,25 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+## cPanel Live With MySQL
+
+Use environment variables in cPanel before running migrations:
+
+```bash
+DJANGO_DEBUG=False
+DJANGO_ALLOWED_HOSTS=yourdomain.com,www.yourdomain.com
+DJANGO_CSRF_TRUSTED_ORIGINS=https://yourdomain.com,https://www.yourdomain.com
+DJANGO_SECRET_KEY=change-this-to-a-long-random-secret
+DJANGO_DB_ENGINE=mysql
+DJANGO_DB_NAME=cpanel_db_name
+DJANGO_DB_USER=cpanel_db_user
+DJANGO_DB_PASSWORD=cpanel_db_password
+DJANGO_DB_HOST=localhost
+DJANGO_DB_PORT=3306
+```
+
+If `DJANGO_DB_ENGINE` is not set to `mysql`, the project falls back to SQLite.
+
 ## API Endpoints
 
 - `POST /api/register/`
