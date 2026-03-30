@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }}</title>
+    <link rel="stylesheet" href="{% static 'core/login.css' %}">
+</head>
+<body>
+    <main class="page">
+        <section class="card">
+            <h1>{{ verify_title }}</h1>
+            <p class="subtitle">{{ verify_subtitle }}</p>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+
+            <form method="post" class="login-form">
+                {% csrf_token %}
+                <label for="otp_code">6 Digit OTP</label>
+                <input id="otp_code" name="otp_code" type="text" inputmode="numeric" maxlength="6" required>
+                <button type="submit" name="action" value="verify">Verify OTP</button>
+                <button type="submit" name="action" value="resend">{{ resend_label }}</button>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

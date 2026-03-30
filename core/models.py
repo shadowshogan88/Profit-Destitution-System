@@ -1,6 +1,7 @@
 from decimal import Decimal
 import secrets
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -30,6 +31,7 @@ class User(AbstractUser):
         on_delete=models.SET_NULL,
         related_name="downlines",
     )
+    email_verified = models.BooleanField(default=False)
     profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
 
     @classmethod
@@ -65,6 +67,54 @@ class User(AbstractUser):
         return self.downlines.count()
 
 
+class SystemConfiguration(models.Model):
+    email_backend = models.CharField(
+        max_length=255,
+        default="django.core.mail.backends.smtp.EmailBackend",
+        help_text="Example: django.core.mail.backends.smtp.EmailBackend",
+    )
+    email_host = models.CharField(max_length=255, default="smtp.gmail.com")
+    email_port = models.PositiveIntegerField(default=587)
+    email_host_user = models.CharField(max_length=255, blank=True)
+    email_host_password = models.CharField(max_length=255, blank=True)
+    email_use_tls = models.BooleanField(default=True)
+    email_use_ssl = models.BooleanField(default=False)
+    default_from_email = models.CharField(
+        max_length=255,
+        default="Profit Distribution System <no-reply@example.com>",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "System Configuration"
+        verbose_name_plural = "System Configuration"
+
+    def __str__(self) -> str:
+        return "System Configuration"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        return cls.objects.filter(pk=1).first() or cls(
+            pk=1,
+            email_backend=getattr(settings, "EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend"),
+            email_host=getattr(settings, "EMAIL_HOST", "smtp.gmail.com"),
+            email_port=getattr(settings, "EMAIL_PORT", 587),
+            email_host_user=getattr(settings, "EMAIL_HOST_USER", ""),
+            email_host_password=getattr(settings, "EMAIL_HOST_PASSWORD", ""),
+            email_use_tls=getattr(settings, "EMAIL_USE_TLS", True),
+            email_use_ssl=getattr(settings, "EMAIL_USE_SSL", False),
+            default_from_email=getattr(
+                settings,
+                "DEFAULT_FROM_EMAIL",
+                "Profit Distribution System <no-reply@example.com>",
+            ),
+        )
+
+
 class Wallet(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="wallet")
     balance = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
@@ -72,6 +122,33 @@ class Wallet(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} wallet"
+
+
+class EmailOTP(models.Model):
+    class Purpose(models.TextChoices):
+        REGISTRATION = "registration", "Registration"
+        WITHDRAWAL = "withdrawal", "Withdrawal"
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_otps")
+    purpose = models.CharField(max_length=20, choices=Purpose.choices)
+    email = models.EmailField()
+    code = models.CharField(max_length=6, db_index=True)
+    token = models.CharField(max_length=64, unique=True, db_index=True)
+    payload = models.JSONField(default=dict, blank=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    verified_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"{self.user.username} {self.purpose} OTP"
+
+    @property
+    def is_expired(self) -> bool:
+        return timezone.now() >= self.expires_at
 
 
 class InvestmentWallet(models.Model):

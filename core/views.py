@@ -1,4 +1,4 @@
-﻿import json
+import json
 from decimal import Decimal, InvalidOperation
 
 import csv
@@ -21,6 +21,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
     CommissionLog,
+    EmailOTP,
     Investment,
     InvestmentPackage,
     InvestmentWallet,
@@ -35,6 +36,7 @@ from .models import (
     Wallet,
     WalletTransaction,
 )
+from .email_verification import create_email_otp, send_email_otp
 from .services import (
     create_investment,
     create_package_investment,
@@ -65,6 +67,88 @@ def _decimal_or_error(raw: str):
         return Decimal(str(raw))
     except (InvalidOperation, TypeError):
         raise ValueError("Invalid decimal amount")
+
+
+def _activate_verified_user(user: User, email_otp: EmailOTP) -> None:
+    if not email_otp.is_used:
+        email_otp.is_used = True
+        email_otp.verified_at = timezone.now()
+        email_otp.save(update_fields=["is_used", "verified_at"])
+
+    updates = []
+    if not user.email_verified:
+        user.email_verified = True
+        updates.append("email_verified")
+    if not user.is_active:
+        user.is_active = True
+        updates.append("is_active")
+    if updates:
+        user.save(update_fields=updates)
+
+
+def _get_active_email_otp(*, user: User, purpose: str, code: str | None = None, token: str | None = None):
+    filters = {
+        "user": user,
+        "purpose": purpose,
+        "is_used": False,
+    }
+    if code is not None:
+        filters["code"] = code.strip()
+    if token is not None:
+        filters["token"] = token
+
+    email_otp = EmailOTP.objects.filter(**filters).order_by("-created_at").first()
+    if not email_otp or email_otp.is_expired:
+        return None
+    return email_otp
+
+
+def _create_withdrawal_request_from_email_otp(user: User, email_otp: EmailOTP):
+    payload = email_otp.payload or {}
+    created_request_id = payload.get("created_request_id")
+    if created_request_id:
+        return ManualWithdrawalRequest.objects.filter(pk=created_request_id, user=user).first()
+
+    amount = _decimal_or_error(payload.get("amount"))
+    method_id = payload.get("withdrawal_method_id")
+    account_details = (payload.get("account_details") or "").strip()
+    selected_method = WithdrawalMethod.objects.filter(id=method_id, is_active=True).first()
+
+    if not selected_method:
+        raise ValueError("Selected withdrawal method is no longer available.")
+    if not account_details:
+        raise ValueError("Account details are required.")
+
+    wallet, _ = Wallet.objects.get_or_create(user=user)
+    if wallet.balance < amount:
+        raise ValueError("Insufficient wallet balance.")
+
+    fee_percent = selected_method.withdrawal_fee_percent
+    fee_fixed = selected_method.withdrawal_fee_fixed
+    if fee_percent > 0:
+        fee_amount = (amount * fee_percent / Decimal("100")).quantize(Decimal("0.01"))
+    else:
+        fee_amount = fee_fixed.quantize(Decimal("0.01"))
+    net_amount = (amount - fee_amount).quantize(Decimal("0.01"))
+    if net_amount < 0:
+        net_amount = Decimal("0.00")
+
+    withdrawal_request = ManualWithdrawalRequest.objects.create(
+        user=user,
+        amount=amount,
+        withdrawal_method=selected_method,
+        payment_method=selected_method.name,
+        withdrawal_fee_percent=fee_percent,
+        withdrawal_fee_fixed=fee_fixed,
+        withdrawal_fee_amount=fee_amount,
+        net_amount=net_amount,
+        account_details=account_details,
+    )
+    email_otp.payload = {**payload, "created_request_id": withdrawal_request.id}
+    email_otp.is_used = True
+    email_otp.verified_at = timezone.now()
+    email_otp.save(update_fields=["payload", "is_used", "verified_at"])
+    return withdrawal_request
 
 
 @csrf_exempt
@@ -401,16 +485,19 @@ def register_with_referral(request: HttpRequest):
 
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
-        email = (request.POST.get("email") or "").strip()
+        email = (request.POST.get("email") or "").strip().lower()
         user_type = User.UserType.USER
         password = request.POST.get("password") or ""
         confirm_password = request.POST.get("confirm_password") or ""
 
-        if not username or not password:
-            messages.error(request, "Username and password are required.")
+        if not username or not password or not email:
+            messages.error(request, "Username, email and password are required.")
             return redirect("register-with-referral")
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
+            return redirect("register-with-referral")
+        if User.objects.filter(email__iexact=email).exists():
+            messages.error(request, "Email already exists.")
             return redirect("register-with-referral")
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
@@ -425,17 +512,104 @@ def register_with_referral(request: HttpRequest):
             referred_by=referrer,
             user_type=user_type,
             is_staff=False,
+            is_active=False,
+            email_verified=False,
         )
-        request.session.pop("signup_referrer_id", None)
-        login(request, user)
-        messages.success(request, "Registration successful.")
-        return redirect("user-dashboard")
+        try:
+            email_otp = create_email_otp(
+                user=user,
+                purpose=EmailOTP.Purpose.REGISTRATION,
+                email=email,
+            )
+            send_email_otp(request, email_otp)
+        except Exception:
+            user.delete()
+            messages.error(request, "Could not send verification email. Please try again.")
+            return redirect("register-with-referral")
+
+        request.session["pending_registration_user_id"] = user.id
+        messages.success(request, "Registration created. Check your email for OTP and verification link.")
+        return redirect("register-email-verify")
 
     return render(
         request,
         "registration/register_with_referral.html",
         {"referrer": referrer},
     )
+
+
+def register_email_verify(request: HttpRequest):
+    user_id = request.session.get("pending_registration_user_id")
+    user = User.objects.filter(id=user_id).first() if user_id else None
+    if not user:
+        messages.error(request, "No pending registration found.")
+        return redirect("referral-entry")
+    if user.email_verified:
+        request.session.pop("pending_registration_user_id", None)
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        return redirect("user-dashboard")
+
+    if request.method == "POST":
+        action = request.POST.get("action") or "verify"
+        if action == "resend":
+            try:
+                email_otp = create_email_otp(
+                    user=user,
+                    purpose=EmailOTP.Purpose.REGISTRATION,
+                    email=user.email,
+                )
+                send_email_otp(request, email_otp)
+                messages.success(request, "A new verification OTP has been sent to your email.")
+            except Exception:
+                messages.error(request, "Could not resend verification email.")
+            return redirect("register-email-verify")
+
+        otp_code = (request.POST.get("otp_code") or "").strip()
+        email_otp = _get_active_email_otp(
+            user=user,
+            purpose=EmailOTP.Purpose.REGISTRATION,
+            code=otp_code,
+        )
+        if not email_otp:
+            messages.error(request, "Invalid or expired OTP.")
+            return redirect("register-email-verify")
+
+        _activate_verified_user(user, email_otp)
+        request.session.pop("pending_registration_user_id", None)
+        request.session.pop("signup_referrer_id", None)
+        login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+        messages.success(request, "Email verified successfully.")
+        return redirect("user-dashboard")
+
+    return render(
+        request,
+        "registration/email_verification.html",
+        {
+            "page_title": "Verify Email",
+            "verify_title": "Verify Your Email",
+            "verify_subtitle": f"We sent a 6-digit OTP and verification link to {user.email}.",
+            "resend_label": "Resend OTP",
+        },
+    )
+
+
+def register_email_link_verify(request: HttpRequest, token: str):
+    email_otp = EmailOTP.objects.filter(
+        token=token,
+        purpose=EmailOTP.Purpose.REGISTRATION,
+        is_used=False,
+    ).select_related("user").first()
+    if not email_otp or email_otp.is_expired:
+        messages.error(request, "Verification link is invalid or expired.")
+        return redirect("register-email-verify")
+
+    user = email_otp.user
+    _activate_verified_user(user, email_otp)
+    request.session.pop("pending_registration_user_id", None)
+    request.session.pop("signup_referrer_id", None)
+    login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    messages.success(request, "Email verified successfully.")
+    return redirect("user-dashboard")
 
 
 def logout_user(request: HttpRequest):
@@ -754,6 +928,13 @@ def manual_withdrawal(request: HttpRequest):
     withdrawal_methods = WithdrawalMethod.objects.filter(is_active=True).order_by("name")
 
     if request.method == "POST":
+        if not request.user.email:
+            messages.error(request, "Add your email address first to verify withdrawal requests.")
+            return redirect("page-profile")
+        if not request.user.email_verified:
+            messages.error(request, "Verify your email address before making a withdrawal request.")
+            return redirect("manual-withdrawal")
+
         amount_raw = request.POST.get("amount")
         withdrawal_method_id = request.POST.get("withdrawal_method_id")
         account_details = (request.POST.get("account_details") or "").strip()
@@ -777,29 +958,25 @@ def manual_withdrawal(request: HttpRequest):
             messages.error(request, "Insufficient wallet balance.")
             return redirect("manual-withdrawal")
 
-        fee_percent = selected_method.withdrawal_fee_percent
-        fee_fixed = selected_method.withdrawal_fee_fixed
-        if fee_percent > 0:
-            fee_amount = (amount * fee_percent / Decimal("100")).quantize(Decimal("0.01"))
-        else:
-            fee_amount = fee_fixed.quantize(Decimal("0.01"))
-        net_amount = (amount - fee_amount).quantize(Decimal("0.01"))
-        if net_amount < 0:
-            net_amount = Decimal("0.00")
+        try:
+            email_otp = create_email_otp(
+                user=request.user,
+                purpose=EmailOTP.Purpose.WITHDRAWAL,
+                email=request.user.email,
+                payload={
+                    "amount": str(amount),
+                    "withdrawal_method_id": selected_method.id,
+                    "account_details": account_details,
+                },
+            )
+            send_email_otp(request, email_otp)
+        except Exception:
+            messages.error(request, "Could not send withdrawal verification email. Please try again.")
+            return redirect("manual-withdrawal")
 
-        ManualWithdrawalRequest.objects.create(
-            user=request.user,
-            amount=amount,
-            withdrawal_method=selected_method,
-            payment_method=selected_method.name,
-            withdrawal_fee_percent=fee_percent,
-            withdrawal_fee_fixed=fee_fixed,
-            withdrawal_fee_amount=fee_amount,
-            net_amount=net_amount,
-            account_details=account_details,
-        )
-        messages.success(request, "Withdrawal request submitted successfully.")
-        return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
+        request.session["pending_withdrawal_otp_id"] = email_otp.id
+        messages.success(request, "We sent an OTP and verification link to your email to confirm this withdrawal.")
+        return redirect("withdrawal-email-verify")
 
     withdrawal_requests = ManualWithdrawalRequest.objects.filter(user=request.user).order_by("-created_at")
 
@@ -813,6 +990,95 @@ def manual_withdrawal(request: HttpRequest):
             "withdrawal_submitted": request.GET.get("submitted") == "1",
         },
     )
+
+
+@login_required
+def withdrawal_email_verify(request: HttpRequest):
+    otp_id = request.session.get("pending_withdrawal_otp_id")
+    email_otp = (
+        EmailOTP.objects.filter(
+            id=otp_id,
+            user=request.user,
+            purpose=EmailOTP.Purpose.WITHDRAWAL,
+            is_used=False,
+        )
+        .order_by("-created_at")
+        .first()
+    )
+    if not email_otp or email_otp.is_expired:
+        messages.error(request, "No active withdrawal verification found.")
+        return redirect("manual-withdrawal")
+
+    if request.method == "POST":
+        action = request.POST.get("action") or "verify"
+        if action == "resend":
+            try:
+                new_email_otp = create_email_otp(
+                    user=request.user,
+                    purpose=EmailOTP.Purpose.WITHDRAWAL,
+                    email=request.user.email,
+                    payload=email_otp.payload,
+                )
+                send_email_otp(request, new_email_otp)
+                request.session["pending_withdrawal_otp_id"] = new_email_otp.id
+                messages.success(request, "A new withdrawal OTP has been sent to your email.")
+            except Exception:
+                messages.error(request, "Could not resend withdrawal verification email.")
+            return redirect("withdrawal-email-verify")
+
+        otp_code = (request.POST.get("otp_code") or "").strip()
+        verified_email_otp = _get_active_email_otp(
+            user=request.user,
+            purpose=EmailOTP.Purpose.WITHDRAWAL,
+            code=otp_code,
+        )
+        if not verified_email_otp:
+            messages.error(request, "Invalid or expired OTP.")
+            return redirect("withdrawal-email-verify")
+
+        try:
+            _create_withdrawal_request_from_email_otp(request.user, verified_email_otp)
+        except ValueError as exc:
+            messages.error(request, str(exc))
+            return redirect("manual-withdrawal")
+
+        request.session.pop("pending_withdrawal_otp_id", None)
+        messages.success(request, "Withdrawal request submitted successfully.")
+        return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
+
+    return render(
+        request,
+        "core/email_verification.html",
+        {
+            "page_title": "Verify Withdrawal",
+            "verify_title": "Confirm Withdrawal Request",
+            "verify_subtitle": f"We sent a 6-digit OTP and verification link to {request.user.email}.",
+            "resend_label": "Resend OTP",
+        },
+    )
+
+
+@login_required
+def withdrawal_email_link_verify(request: HttpRequest, token: str):
+    email_otp = EmailOTP.objects.filter(
+        token=token,
+        user=request.user,
+        purpose=EmailOTP.Purpose.WITHDRAWAL,
+        is_used=False,
+    ).first()
+    if not email_otp or email_otp.is_expired:
+        messages.error(request, "Withdrawal verification link is invalid or expired.")
+        return redirect("manual-withdrawal")
+
+    try:
+        _create_withdrawal_request_from_email_otp(request.user, email_otp)
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return redirect("manual-withdrawal")
+
+    request.session.pop("pending_withdrawal_otp_id", None)
+    messages.success(request, "Withdrawal request submitted successfully.")
+    return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
 
 
 @login_required
@@ -916,7 +1182,7 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
         investment = create_package_investment(request.user, package, amount)
         messages.success(
             request,
-            f"Investment {investment.investment_code} started for Tk {amount} "
+            f"Investment {investment.investment_code} started for USDT {amount} "
             f"and {package.duration_days} days.",
         )
         return redirect("investment-page")
@@ -1575,4 +1841,5 @@ def withdrawal_method_info(request: HttpRequest):
             "withdrawal_fee_fixed": str(method.withdrawal_fee_fixed),
         }
     )
+
 

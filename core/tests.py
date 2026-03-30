@@ -1,17 +1,22 @@
 from datetime import timedelta
 from decimal import Decimal
 
+from django.core import mail
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.utils import timezone
 
 from .models import (
     CommissionLog,
     CommissionRate,
+    EmailOTP,
     InvestmentPackage,
+    ManualWithdrawalRequest,
     ProfitDistribution,
     ProfitDistributionEntry,
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
+    WithdrawalMethod,
     User,
 )
 from .services import (
@@ -159,3 +164,81 @@ class ReferralCommissionTests(TestCase):
         self.assertEqual(u2.wallet.balance, Decimal("21.00"))
         self.assertEqual(ProfitDistribution.objects.count(), 1)
         self.assertEqual(ProfitDistributionEntry.objects.count(), 2)
+
+
+@override_settings(EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend")
+class EmailVerificationFlowTests(TestCase):
+    def test_registration_requires_email_otp_verification(self):
+        referrer = User.objects.create_user(
+            username="referrer",
+            email="referrer@example.com",
+            password="pass1234",
+            email_verified=True,
+        )
+        session = self.client.session
+        session["signup_referrer_id"] = referrer.id
+        session.save()
+
+        response = self.client.post(
+            "/register/create/",
+            {
+                "username": "newuser",
+                "email": "newuser@example.com",
+                "password": "pass1234",
+                "confirm_password": "pass1234",
+            },
+        )
+        self.assertRedirects(response, "/register/verify/")
+
+        user = User.objects.get(username="newuser")
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.email_verified)
+        self.assertEqual(EmailOTP.objects.filter(user=user, purpose=EmailOTP.Purpose.REGISTRATION).count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
+
+        otp = EmailOTP.objects.get(user=user, purpose=EmailOTP.Purpose.REGISTRATION)
+        response = self.client.post("/register/verify/", {"otp_code": otp.code})
+        self.assertRedirects(response, "/user-dashboard/")
+
+        user.refresh_from_db()
+        otp.refresh_from_db()
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.email_verified)
+        self.assertTrue(otp.is_used)
+
+    def test_withdrawal_requires_email_otp_before_request_creation(self):
+        user = User.objects.create_user(
+            username="withdraw_user",
+            email="withdraw@example.com",
+            password="pass1234",
+            email_verified=True,
+        )
+        WithdrawalMethod.objects.create(
+            name="Bank",
+            withdrawal_fee_fixed=Decimal("10.00"),
+            account_details="Bank account",
+            instruction="Use account number",
+        )
+        credit_wallet(user, Decimal("500.00"), "Seed wallet")
+        self.client.force_login(user)
+
+        response = self.client.post(
+            "/manual-withdrawal/",
+            {
+                "amount": "100.00",
+                "withdrawal_method_id": WithdrawalMethod.objects.get(name="Bank").id,
+                "account_details": "Account 123",
+            },
+        )
+        self.assertRedirects(response, "/manual-withdrawal/verify/")
+        self.assertEqual(ManualWithdrawalRequest.objects.count(), 0)
+        self.assertEqual(len(mail.outbox), 1)
+
+        otp = EmailOTP.objects.get(user=user, purpose=EmailOTP.Purpose.WITHDRAWAL, is_used=False)
+        response = self.client.post("/manual-withdrawal/verify/", {"otp_code": otp.code})
+        self.assertRedirects(response, "/manual-withdrawal/?submitted=1")
+
+        self.assertEqual(ManualWithdrawalRequest.objects.count(), 1)
+        withdrawal = ManualWithdrawalRequest.objects.get(user=user)
+        self.assertEqual(withdrawal.amount, Decimal("100.00"))
+        self.assertEqual(withdrawal.withdrawal_fee_amount, Decimal("10.00"))

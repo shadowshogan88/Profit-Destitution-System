@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<body style="margin:0;padding:24px;background:#f5f7fb;font-family:Arial,sans-serif;color:#1f2937;">
+    <div style="max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;padding:32px;border:1px solid #e5e7eb;">
+        <p style="margin:0 0 8px;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#64748b;">Profit Distribution System</p>
+        <h1 style="margin:0 0 16px;font-size:24px;color:#0f172a;">{{ title }}</h1>
+        <p style="margin:0 0 16px;">Hello {{ user.username }},</p>
+        <p style="margin:0 0 16px;">Use the OTP below to complete your request.</p>
+        <div style="margin:24px 0;padding:18px;border-radius:10px;background:#eff6ff;border:1px solid #bfdbfe;text-align:center;">
+            <div style="font-size:32px;font-weight:700;letter-spacing:8px;color:#1d4ed8;">{{ email_otp.code }}</div>
+            <div style="margin-top:8px;font-size:13px;color:#475569;">Expires in {{ expires_minutes }} minutes</div>
+        </div>
+        <p style="margin:0 0 20px;">Or use the secure verification link below:</p>
+        <p style="margin:0 0 24px;">
+            <a href="{{ verify_url }}" style="display:inline-block;background:#0f766e;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600;">Verify Now</a>
+        </p>
+        <p style="margin:0;font-size:13px;color:#64748b;">If you did not request this action, you can safely ignore this email.</p>
+    </div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-﻿{% extends 'core/user_dashboard_master.html' %}
+{% extends 'core/user_dashboard_master.html' %}
 {% load static %}
 {% block title %}{{ page_title }}{% endblock %}
 {% block dashboard_content %}
@@ -28,7 +28,7 @@
                                     <div>
                                         <div class="dropdown">
                                             <button class="btn btn-soft-primary btn-sm material-shadow-none" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <span class="text-uppercase">Tk<i class="mdi mdi-chevron-down align-middle ms-1"></i></span>
+                                                <span class="text-uppercase">USDT<i class="mdi mdi-chevron-down align-middle ms-1"></i></span>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-end">
                                                 <a class="dropdown-item" href="javascript:void(0);">Add Amount</a>
@@ -55,7 +55,7 @@
                                                     <p class="fs-12 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-primary me-1"></i>{{ now|date:"F" }}</p>
                                                 </div>
                                                 <div class="flex-shrink-0 text-end">
-                                                    <h6 class="mb-1">Tk {{ monthly_add_money|floatformat:2 }}</h6>
+                                                    <h6 class="mb-1">USDT {{ monthly_add_money|floatformat:2 }}</h6>
                                                     <p class="text-success fs-12 mb-0">Approved this month</p>
                                                 </div>
                                             </div>
@@ -72,7 +72,7 @@
                                                     <p class="fs-12 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-info me-1"></i>Running portfolio</p>
                                                 </div>
                                                 <div class="flex-shrink-0 text-end">
-                                                    <h6 class="mb-1">Tk {{ total_invested|floatformat:2 }}</h6>
+                                                    <h6 class="mb-1">USDT {{ total_invested|floatformat:2 }}</h6>
                                                     <p class="text-info fs-12 mb-0">All investments</p>
                                                 </div>
                                             </div>
@@ -89,7 +89,7 @@
                                                     <p class="fs-12 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-warning me-1"></i>{{ now|date:"F" }}</p>
                                                 </div>
                                                 <div class="flex-shrink-0 text-end">
-                                                    <h6 class="mb-1">Tk {{ monthly_won_profit|floatformat:2 }}</h6>
+                                                    <h6 class="mb-1">USDT {{ monthly_won_profit|floatformat:2 }}</h6>
                                                     <p class="text-warning fs-12 mb-0">Won this month</p>
                                                 </div>
                                             </div>
@@ -106,7 +106,7 @@
                                                     <p class="fs-12 mb-0 text-muted"><i class="mdi mdi-circle fs-10 align-middle text-success me-1"></i>{{ now|date:"F" }}</p>
                                                 </div>
                                                 <div class="flex-shrink-0 text-end">
-                                                    <h6 class="mb-1">Tk {{ monthly_commission|floatformat:2 }}</h6>
+                                                    <h6 class="mb-1">USDT {{ monthly_commission|floatformat:2 }}</h6>
                                                     <p class="text-success fs-12 mb-0">Referral this month</p>
                                                 </div>
                                             </div>
@@ -130,7 +130,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Wallet</p>
-                                                        <h4 class=" mb-0" >Tk<span class="counter-value" data-target="{{ request.user.wallet.balance }}">0</span></h4>
+                                                        <h4 class=" mb-0" >USDT<span class="counter-value" data-target="{{ request.user.wallet.balance }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">Available<span> </span></span>
@@ -150,7 +150,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Add Amount</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_add_money }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT<span class="counter-value" data-target="{{ monthly_add_money }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
@@ -170,7 +170,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Withdrals</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_withdrawals }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT<span class="counter-value" data-target="{{ monthly_withdrawals }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-danger-subtle text-danger">{{ now|date:"F" }}<span> </span></span>
@@ -190,7 +190,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Total Invested</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ total_invested }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT<span class="counter-value" data-target="{{ total_invested }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">All Active<span> </span></span>
@@ -210,7 +210,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Won Profit</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_won_profit }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT<span class="counter-value" data-target="{{ monthly_won_profit }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
@@ -230,7 +230,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1">Commission</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_commission }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT<span class="counter-value" data-target="{{ monthly_commission }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
@@ -299,14 +299,14 @@
                                         show: true,
                                         offsetY: 8,
                                         formatter: function () {
-                                            return "Tk " + total.toFixed(2);
+                                            return "USDT " + total.toFixed(2);
                                         }
                                     },
                                     total: {
                                         show: true,
                                         label: "Total Value",
                                         formatter: function () {
-                                            return "Tk " + total.toFixed(2);
+                                            return "USDT " + total.toFixed(2);
                                         }
                                     }
                                 }
@@ -316,7 +316,7 @@
                     tooltip: {
                         y: {
                             formatter: function (value) {
-                                return "Tk " + value.toFixed(2);
+                                return "USDT " + value.toFixed(2);
                             }
                         }
                     },
@@ -335,5 +335,6 @@
             </script>
 
             {% endblock %}
+
 
 
