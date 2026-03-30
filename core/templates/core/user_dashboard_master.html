@@ -1,0 +1,524 @@
+﻿{% load static %}
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="material" data-theme-colors="default">
+
+
+<head>
+
+    <meta charset="utf-8" />
+    <title>{% block title %}{{ page_title }}{% endblock %} | SynckBD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="Kakababu" name="author" />
+    <!-- App favicon -->
+    <link rel="shortcut icon" href="{% static 'assets/images/favicon.ico' %}">
+
+            <!-- gridjs css -->
+    <link href="{% static 'assets/libs/gridjs/theme/mermaid.min.css' %}" rel="stylesheet" type="text/css">
+
+    <link href="{% static 'assets/libs/swiper/swiper-bundle.min.css' %}" rel="stylesheet" />
+
+    <!-- Sweet Alert css-->
+    <link href="{% static 'assets/libs/sweetalert2/sweetalert2.min.css' %}" rel="stylesheet" type="text/css" />
+
+    <!-- Layout config Js -->
+    <script src="{% static 'assets/js/layout.js' %}"></script>
+    <!-- Bootstrap Css -->
+    <link href="{% static 'assets/css/bootstrap.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- Icons Css -->
+    <link href="{% static 'assets/css/icons.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- App Css-->
+    <link href="{% static 'assets/css/app.min.css' %}" rel="stylesheet" type="text/css" />
+    <!-- custom Css-->
+    <link href="{% static 'assets/css/custom.min.css' %}" rel="stylesheet" type="text/css" />
+
+
+
+
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+        <header id="page-topbar">
+    <div class="layout-width">
+        <div class="navbar-header">
+            <div class="d-flex">
+                <!-- LOGO -->
+                <div class="navbar-brand-box horizontal-logo">
+                    <a href="{% url 'dashboard' %}" class="logo logo-dark">
+                        <span class="logo-sm">
+                            <span class="fw-bold fs-4 text-dark">DATI</span>
+                        </span>
+                        <span class="logo-lg">
+                            <span class="fw-semibold text-dark" style="font-size: 14px; white-space: nowrap;">Digital Asset Tread International</span>
+                        </span>
+                    </a>
+
+                    <a href="{% url 'dashboard' %}" class="logo logo-light">
+                        <span class="logo-sm">
+                            <span class="fw-bold fs-4 text-white">DATI</span>
+                        </span>
+                        <span class="logo-lg">
+                            <span class="fw-semibold text-white" style="font-size: 14px; white-space: nowrap;">Digital Asset Tread International</span>
+                        </span>
+                    </a>
+                </div>
+
+                <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger material-shadow-none" id="topnav-hamburger-icon">
+                    <span class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </button>
+
+                <!-- App Search-->
+
+            </div>
+
+            <div class="d-flex align-items-center">
+
+                {% if not request.user.is_superuser and not request.user.is_staff and request.user.user_type|lower != 'admin' %}
+                <div class="d-none d-md-flex align-items-center gap-2 me-3">
+                    <div class="text-end px-3 py-2 border rounded bg-light">
+                        <div class="fs-12 text-muted">Wallet</div>
+                        <div class="fw-semibold">Tk {{ request.user.wallet.balance|default:'0.00' }}</div>
+                    </div>
+                    <div class="text-end px-3 py-2 border rounded bg-light">
+                        <div class="fs-12 text-muted">Total Invested</div>
+                        <div class="fw-semibold">Tk {{ request.user.total_invested_amount }}</div>
+                    </div>
+                    <div class="text-end px-3 py-2 border rounded bg-light">
+                        <div class="fs-12 text-muted">Referrals</div>
+                        <div class="fw-semibold">{{ request.user.total_referrals }}</div>
+                    </div>
+                    <div class="text-end px-3 py-2 border rounded bg-light">
+                        <div class="fs-12 text-muted">Active Investments</div>
+                        <div class="fw-semibold">{{ request.user.active_investments_count }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <div class="dropdown d-md-none topbar-head-dropdown header-item">
+                    <button type="button" class="btn btn-icon btn-topbar material-shadow-none btn-ghost-secondary rounded-circle" id="page-header-search-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="bx bx-search fs-22"></i>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-search-dropdown">
+                        <form class="p-3">
+                            <div class="form-group m-0">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" placeholder="Search ..." aria-label="Recipient's username">
+                                    <button class="btn btn-primary" type="submit"><i class="mdi mdi-magnify"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+
+                <div class="dropdown ms-sm-3 header-item topbar-user">
+                    <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="d-flex align-items-center">
+                            {% if request.user.profile_picture %}
+                            <img class="rounded-circle header-profile-user" src="{{ request.user.profile_picture.url }}" alt="Header Avatar">
+                            {% else %}
+                            <img class="rounded-circle header-profile-user" src="{% static 'assets/images/users/avatar-1.jpg' %}" alt="Header Avatar">
+                            {% endif %}
+                            <span class="text-start ms-xl-2">
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">{{ request.user.get_full_name|default:request.user.username }}</span>
+                                <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">{{ request.user.username }}</span>
+                            </span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <h6 class="dropdown-header">Welcome Anna!</h6>
+                        <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>Tk {{ request.user.wallet.balance|default:'0.00' }}</b></span></a>
+                        <a class="dropdown-item" href="{% url 'password_change' %}"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Change Password</span></a>
+                        <a class="dropdown-item" href="{% url 'lock-screen' %}?next={{ request.get_full_path|urlencode }}"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Lock screen</span></a>
+                        <a class="dropdown-item" href="{% url 'logout' %}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- removeNotificationModal -->
+<div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="NotificationModalbtn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Are you sure ?</h4>
+                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Notification ?</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn w-sm btn-danger" id="delete-notification">Yes, Delete It!</button>
+                </div>
+            </div>
+
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+        <!-- ========== App Menu ========== -->
+        <div class="app-menu navbar-menu">
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <!-- Dark Logo-->
+                <a href="{% url 'dashboard' %}" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <span class="fw-bold fs-4 text-dark">DATI</span>
+                    </span>
+                    <span class="logo-lg">
+                        <span class="fw-semibold text-dark" style="font-size: 14px; white-space: nowrap;">Digital Asset Tread International</span>
+                    </span>
+                </a>
+                <!-- Light Logo-->
+                <a href="{% url 'dashboard' %}" class="logo logo-light">
+                    <span class="logo-sm">
+                        <span class="fw-bold fs-4 text-white">DATI</span>
+                    </span>
+                    <span class="logo-lg">
+                        <span class="fw-semibold text-white" style="font-size: 14px; white-space: nowrap;">Digital Asset Tread International</span>
+                    </span>
+                </a>
+                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+                    <i class="ri-record-circle-line"></i>
+                </button>
+            </div>
+
+            <div class="dropdown sidebar-user m-1 rounded">
+                <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span class="d-flex align-items-center gap-2">
+                        {% if request.user.profile_picture %}
+                        <img class="rounded header-profile-user" src="{{ request.user.profile_picture.url }}" alt="Header Avatar">
+                        {% else %}
+                        <img class="rounded header-profile-user" src="{% static 'assets/images/users/avatar-1.jpg' %}" alt="Header Avatar">
+                        {% endif %}
+                        <span class="text-start">
+                            <span class="d-block fw-medium sidebar-user-name-text">{{ request.user.get_full_name|default:request.user.username }}</span>
+                            <span class="d-block fs-14 sidebar-user-name-sub-text"><i class="ri ri-circle-fill fs-10 text-success align-baseline"></i> <span class="align-middle">Online</span></span>
+                        </span>
+                    </span>
+                </button>
+                <div class="dropdown-menu dropdown-menu-end">
+                    <!-- item-->
+                    <h6 class="dropdown-header">Welcome Anna!</h6>
+                    <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
+                    <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
+                    <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
+                    <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>Tk {{ request.user.wallet.balance|default:'0.00' }}</b></span></a>
+                    <a class="dropdown-item" href="{% url 'password_change' %}"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Change Password</span></a>
+                    <a class="dropdown-item" href="{% url 'lock-screen' %}?next={{ request.get_full_path|urlencode }}"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Lock screen</span></a>
+                    <a class="dropdown-item" href="{% url 'logout' %}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
+                </div>
+            </div>
+            <div id="scrollbar">
+                <div class="container-fluid">
+
+
+                    <div id="two-column-menu">
+                    </div>
+                    <ul class="navbar-nav" id="navbar-nav">
+                        <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'user-dashboard' %}">
+                                <i class="ri-dashboard-2-line"></i> <span data-key="t-widgets">Dashboard</span>
+                            </a>
+                        </li> <!-- end Dashboard Menu -->
+
+
+                        {% if not request.user.is_superuser and not request.user.is_staff and request.user.user_type|lower != 'admin' %}
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Product & Orders</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#sidebarPackages" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarPackages">
+                                    <i class="ri-stack-fill"></i> <span data-key="t-multi-level">Packages</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarPackages">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{% url 'investment-packages' %}" class="nav-link" data-key="t-packages">Packages</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'investment-page' %}" class="nav-link" data-key="t-investment">Investment</a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="#" class="nav-link" data-key="t-level-1.1">Cancel Investment</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                        </li>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">My Network</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#sidebarReferral" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarReferral">
+                                    <i class="ri-share-line"></i> <span data-key="t-multi-level"> Referral </span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarReferral">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{% url 'referral-info' %}" class="nav-link" data-key="t-Referral_Link"> Referral Link </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'users-referral' %}" class="nav-link" data-key="t-Referral_List"> Users Referral </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                        </li>
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Accounts</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#sidebarWallet" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarWallet">
+                                    <i class="ri-bank-fill"></i> <span data-key="t-multi-level"> Wallet </span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarWallet">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{% url 'page-profile' %}" class="nav-link" data-key="t-Profile"> Profile </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'add-money' %}" class="nav-link" data-key="t-Add_Money"> Add Money </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'manual-withdrawal' %}" class="nav-link" data-key="t-Withdraw_Money"> Withdraw Money </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'payment-withdrawal-transaction' %}" class="nav-link" data-key="t-Withdraw_Money"> Transaction </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                        </li>
+                        {% endif %}
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Reports & Analytics</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#sidebarReports" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarReports">
+                                    <i class="ri-file-chart-line"></i> <span data-key="t-multi-level"> Reports </span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="sidebarReports">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{% url 'investment-reports' %}" class="nav-link" data-key="t-Investment_Reports"> Investment Reports </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'transaction-reports' %}" class="nav-link" data-key="t-Transaction_Reports"> Transaction Reports </a>
+                                    </ul>
+                                </div>
+                            </li>
+                        </li>
+                        {% if request.user.is_superuser or request.user.is_staff or request.user.user_type|lower == 'admin' %}
+                        <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Admin</span></li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-profit-distribution' %}">
+                                <i class="ri-coins-line"></i> <span data-key="t-admin-profit">Profit Distribution</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-investment-reports' %}">
+                                <i class="ri-file-chart-line"></i> <span data-key="t-admin-investment-reports">Investment Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-transaction-reports' %}">
+                                <i class="ri-file-list-3-line"></i> <span data-key="t-admin-transaction-reports">Transaction Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-profit-reports' %}">
+                                <i class="ri-bar-chart-2-line"></i> <span data-key="t-admin-profit-reports">Profit Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-profit-reports-details' %}">
+                                <i class="ri-file-list-2-line"></i> <span data-key="t-admin-profit-reports-details">Profit Details</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="/admin/unsettled-balance-reports/">
+                                <i class="ri-funds-box-line"></i> <span data-key="t-admin-unsettled-balance-reports">Unsettled Balance</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-pending-add-money' %}">
+                                <i class="ri-wallet-3-line"></i> <span data-key="t-admin-add-money">Pending Add Money</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-pending-withdrawals' %}">
+                                <i class="ri-money-dollar-circle-line"></i> <span data-key="t-admin-withdrawals">Pending Withdrawals</span>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <!-- Sidebar -->
+            </div>
+
+            <div class="sidebar-background"></div>
+        </div>
+        <!-- Left Sidebar End -->
+        <!-- Vertical Overlay-->
+        <div class="vertical-overlay"></div>
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+{% block dashboard_content %}
+{% endblock %}
+<footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script> &copy; SynckBD.
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-sm-end d-none d-sm-block">
+                                Design & Develop by Kakababu
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+
+
+
+    <!--start back-to-top-->
+    <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+    <!--end back-to-top-->
+
+    <!--preloader-->
+    <div id="preloader">
+        <div id="status">
+            <div class="spinner-border text-primary avatar-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <!-- JAVASCRIPT -->
+    <script src="{% static 'assets/libs/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <script src="{% static 'assets/libs/simplebar/simplebar.min.js' %}"></script>
+    <script src="{% static 'assets/libs/node-waves/waves.min.js' %}"></script>
+    <script src="{% static 'assets/libs/feather-icons/feather.min.js' %}"></script>
+    <script src="{% static 'assets/js/pages/plugins/lord-icon-2.1.0.js' %}"></script>
+    <script src="{% static 'assets/js/plugins.js' %}"></script>
+
+    <!-- apexcharts -->
+    <script src="{% static 'assets/libs/apexcharts/apexcharts.min.js' %}"></script>
+
+    <!-- Swiper Js -->
+    <script src="{% static 'assets/libs/swiper/swiper-bundle.min.js' %}"></script>
+
+    <!-- CRM js -->
+    <script src="{% static 'assets/js/pages/dashboard-crypto.init.js' %}"></script>
+
+        <!-- prismjs plugin -->
+    <script src="{% static 'assets/libs/prismjs/prism.js' %}"></script>
+
+    <!-- gridjs js -->
+    <script src="{% static 'assets/libs/gridjs/gridjs.umd.js' %}"></script>
+    <!-- gridjs init -->
+    <script src="{% static 'assets/js/pages/gridjs.init.js' %}"></script>
+
+    <!-- App js -->
+    <script src="{% static 'assets/js/app.js' %}"></script>
+
+        <!-- form js -->
+    <script src="{% static 'assets/libs/choices.js/public/assets/scripts/choices.min.js' %}"></script>
+    <script src="{% static 'assets/libs/flatpickr/flatpickr.min.js' %}"></script>
+    <!-- Sweet Alerts js -->
+    <script src="{% static 'assets/libs/sweetalert2/sweetalert2.min.js' %}"></script>
+
+    <!-- Sweet alert init js-->
+    <script src="{% static 'assets/js/pages/sweetalerts.init.js' %}"></script>
+    <script>
+    (function () {
+        var timeoutMs = 5 * 60 * 1000;
+        var lockTimer = null;
+        var locked = false;
+        var setLockUrl = "{% url 'lock-screen-set' %}";
+        var lockScreenUrl = "{% url 'lock-screen' %}";
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function triggerLock() {
+            if (locked) {
+                return;
+            }
+            locked = true;
+            var currentPath = window.location.pathname + window.location.search;
+            fetch(setLockUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                credentials: "same-origin",
+                body: "next=" + encodeURIComponent(currentPath)
+            }).finally(function () {
+                window.location.href = lockScreenUrl + "?next=" + encodeURIComponent(currentPath);
+            });
+        }
+
+        function resetTimer() {
+            if (locked) {
+                return;
+            }
+            if (lockTimer) {
+                clearTimeout(lockTimer);
+            }
+            lockTimer = setTimeout(triggerLock, timeoutMs);
+        }
+
+        ["mousemove", "mousedown", "keydown", "scroll", "touchstart", "click"].forEach(function (eventName) {
+            document.addEventListener(eventName, resetTimer, { passive: true });
+        });
+        resetTimer();
+    })();
+    </script>
+</body>
+
+
+</html>

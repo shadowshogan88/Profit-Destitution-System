@@ -1,0 +1,73 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+<div class="row">
+    <div class="col-12">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Profit Distribution</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="distribute_profit">
+                    <div class="mb-3">
+                        <label class="form-label">Current Total Invested (All Users)</label>
+                        <input type="text" class="form-control" value="Tk {{ current_total_invested }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Total Amount (Tk)</label>
+                        <input type="number" class="form-control" name="total_amount" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Note (optional)</label>
+                        <textarea class="form-control" name="note" rows="2" placeholder="Optional note"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Distribute Profit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Distribution Rule</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3">
+                    Total profit is split by active investment ratio first. Then each investor's gross share is divided into own profit and referral commission by the configured L1-L6 rates.
+                </p>
+                <ul class="mb-0 ps-3 text-muted">
+                    <li><strong>L6</strong> = investor own profit</li>
+                    <li><strong>L1</strong> = nearest referrer</li>
+                    <li><strong>L5</strong> = farthest eligible upline</li>
+                    <li>Missing L1-L5 levels go to the unsettled account</li>
+                    <li>If L6 is not configured, the system uses <code>100 - (L1+L2+L3+L4+L5)</code> as own profit</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
