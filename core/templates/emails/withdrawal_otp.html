@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirm your withdrawal</title>
+  </head>
+  <body style="margin:0;padding:0;background:#0b1220;font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0b1220;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:600px;max-width:100%;background:#111a2e;border-radius:12px;overflow:hidden;border:1px solid #223155;">
+            <tr>
+              <td style="padding:22px 24px;background:#0f1730;">
+                <div style="color:#cbd5e1;font-size:13px;letter-spacing:0.02em;">{{ app_name }}</div>
+                <div style="color:#ffffff;font-size:20px;font-weight:700;margin-top:6px;">Confirm your withdrawal</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px;color:#e2e8f0;">
+                <p style="margin:0 0 12px 0;font-size:14px;line-height:1.6;">
+                  Hi {{ username }}, we received a withdrawal request. Please confirm it using the OTP below.
+                </p>
+
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:12px 0 18px 0;">
+                  <tr>
+                    <td style="padding:12px 14px;background:#0b1220;border:1px solid #223155;border-radius:10px;">
+                      <div style="font-size:13px;color:#cbd5e1;">Request summary</div>
+                      <div style="margin-top:6px;font-size:14px;color:#ffffff;">
+                        Amount: <strong>{{ amount }}</strong> &nbsp;|&nbsp; Net: <strong>{{ net_amount }}</strong>
+                      </div>
+                      <div style="margin-top:6px;font-size:12px;color:#94a3b8;">
+                        Method: {{ payment_method }}
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+
+                <div style="background:#0b1220;border:1px dashed #f59e0b;border-radius:10px;padding:14px 16px;display:inline-block;">
+                  <span style="font-size:22px;letter-spacing:0.25em;color:#ffffff;font-weight:800;">{{ otp_code }}</span>
+                </div>
+                <p style="margin:18px 0 18px 0;font-size:13px;line-height:1.6;color:#cbd5e1;">
+                  This OTP expires in {{ otp_valid_minutes }} minutes.
+                </p>
+
+                <table role="presentation" cellspacing="0" cellpadding="0" style="margin:16px 0 18px 0;">
+                  <tr>
+                    <td bgcolor="#f59e0b" style="border-radius:10px;">
+                      <a href="{{ verify_url }}" style="display:inline-block;padding:12px 18px;color:#111827;text-decoration:none;font-weight:700;font-size:14px;">
+                        Open confirmation page
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+
+                <p style="margin:0;font-size:12px;line-height:1.6;color:#94a3b8;">
+                  If the button doesn’t work, copy and paste this link into your browser:
+                </p>
+                <p style="margin:6px 0 0 0;font-size:12px;line-height:1.6;word-break:break-all;">
+                  <a href="{{ verify_url }}" style="color:#60a5fa;text-decoration:underline;">{{ verify_url }}</a>
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:18px 24px;border-top:1px solid #223155;color:#94a3b8;font-size:12px;line-height:1.6;">
+                If you didn’t request this withdrawal, you can ignore this email or contact support.
+              </td>
+            </tr>
+          </table>
+          <div style="color:#64748b;font-size:12px;margin-top:14px;">
+            © {{ year }} {{ app_name }}. All rights reserved.
+          </div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+

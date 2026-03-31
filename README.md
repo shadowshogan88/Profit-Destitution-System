@@ -44,11 +44,36 @@ If `DJANGO_DB_ENGINE` is not set to `mysql`, the project falls back to SQLite.
 
 ## API Endpoints
 
-- `POST /api/register/`
+- `POST /api/register/` (requires `email`; sends email OTP + verification link)
 - `POST /api/wallet/deposit/`
 - `POST /api/investments/create/`
 - `POST /api/investments/realize-profit/`
 - `GET /api/users/<username>/summary/`
+
+## Email Verification (OTP)
+
+- Registration creates the user as inactive (`is_active=False`) until email verification completes.
+- Email includes both an OTP and a verification link (OTP validity default: 10 minutes).
+
+Configure SMTP via environment variables:
+
+```bash
+EMAIL_HOST=smtp.yourprovider.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your_smtp_username
+EMAIL_HOST_PASSWORD=your_smtp_password
+EMAIL_USE_TLS=True
+EMAIL_USE_SSL=False
+DEFAULT_FROM_EMAIL=no-reply@yourdomain.com
+```
+
+Optional:
+
+```bash
+EMAIL_OTP_EXPIRY_MINUTES=10
+EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS=60
+EMAIL_APP_NAME="Referral System"
+```
 
 ## Quick Flow Example
 

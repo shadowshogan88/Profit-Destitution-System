@@ -12,6 +12,8 @@ urlpatterns = [
     path("manual-payment/", views.manual_payment, name="manual-payment"),
     path("add-money/", views.add_money_page, name="add-money"),
     path("manual-withdrawal/", views.manual_withdrawal, name="manual-withdrawal"),
+    path("manual-withdrawal/verify/", views.verify_withdrawal_otp, name="withdrawal-otp-verify"),
+    path("manual-withdrawal/verify/resend/", views.resend_withdrawal_otp, name="withdrawal-otp-resend"),
     path("transactions/", views.payment_withdrawal_transaction, name="payment-withdrawal-transaction"),
     path("manual-payment/method-info/", views.payment_method_info, name="payment-method-info"),
     path("manual-withdrawal/method-info/", views.withdrawal_method_info, name="withdrawal-method-info"),
@@ -22,6 +24,8 @@ urlpatterns = [
     path("transaction-reports/", views.transaction_reports, name="transaction-reports"),
     path("register/", views.referral_code_entry, name="referral-entry"),
     path("register/create/", views.register_with_referral, name="register-with-referral"),
+    path("verify-email/", views.verify_email, name="email-verify"),
+    path("verify-email/resend/", views.resend_email_verification, name="email-verify-resend"),
     path(
         "login/",
         auth_views.LoginView.as_view(

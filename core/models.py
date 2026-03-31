@@ -1,5 +1,7 @@
 from decimal import Decimal
 import secrets
+import uuid
+from datetime import timedelta
 
 from django.contrib.auth.models import AbstractUser
 from django.core.exceptions import ValidationError
@@ -73,6 +75,106 @@ class Wallet(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user.username} wallet"
+
+
+class EmailVerificationToken(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="email_verification_tokens")
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)
+    otp_code = models.CharField(max_length=8)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    send_count = models.PositiveSmallIntegerField(default=0)
+    last_sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    @property
+    def is_used(self) -> bool:
+        return self.used_at is not None
+
+    @property
+    def is_expired(self) -> bool:
+        return self.expires_at <= timezone.now()
+
+    def mark_sent(self) -> None:
+        self.send_count = (self.send_count or 0) + 1
+        self.last_sent_at = timezone.now()
+        self.save(update_fields=["send_count", "last_sent_at"])
+
+    @classmethod
+    def create_for_user(cls, user: User, otp_valid_minutes: int) -> "EmailVerificationToken":
+        otp = f"{secrets.randbelow(10**6):06d}"
+        expires_at = timezone.now() + timedelta(minutes=int(otp_valid_minutes))
+        return cls.objects.create(user=user, otp_code=otp, expires_at=expires_at)
+
+
+class EmailConfiguration(models.Model):
+    app_name = models.CharField(max_length=80, default="Referral System")
+    default_from_email = models.EmailField(blank=True, default="")
+
+    otp_expiry_minutes = models.PositiveSmallIntegerField(default=10)
+    resend_cooldown_seconds = models.PositiveIntegerField(default=60)
+
+    smtp_host = models.CharField(max_length=255, blank=True, default="")
+    smtp_port = models.PositiveIntegerField(default=587)
+    smtp_username = models.CharField(max_length=255, blank=True, default="")
+    smtp_password = models.CharField(max_length=255, blank=True, default="")
+    smtp_use_tls = models.BooleanField(default=True)
+    smtp_use_ssl = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self) -> str:
+        return f"Email Config ({'active' if self.is_active else 'inactive'})"
+
+    @classmethod
+    def get_active(cls) -> "EmailConfiguration":
+        obj = cls.objects.filter(is_active=True).order_by("-updated_at").first()
+        if obj:
+            return obj
+        return cls.objects.create(is_active=True)
+
+
+class WithdrawalOtpToken(models.Model):
+    withdrawal_request = models.ForeignKey(
+        "ManualWithdrawalRequest",
+        on_delete=models.CASCADE,
+        related_name="otp_tokens",
+    )
+    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False, db_index=True)
+    otp_code = models.CharField(max_length=8)
+    expires_at = models.DateTimeField()
+    used_at = models.DateTimeField(null=True, blank=True)
+    send_count = models.PositiveSmallIntegerField(default=0)
+    last_sent_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    @property
+    def is_used(self) -> bool:
+        return self.used_at is not None
+
+    @property
+    def is_expired(self) -> bool:
+        return self.expires_at <= timezone.now()
+
+    def mark_sent(self) -> None:
+        self.send_count = (self.send_count or 0) + 1
+        self.last_sent_at = timezone.now()
+        self.save(update_fields=["send_count", "last_sent_at"])
+
+    @classmethod
+    def create_for_request(cls, withdrawal_request: "ManualWithdrawalRequest", otp_valid_minutes: int) -> "WithdrawalOtpToken":
+        otp = f"{secrets.randbelow(10**6):06d}"
+        expires_at = timezone.now() + timedelta(minutes=int(otp_valid_minutes))
+        return cls.objects.create(withdrawal_request=withdrawal_request, otp_code=otp, expires_at=expires_at)
 
 
 class InvestmentWallet(models.Model):
@@ -385,6 +487,8 @@ class ManualWithdrawalRequest(models.Model):
     net_amount = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
     account_details = models.TextField()
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
+    email_otp_verified = models.BooleanField(default=False)
+    email_otp_verified_at = models.DateTimeField(null=True, blank=True)
     wallet_debited = models.BooleanField(default=False)
     debited_at = models.DateTimeField(null=True, blank=True)
     admin_note = models.TextField(blank=True)

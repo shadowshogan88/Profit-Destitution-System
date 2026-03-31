@@ -10,6 +10,9 @@ from django.utils import timezone
 from .models import (
     CommissionLog,
     CommissionRate,
+    EmailConfiguration,
+    EmailVerificationToken,
+    WithdrawalOtpToken,
     Investment,
     InvestmentPackage,
     InvestmentWallet,
@@ -44,6 +47,32 @@ admin.site.register(Wallet)
 admin.site.register(InvestmentWallet)
 admin.site.register(Investment)
 admin.site.register(CommissionRate)
+admin.site.register(EmailVerificationToken)
+
+
+class EmailConfigurationAdminForm(forms.ModelForm):
+    class Meta:
+        model = EmailConfiguration
+        fields = "__all__"
+        widgets = {
+            "smtp_password": forms.PasswordInput(render_value=False),
+        }
+
+    def clean_smtp_password(self):
+        value = self.cleaned_data.get("smtp_password") or ""
+        if value:
+            return value
+        if self.instance and self.instance.pk:
+            return EmailConfiguration.objects.get(pk=self.instance.pk).smtp_password
+        return ""
+
+
+@admin.register(EmailConfiguration)
+class EmailConfigurationAdmin(admin.ModelAdmin):
+    form = EmailConfigurationAdminForm
+    list_display = ("app_name", "is_active", "smtp_host", "smtp_port", "smtp_use_tls", "smtp_use_ssl", "updated_at")
+    list_filter = ("is_active", "smtp_use_tls", "smtp_use_ssl")
+    search_fields = ("app_name", "smtp_host", "smtp_username")
 
 
 @admin.register(InvestmentPackage)
@@ -310,10 +339,11 @@ class ManualWithdrawalRequestAdmin(admin.ModelAdmin):
         "withdrawal_fee_amount",
         "net_amount",
         "status",
+        "email_otp_verified",
         "wallet_debited",
         "created_at",
     )
-    list_filter = ("status", "wallet_debited", "payment_method")
+    list_filter = ("status", "email_otp_verified", "wallet_debited", "payment_method")
     search_fields = ("user__username", "payment_method", "account_details")
     readonly_fields = (
         "withdrawal_method",
@@ -323,6 +353,8 @@ class ManualWithdrawalRequestAdmin(admin.ModelAdmin):
         "withdrawal_fee_fixed",
         "withdrawal_fee_amount",
         "net_amount",
+        "email_otp_verified",
+        "email_otp_verified_at",
         "wallet_debited",
         "debited_at",
         "created_at",
@@ -330,6 +362,11 @@ class ManualWithdrawalRequestAdmin(admin.ModelAdmin):
     )
 
     def save_model(self, request, obj, form, change):
+        if change and obj.status == ManualWithdrawalRequest.Status.APPROVED and not obj.email_otp_verified:
+            obj.status = ManualWithdrawalRequest.Status.PENDING
+            messages.error(request, "Cannot approve: withdrawal is not OTP-verified by email.")
+            return super().save_model(request, obj, form, change)
+
         if change and obj.status == ManualWithdrawalRequest.Status.APPROVED and not obj.wallet_debited:
             with transaction.atomic():
                 locked = (
@@ -368,6 +405,13 @@ class ManualWithdrawalRequestAdmin(admin.ModelAdmin):
                         )
 
         super().save_model(request, obj, form, change)
+
+
+@admin.register(WithdrawalOtpToken)
+class WithdrawalOtpTokenAdmin(admin.ModelAdmin):
+    list_display = ("id", "withdrawal_request", "token", "otp_code", "expires_at", "used_at", "send_count", "last_sent_at", "created_at")
+    list_filter = ("used_at",)
+    search_fields = ("withdrawal_request__request_code", "withdrawal_request__user__username", "token")
 
 
 class UnsettledBalanceEntryInline(admin.TabularInline):

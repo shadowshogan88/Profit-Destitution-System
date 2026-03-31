@@ -1,0 +1,14 @@
+{{ app_name }}
+
+Verify your email address
+
+Hi {{ username }}, thanks for signing up. To complete your registration, please verify your email.
+
+Your OTP: {{ otp_code }}
+This OTP expires in {{ otp_valid_minutes }} minutes.
+
+Open verification page:
+{{ verify_url }}
+
+If you didn’t request this, you can safely ignore this email.
+

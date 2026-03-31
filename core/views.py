@@ -3,6 +3,7 @@ from decimal import Decimal, InvalidOperation
 
 import csv
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib import messages
 from django.contrib.auth import views as auth_views
@@ -11,16 +12,25 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
 from django.db.models import Avg, Count, Sum
+from django.core.exceptions import ValidationError
+from django.core import mail
+from django.core.mail.backends.smtp import EmailBackend as SmtpEmailBackend
+from django.core.mail import EmailMultiAlternatives
+from django.core.validators import validate_email
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
+from django.template.loader import render_to_string
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import (
     CommissionLog,
+    EmailConfiguration,
+    EmailVerificationToken,
+    WithdrawalOtpToken,
     Investment,
     InvestmentPackage,
     InvestmentWallet,
@@ -45,6 +55,108 @@ from .services import (
 
 User = get_user_model()
 MAX_REFERRAL_LEVEL = 5
+
+
+def _mask_email(value: str) -> str:
+    value = (value or "").strip()
+    if "@" not in value:
+        return value
+    local, domain = value.split("@", 1)
+    if len(local) <= 2:
+        local_masked = local[:1] + "*"
+    else:
+        local_masked = local[:2] + "*" * max(1, len(local) - 2)
+    return f"{local_masked}@{domain}"
+
+
+def _send_email_verification(request: HttpRequest, token_obj: EmailVerificationToken) -> None:
+    email_cfg = EmailConfiguration.get_active()
+    user = token_obj.user
+    verify_url = request.build_absolute_uri(f"{reverse('email-verify')}?token={token_obj.token}")
+    context = {
+        "app_name": (email_cfg.app_name or getattr(settings, "EMAIL_APP_NAME", "Referral System")),
+        "username": user.username,
+        "otp_code": token_obj.otp_code,
+        "otp_valid_minutes": int(email_cfg.otp_expiry_minutes or getattr(settings, "EMAIL_OTP_EXPIRY_MINUTES", 10)),
+        "verify_url": verify_url,
+        "year": timezone.now().year,
+    }
+    subject = "Verify your email address"
+    text_body = render_to_string("emails/email_verification.txt", context)
+    html_body = render_to_string("emails/email_verification.html", context)
+
+    connection = None
+    if email_cfg.smtp_host:
+        connection = SmtpEmailBackend(
+            host=email_cfg.smtp_host,
+            port=int(email_cfg.smtp_port or 587),
+            username=email_cfg.smtp_username or None,
+            password=email_cfg.smtp_password or None,
+            use_tls=bool(email_cfg.smtp_use_tls),
+            use_ssl=bool(email_cfg.smtp_use_ssl),
+            fail_silently=False,
+        )
+    else:
+        connection = mail.get_connection(fail_silently=False)
+
+    message = EmailMultiAlternatives(
+        subject=subject,
+        body=text_body,
+        from_email=(email_cfg.default_from_email or getattr(settings, "DEFAULT_FROM_EMAIL", None)),
+        to=[user.email],
+        connection=connection,
+    )
+    message.attach_alternative(html_body, "text/html")
+    message.send(fail_silently=False)
+    token_obj.mark_sent()
+
+
+def _send_withdrawal_otp(request: HttpRequest, token_obj: WithdrawalOtpToken) -> None:
+    email_cfg = EmailConfiguration.get_active()
+    withdrawal = token_obj.withdrawal_request
+    user = withdrawal.user
+    verify_url = request.build_absolute_uri(
+        f"{reverse('withdrawal-otp-verify')}?token={token_obj.token}"
+    )
+    context = {
+        "app_name": (email_cfg.app_name or getattr(settings, "EMAIL_APP_NAME", "Referral System")),
+        "username": user.username,
+        "otp_code": token_obj.otp_code,
+        "otp_valid_minutes": int(email_cfg.otp_expiry_minutes or getattr(settings, "EMAIL_OTP_EXPIRY_MINUTES", 10)),
+        "verify_url": verify_url,
+        "year": timezone.now().year,
+        "amount": withdrawal.amount,
+        "net_amount": withdrawal.net_amount,
+        "payment_method": withdrawal.payment_method,
+    }
+    subject = "Withdrawal OTP verification"
+    text_body = render_to_string("emails/withdrawal_otp.txt", context)
+    html_body = render_to_string("emails/withdrawal_otp.html", context)
+
+    connection = None
+    if email_cfg.smtp_host:
+        connection = SmtpEmailBackend(
+            host=email_cfg.smtp_host,
+            port=int(email_cfg.smtp_port or 587),
+            username=email_cfg.smtp_username or None,
+            password=email_cfg.smtp_password or None,
+            use_tls=bool(email_cfg.smtp_use_tls),
+            use_ssl=bool(email_cfg.smtp_use_ssl),
+            fail_silently=False,
+        )
+    else:
+        connection = mail.get_connection(fail_silently=False)
+
+    message = EmailMultiAlternatives(
+        subject=subject,
+        body=text_body,
+        from_email=(email_cfg.default_from_email or getattr(settings, "DEFAULT_FROM_EMAIL", None)),
+        to=[user.email],
+        connection=connection,
+    )
+    message.attach_alternative(html_body, "text/html")
+    message.send(fail_silently=False)
+    token_obj.mark_sent()
 
 
 class DashboardPasswordChangeView(SuccessMessageMixin, auth_views.PasswordChangeView):
@@ -75,11 +187,20 @@ def register_user(request: HttpRequest):
     data = _json_body(request)
     username = data.get("username")
     password = data.get("password")
+    email = (data.get("email") or "").strip()
     user_type = (data.get("user_type") or User.UserType.USER).strip().lower()
     referrer_code = (data.get("referrer_code") or "").strip().upper()
 
-    if not username or not password or not referrer_code:
-        return JsonResponse({"error": "username, password and referrer_code are required"}, status=400)
+    if not username or not password or not referrer_code or not email:
+        return JsonResponse(
+            {"error": "username, password, email and referrer_code are required"},
+            status=400,
+        )
+
+    try:
+        validate_email(email)
+    except ValidationError:
+        return JsonResponse({"error": "invalid email"}, status=400)
 
     if User.objects.filter(username=username).exists():
         return JsonResponse({"error": "username already exists"}, status=400)
@@ -93,11 +214,35 @@ def register_user(request: HttpRequest):
     user = User.objects.create(
         username=username,
         password=make_password(password),
+        email=email,
         referred_by=referred_by,
         user_type=user_type,
         is_staff=(user_type == User.UserType.ADMIN),
+        is_active=False,
+        email_verified=False,
     )
-    return JsonResponse({"id": user.id, "username": user.username, "user_type": user.user_type})
+    token_obj = EmailVerificationToken.create_for_user(
+        user=user,
+        otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
+    )
+    try:
+        _send_email_verification(request, token_obj)
+    except Exception:
+        return JsonResponse(
+            {"error": "user created but verification email could not be sent"},
+            status=500,
+        )
+
+    verify_url = request.build_absolute_uri(f"{reverse('email-verify')}?token={token_obj.token}")
+    return JsonResponse(
+        {
+            "id": user.id,
+            "username": user.username,
+            "user_type": user.user_type,
+            "email_verification_required": True,
+            "verify_url": verify_url,
+        }
+    )
 
 
 @csrf_exempt
@@ -409,6 +554,14 @@ def register_with_referral(request: HttpRequest):
         if not username or not password:
             messages.error(request, "Username and password are required.")
             return redirect("register-with-referral")
+        if not email:
+            messages.error(request, "Email is required.")
+            return redirect("register-with-referral")
+        try:
+            validate_email(email)
+        except ValidationError:
+            messages.error(request, "Please enter a valid email address.")
+            return redirect("register-with-referral")
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return redirect("register-with-referral")
@@ -425,17 +578,206 @@ def register_with_referral(request: HttpRequest):
             referred_by=referrer,
             user_type=user_type,
             is_staff=False,
+            is_active=False,
+            email_verified=False,
         )
         request.session.pop("signup_referrer_id", None)
-        login(request, user)
-        messages.success(request, "Registration successful.")
-        return redirect("user-dashboard")
+        token_obj = EmailVerificationToken.create_for_user(
+            user=user,
+            otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
+        )
+        try:
+            _send_email_verification(request, token_obj)
+        except Exception:
+            messages.error(request, "Account created, but we couldn't send verification email. Contact support.")
+            return redirect("login")
+        messages.success(request, "Registration successful. Please verify your email to activate your account.")
+        return redirect(f"{reverse('email-verify')}?token={token_obj.token}")
 
     return render(
         request,
         "registration/register_with_referral.html",
         {"referrer": referrer},
     )
+
+
+def verify_email(request: HttpRequest):
+    token_raw = (request.GET.get("token") or request.POST.get("token") or "").strip()
+    try:
+        token_obj = EmailVerificationToken.objects.select_related("user").get(token=token_raw)
+    except EmailVerificationToken.DoesNotExist:
+        messages.error(request, "Invalid verification link.")
+        return redirect("login")
+
+    user = token_obj.user
+    if token_obj.is_used:
+        messages.success(request, "Your email is already verified. You can sign in now.")
+        return redirect("login")
+    if token_obj.is_expired:
+        messages.error(request, "Your OTP has expired. Please resend OTP.")
+        return render(
+            request,
+            "registration/verify_email.html",
+            {"token": str(token_obj.token), "masked_email": _mask_email(user.email)},
+        )
+
+    if request.method == "POST":
+        otp = (request.POST.get("otp_code") or "").strip()
+        if not otp:
+            messages.error(request, "OTP is required.")
+        elif otp != token_obj.otp_code:
+            messages.error(request, "Invalid OTP.")
+        else:
+            user.email_verified = True
+            user.is_active = True
+            user.save(update_fields=["email_verified", "is_active"])
+            token_obj.used_at = timezone.now()
+            token_obj.save(update_fields=["used_at"])
+            messages.success(request, "Email verified successfully. You can sign in now.")
+            return redirect("login")
+
+    return render(
+        request,
+        "registration/verify_email.html",
+        {"token": str(token_obj.token), "masked_email": _mask_email(user.email)},
+    )
+
+
+def resend_email_verification(request: HttpRequest):
+    if request.method != "POST":
+        return redirect("login")
+
+    token_raw = (request.POST.get("token") or "").strip()
+    try:
+        token_obj = EmailVerificationToken.objects.select_related("user").get(token=token_raw)
+    except EmailVerificationToken.DoesNotExist:
+        messages.error(request, "Invalid verification request.")
+        return redirect("login")
+
+    if token_obj.is_used:
+        messages.success(request, "Your email is already verified. You can sign in now.")
+        return redirect("login")
+
+    cooldown = int(
+        EmailConfiguration.get_active().resend_cooldown_seconds
+        or getattr(settings, "EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS", 60)
+    )
+    if token_obj.last_sent_at and (timezone.now() - token_obj.last_sent_at).total_seconds() < cooldown:
+        messages.error(request, "Please wait a moment before requesting another OTP.")
+        return redirect(f"{reverse('email-verify')}?token={token_obj.token}")
+
+    new_token = EmailVerificationToken.create_for_user(
+        user=token_obj.user,
+        otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
+    )
+    try:
+        _send_email_verification(request, new_token)
+    except Exception:
+        messages.error(request, "Could not send OTP. Please try again later.")
+        return redirect(f"{reverse('email-verify')}?token={token_obj.token}")
+
+    messages.success(request, "A new OTP has been sent to your email.")
+    return redirect(f"{reverse('email-verify')}?token={new_token.token}")
+
+
+@login_required
+def verify_withdrawal_otp(request: HttpRequest):
+    token_raw = (request.GET.get("token") or request.POST.get("token") or "").strip()
+    try:
+        token_obj = (
+            WithdrawalOtpToken.objects.select_related("withdrawal_request", "withdrawal_request__user")
+            .get(token=token_raw)
+        )
+    except WithdrawalOtpToken.DoesNotExist:
+        messages.error(request, "Invalid withdrawal verification link.")
+        return redirect("manual-withdrawal")
+
+    withdrawal = token_obj.withdrawal_request
+    if withdrawal.user_id != request.user.id:
+        messages.error(request, "This verification link is not for your account.")
+        return redirect("manual-withdrawal")
+
+    if withdrawal.email_otp_verified:
+        messages.success(request, "Your withdrawal request is already verified.")
+        return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
+
+    if token_obj.is_used:
+        messages.error(request, "This OTP token has already been used. Please resend OTP.")
+    if token_obj.is_expired:
+        messages.error(request, "Your OTP has expired. Please resend OTP.")
+
+    if request.method == "POST":
+        otp = (request.POST.get("otp_code") or "").strip()
+        if token_obj.is_expired:
+            messages.error(request, "Your OTP has expired. Please resend OTP.")
+        elif not otp:
+            messages.error(request, "OTP is required.")
+        elif otp != token_obj.otp_code:
+            messages.error(request, "Invalid OTP.")
+        else:
+            withdrawal.email_otp_verified = True
+            withdrawal.email_otp_verified_at = timezone.now()
+            withdrawal.save(update_fields=["email_otp_verified", "email_otp_verified_at"])
+            token_obj.used_at = timezone.now()
+            token_obj.save(update_fields=["used_at"])
+            messages.success(request, "Withdrawal request verified successfully.")
+            return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
+
+    return render(
+        request,
+        "core/verify_withdrawal_otp.html",
+        {
+            "token": str(token_obj.token),
+            "masked_email": _mask_email(request.user.email),
+            "withdrawal": withdrawal,
+        },
+    )
+
+
+@login_required
+def resend_withdrawal_otp(request: HttpRequest):
+    if request.method != "POST":
+        return redirect("manual-withdrawal")
+
+    token_raw = (request.POST.get("token") or "").strip()
+    try:
+        token_obj = (
+            WithdrawalOtpToken.objects.select_related("withdrawal_request", "withdrawal_request__user")
+            .get(token=token_raw)
+        )
+    except WithdrawalOtpToken.DoesNotExist:
+        messages.error(request, "Invalid withdrawal verification request.")
+        return redirect("manual-withdrawal")
+
+    withdrawal = token_obj.withdrawal_request
+    if withdrawal.user_id != request.user.id:
+        messages.error(request, "This verification request is not for your account.")
+        return redirect("manual-withdrawal")
+
+    if withdrawal.email_otp_verified:
+        messages.success(request, "Your withdrawal request is already verified.")
+        return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
+
+    cooldown = int(
+        EmailConfiguration.get_active().resend_cooldown_seconds
+        or getattr(settings, "EMAIL_VERIFICATION_RESEND_COOLDOWN_SECONDS", 60)
+    )
+    if token_obj.last_sent_at and (timezone.now() - token_obj.last_sent_at).total_seconds() < cooldown:
+        messages.error(request, "Please wait a moment before requesting another OTP.")
+        return redirect(f"{reverse('withdrawal-otp-verify')}?token={token_obj.token}")
+
+    new_token = WithdrawalOtpToken.create_for_request(
+        withdrawal_request=withdrawal,
+        otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
+    )
+    try:
+        _send_withdrawal_otp(request, new_token)
+    except Exception:
+        messages.error(request, "Could not send OTP. Please try again later.")
+        return redirect(f"{reverse('withdrawal-otp-verify')}?token={token_obj.token}")
+
+    messages.success(request, "A new OTP has been sent to your email.")
+    return redirect(f"{reverse('withdrawal-otp-verify')}?token={new_token.token}")
 
 
 def logout_user(request: HttpRequest):
@@ -754,6 +1096,25 @@ def manual_withdrawal(request: HttpRequest):
     withdrawal_methods = WithdrawalMethod.objects.filter(is_active=True).order_by("name")
 
     if request.method == "POST":
+        if not request.user.email:
+            messages.error(request, "Please add an email to your account before making a withdrawal request.")
+            return redirect("manual-withdrawal")
+        if not request.user.email_verified:
+            token_obj = EmailVerificationToken.create_for_user(
+                user=request.user,
+                otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
+            )
+            try:
+                _send_email_verification(request, token_obj)
+            except Exception:
+                messages.error(
+                    request,
+                    "Your email is not verified, and we could not send a verification OTP. Please contact support.",
+                )
+                return redirect("manual-withdrawal")
+            messages.error(request, "Please verify your email first. We sent you a new OTP.")
+            return redirect(f"{reverse('email-verify')}?token={token_obj.token}")
+
         amount_raw = request.POST.get("amount")
         withdrawal_method_id = request.POST.get("withdrawal_method_id")
         account_details = (request.POST.get("account_details") or "").strip()
@@ -787,7 +1148,7 @@ def manual_withdrawal(request: HttpRequest):
         if net_amount < 0:
             net_amount = Decimal("0.00")
 
-        ManualWithdrawalRequest.objects.create(
+        withdrawal = ManualWithdrawalRequest.objects.create(
             user=request.user,
             amount=amount,
             withdrawal_method=selected_method,
@@ -798,8 +1159,18 @@ def manual_withdrawal(request: HttpRequest):
             net_amount=net_amount,
             account_details=account_details,
         )
-        messages.success(request, "Withdrawal request submitted successfully.")
-        return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
+        token_obj = WithdrawalOtpToken.create_for_request(
+            withdrawal_request=withdrawal,
+            otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
+        )
+        try:
+            _send_withdrawal_otp(request, token_obj)
+        except Exception:
+            messages.error(request, "Withdrawal request created, but we couldn't send OTP. Please try resend.")
+            return redirect(f"{reverse('withdrawal-otp-verify')}?token={token_obj.token}")
+
+        messages.success(request, "OTP sent. Please verify to confirm your withdrawal request.")
+        return redirect(f"{reverse('withdrawal-otp-verify')}?token={token_obj.token}")
 
     withdrawal_requests = ManualWithdrawalRequest.objects.filter(user=request.user).order_by("-created_at")
 
@@ -1053,6 +1424,11 @@ def admin_profit_distribution(request: HttpRequest):
                                 request,
                                 "This withdrawal request was already approved.",
                             )
+                        elif not withdrawal_req.email_otp_verified:
+                            messages.error(
+                                request,
+                                "Cannot approve: withdrawal is not OTP-verified by email.",
+                            )
                         else:
                             wallet, _ = Wallet.objects.select_for_update().get_or_create(
                                 user=withdrawal_req.user
@@ -1197,6 +1573,11 @@ def admin_pending_withdrawals(request: HttpRequest):
                             messages.error(
                                 request,
                                 "This withdrawal request was already approved.",
+                            )
+                        elif not withdrawal_req.email_otp_verified:
+                            messages.error(
+                                request,
+                                "Cannot approve: withdrawal is not OTP-verified by email.",
                             )
                         else:
                             wallet, _ = Wallet.objects.select_for_update().get_or_create(

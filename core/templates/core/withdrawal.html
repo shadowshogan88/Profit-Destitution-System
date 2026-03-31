@@ -13,24 +13,31 @@
     <div class="col-12">
         <div class="card">
             <div class="card-body">
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %}" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
                 <form method="post" class="vertical-navs-step checkout-tab">
                     {% csrf_token %}
                     <div class="row gy-5">
                         <div class="col-lg-3">
                             <div class="nav flex-column custom-nav nav-pills" role="tablist" aria-orientation="vertical">
-                                <button class="nav-link active" id="v-pills-bill-info-tab" data-bs-target="#v-pills-bill-info" type="button" role="tab" aria-controls="v-pills-bill-info" aria-selected="true">
+                                <button class="nav-link active" id="v-pills-bill-info-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-info" type="button" role="tab" aria-controls="v-pills-bill-info" aria-selected="true">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 1</span>
                                     Withdraw Info
                                 </button>
-                                <button class="nav-link" id="v-pills-bill-address-tab" data-bs-target="#v-pills-bill-address" type="button" role="tab" aria-controls="v-pills-bill-address" aria-selected="false">
+                                <button class="nav-link" id="v-pills-bill-address-tab" data-bs-toggle="pill" data-bs-target="#v-pills-bill-address" type="button" role="tab" aria-controls="v-pills-bill-address" aria-selected="false">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 2</span>
                                     Instruction
                                 </button>
-                                <button class="nav-link" id="v-pills-payment-tab" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
+                                <button class="nav-link" id="v-pills-payment-tab" data-bs-toggle="pill" data-bs-target="#v-pills-payment" type="button" role="tab" aria-controls="v-pills-payment" aria-selected="false">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 3</span>
                                     Request
                                 </button>
-                                <button class="nav-link" id="v-pills-finish-tab" data-bs-target="#v-pills-finish" type="button" role="tab" aria-controls="v-pills-finish" aria-selected="false">
+                                <button class="nav-link" id="v-pills-finish-tab" data-bs-toggle="pill" data-bs-target="#v-pills-finish" type="button" role="tab" aria-controls="v-pills-finish" aria-selected="false">
                                     <span class="step-title me-2"><i class="ri-close-circle-fill step-icon me-2"></i> Step 4</span>
                                     Finish
                                 </button>
@@ -371,12 +378,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     document.querySelectorAll(".custom-nav .nav-link").forEach(function (tabBtn) {
-        tabBtn.addEventListener("click", function (event) {
-            if (event.isTrusted) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        });
         tabBtn.addEventListener("shown.bs.tab", updateStepIcons);
     });
 

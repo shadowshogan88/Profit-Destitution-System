@@ -1,0 +1,19 @@
+{{ app_name }}
+
+Withdrawal OTP verification
+
+Hi {{ username }},
+
+Use this OTP to confirm your withdrawal request: {{ otp_code }}
+This OTP expires in {{ otp_valid_minutes }} minutes.
+
+Request summary:
+- Amount: {{ amount }}
+- Net: {{ net_amount }}
+- Method: {{ payment_method }}
+
+Open confirmation page:
+{{ verify_url }}
+
+If you didn’t request this withdrawal, you can ignore this email or contact support.
+

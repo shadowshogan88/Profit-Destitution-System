@@ -1,12 +1,15 @@
 from datetime import timedelta
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
+from django.urls import reverse
 from django.utils import timezone
 
 from .models import (
     CommissionLog,
     CommissionRate,
+    EmailVerificationToken,
+    WithdrawalOtpToken,
     InvestmentPackage,
     ProfitDistribution,
     ProfitDistributionEntry,
@@ -153,3 +156,85 @@ class ReferralCommissionTests(TestCase):
         self.assertEqual(u2.wallet.balance, Decimal("23.70"))
         self.assertEqual(ProfitDistribution.objects.count(), 1)
         self.assertEqual(ProfitDistributionEntry.objects.count(), 2)
+
+
+@override_settings(
+    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+    EMAIL_OTP_EXPIRY_MINUTES=10,
+)
+class EmailVerificationTests(TestCase):
+    def test_verify_email_activates_user(self):
+        user = User.objects.create_user(
+            username="verify_user",
+            password="x",
+            email="verify_user@example.com",
+            is_active=False,
+            email_verified=False,
+        )
+        token_obj = EmailVerificationToken.create_for_user(user=user, otp_valid_minutes=10)
+        url = reverse("email-verify") + f"?token={token_obj.token}"
+        self.client.post(url, {"token": str(token_obj.token), "otp_code": token_obj.otp_code})
+
+        user.refresh_from_db()
+        token_obj.refresh_from_db()
+        self.assertTrue(user.is_active)
+        self.assertTrue(user.email_verified)
+        self.assertIsNotNone(token_obj.used_at)
+
+    def test_verify_email_rejects_wrong_otp(self):
+        user = User.objects.create_user(
+            username="verify_user2",
+            password="x",
+            email="verify_user2@example.com",
+            is_active=False,
+            email_verified=False,
+        )
+        token_obj = EmailVerificationToken.create_for_user(user=user, otp_valid_minutes=10)
+        url = reverse("email-verify") + f"?token={token_obj.token}"
+        self.client.post(url, {"token": str(token_obj.token), "otp_code": "000000"})
+
+        user.refresh_from_db()
+        token_obj.refresh_from_db()
+        self.assertFalse(user.is_active)
+        self.assertFalse(user.email_verified)
+        self.assertIsNone(token_obj.used_at)
+
+
+@override_settings(
+    EMAIL_BACKEND="django.core.mail.backends.locmem.EmailBackend",
+)
+class WithdrawalOtpTests(TestCase):
+    def test_withdrawal_requires_otp_verification(self):
+        user = User.objects.create_user(
+            username="w_user",
+            password="x",
+            email="w_user@example.com",
+            is_active=True,
+            email_verified=True,
+        )
+        credit_wallet(user, Decimal("100.00"), "Seed wallet")
+        self.client.force_login(user)
+
+        from .models import WithdrawalMethod
+
+        method = WithdrawalMethod.objects.create(
+            name="USDT TRC20",
+            is_active=True,
+            withdrawal_fee_percent=Decimal("0.00"),
+        )
+
+        resp = self.client.post(
+            reverse("manual-withdrawal"),
+            {"amount": "10", "withdrawal_method_id": method.id, "account_details": "TRC20:xxxx"},
+            follow=False,
+        )
+        self.assertEqual(resp.status_code, 302)
+        token = WithdrawalOtpToken.objects.first()
+        self.assertIsNotNone(token)
+        self.assertFalse(token.withdrawal_request.email_otp_verified)
+
+        verify_url = reverse("withdrawal-otp-verify") + f"?token={token.token}"
+        resp2 = self.client.post(verify_url, {"token": str(token.token), "otp_code": token.otp_code})
+        self.assertEqual(resp2.status_code, 302)
+        token.withdrawal_request.refresh_from_db()
+        self.assertTrue(token.withdrawal_request.email_otp_verified)
