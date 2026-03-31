@@ -16,19 +16,19 @@
         <div class="nav-stats">
             <div class="nav-stat">
                 <span>Wallet</span>
-                <strong>Tk {{ request.user.wallet.balance }}</strong>
+                <strong>USDT {{ request.user.wallet.balance }}</strong>
             </div>
             <div class="nav-stat">
                 <span>Invested</span>
-                <strong>Tk {{ total_invested }}</strong>
+                <strong>USDT {{ total_invested }}</strong>
             </div>
             <div class="nav-stat">
                 <span>Won Profit</span>
-                <strong>Tk {{ total_profit_won }}</strong>
+                <strong>USDT {{ total_profit_won }}</strong>
             </div>
             <div class="nav-stat">
                 <span>Commission</span>
-                <strong>Tk {{ commission_total }}</strong>
+                <strong>USDT {{ commission_total }}</strong>
             </div>
         </div>
     </header>
@@ -77,8 +77,8 @@
 
         <section id="wallet" class="card">
             <h2>Wallet</h2>
-            <p class="big">Tk {{ request.user.wallet.balance }}</p>
-            <p>Total Commission: Tk {{ commission_total }}</p>
+            <p class="big">USDT {{ request.user.wallet.balance }}</p>
+            <p>Total Commission: USDT {{ commission_total }}</p>
             <p class="subtitle">
                 Add fund from wallet is disabled.
                 Submit from <a href="{% url 'manual-payment' %}">Manual Payment</a>.
@@ -98,8 +98,8 @@
         <section id="summary" class="card">
             <h2>Investment Summary</h2>
             <ul class="list">
-                <li><strong>Total Invested:</strong> Tk {{ total_invested }}</li>
-                <li><strong>Total Won Profit:</strong> Tk {{ total_profit_won }}</li>
+                <li><strong>Total Invested:</strong> USDT {{ total_invested }}</li>
+                <li><strong>Total Won Profit:</strong> USDT {{ total_profit_won }}</li>
                 <li><strong>Total Investments:</strong> {{ investments|length }}</li>
                 <li><strong>Won Investments:</strong> {{ won_investments|length }}</li>
             </ul>
@@ -120,8 +120,8 @@
                     {% for inv in won_investments %}
                         <tr>
                             <td>#{{ inv.id }}</td>
-                            <td>Tk {{ inv.principal_amount }}</td>
-                            <td>Tk {{ inv.profit_realized }}</td>
+                            <td>USDT {{ inv.principal_amount }}</td>
+                            <td>USDT {{ inv.profit_realized }}</td>
                             <td>{{ inv.created_at|date:"Y-m-d H:i" }}</td>
                         </tr>
                     {% empty %}
@@ -146,7 +146,7 @@
                     {% for tx in wallet_transactions %}
                         <tr>
                             <td>{{ tx.tx_type }}</td>
-                            <td>Tk {{ tx.amount }}</td>
+                            <td>USDT {{ tx.amount }}</td>
                             <td>{{ tx.description }}</td>
                             <td>{{ tx.created_at|date:"Y-m-d H:i" }}</td>
                         </tr>
@@ -160,3 +160,4 @@
     </div>
 </body>
 </html>
+

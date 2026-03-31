@@ -31,6 +31,7 @@ class User(AbstractUser):
         related_name="downlines",
     )
     profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
+    email_verified = models.BooleanField(default=False)
 
     @classmethod
     def generate_referral_code(cls) -> str:
@@ -178,6 +179,25 @@ class CommissionRate(models.Model):
 
     class Meta:
         ordering = ["level"]
+
+    def clean(self):
+        super().clean()
+        if self.level < 1 or self.level > 6:
+            raise ValidationError({"level": "Level must be between 1 and 6."})
+
+        total_percent = Decimal("0.00")
+        rates_qs = CommissionRate.objects.exclude(pk=self.pk)
+        seen_levels = set(rates_qs.values_list("level", flat=True))
+        for item in rates_qs:
+            total_percent += item.rate_percent
+
+        total_percent += self.rate_percent
+        seen_levels.add(self.level)
+
+        if total_percent > Decimal("100.00"):
+            raise ValidationError("Total L1-L6 percentage cannot exceed 100%.")
+        if len(seen_levels) == 6 and total_percent != Decimal("100.00"):
+            raise ValidationError("Total L1-L6 percentage must be exactly 100%.")
 
     def __str__(self) -> str:
         return f"Level {self.level}: {self.rate_percent}%"

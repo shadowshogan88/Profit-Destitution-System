@@ -69,12 +69,12 @@
                                 <td>{{ inv.user.username }}</td>
                                 {% endif %}
                                 <td>{{ inv.package.name|default:"-" }}</td>
-                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>USDT {{ inv.principal_amount }}</td>
                                 <td>{{ inv.duration_days }} days</td>
                                 <td>{{ inv.starts_at|date:"d M Y, h:i A" }}</td>
                                 <td>{{ inv.ends_at|date:"d M Y, h:i A" }}</td>
                                 <td>{{ inv.status }}</td>
-                                <td>Tk {{ inv.profit_realized }}</td>
+                                <td>USDT {{ inv.profit_realized }}</td>
                                 <td>{{ inv.created_at|date:"d M Y, h:i A" }}</td>
                             </tr>
                             {% empty %}
@@ -141,3 +141,4 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 </style>
 {% endblock %}
+

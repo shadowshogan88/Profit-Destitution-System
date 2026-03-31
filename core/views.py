@@ -1,4 +1,4 @@
-﻿import json
+import json
 from decimal import Decimal, InvalidOperation
 
 import csv
@@ -916,7 +916,7 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
         investment = create_package_investment(request.user, package, amount)
         messages.success(
             request,
-            f"Investment {investment.investment_code} started for Tk {amount} "
+            f"Investment {investment.investment_code} started for USDT {amount} "
             f"and {package.duration_days} days.",
         )
         return redirect("investment-page")
@@ -1575,4 +1575,5 @@ def withdrawal_method_info(request: HttpRequest):
             "withdrawal_fee_fixed": str(method.withdrawal_fee_fixed),
         }
     )
+
 

@@ -44,7 +44,7 @@
         <div class="card">
             <div class="card-body">
                 <p class="text-muted mb-1">Current Unsettled Balance</p>
-                <h4 class="mb-0">Tk {{ unsettled_account_balance }}</h4>
+                <h4 class="mb-0">USDT {{ unsettled_account_balance }}</h4>
             </div>
         </div>
     </div>
@@ -52,7 +52,7 @@
         <div class="card">
             <div class="card-body">
                 <p class="text-muted mb-1">Filtered Unsettled Entries Total</p>
-                <h4 class="mb-0">Tk {{ unsettled_total }}</h4>
+                <h4 class="mb-0">USDT {{ unsettled_total }}</h4>
             </div>
         </div>
     </div>
@@ -84,12 +84,12 @@
                                 <td>#{{ item.distribution_id }}</td>
                                 <td>{{ item.user.username }}</td>
                                 <td>{{ item.investment.investment_code|default:"-" }}</td>
-                                <td>Tk {{ item.active_principal }}</td>
-                                <td>Tk {{ item.gross_profit }}</td>
-                                <td>Tk {{ item.referral_commission }}</td>
-                                <td>Tk {{ item.unsettled_commission }}</td>
-                                <td>Tk {{ item.won_profit }}</td>
-                                <td>Tk {{ item.payout_amount }}</td>
+                                <td>USDT {{ item.active_principal }}</td>
+                                <td>USDT {{ item.gross_profit }}</td>
+                                <td>USDT {{ item.referral_commission }}</td>
+                                <td>USDT {{ item.unsettled_commission }}</td>
+                                <td>USDT {{ item.won_profit }}</td>
+                                <td>USDT {{ item.payout_amount }}</td>
                                 <td>{{ item.created_at|date:"d M Y, h:i A" }}</td>
                             </tr>
                             {% empty %}
@@ -132,7 +132,7 @@
                                 <td>{{ item.source_user.username|default:"-" }}</td>
                                 <td>{{ item.investment.investment_code|default:"-" }}</td>
                                 <td>
-                                    <span class="badge bg-warning-subtle text-warning">Tk {{ item.amount }}</span>
+                                    <span class="badge bg-warning-subtle text-warning">USDT {{ item.amount }}</span>
                                 </td>
                                 <td>
                                     {% if item.missing_from_level and item.missing_to_level %}
@@ -206,3 +206,4 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 </style>
 {% endblock %}
+

@@ -47,9 +47,9 @@
             <section class="card wide">
                 <h2>Wallet Balances</h2>
                 <ul class="list">
-                    <li><strong>Main Wallet:</strong> Tk {{ request.user.wallet.balance }}</li>
-                    <li><strong>Investment Wallet:</strong> Tk {{ investment_wallet_balance }}</li>
-                    <li><strong>Return Average:</strong> Tk {{ return_average }}</li>
+                    <li><strong>Main Wallet:</strong> USDT {{ request.user.wallet.balance }}</li>
+                    <li><strong>Investment Wallet:</strong> USDT {{ investment_wallet_balance }}</li>
+                    <li><strong>Return Average:</strong> USDT {{ return_average }}</li>
                 </ul>
             </section>
 
@@ -64,7 +64,7 @@
                             <option value="{{ p.id }}">{{ p.name }} - {{ p.duration_days }} days</option>
                         {% endfor %}
                     </select>
-                    <label for="amount">Amount (Tk)</label>
+                    <label for="amount">Amount (USDT)</label>
                     <input id="amount" name="amount" type="number" min="0.01" step="0.01" placeholder="Enter amount" required>
                     <button type="submit">Start Investment</button>
                 </form>
@@ -88,7 +88,7 @@
                             <tr>
                                 <td>#{{ inv.id }}</td>
                                 <td>{{ inv.package.name|default:"-" }}</td>
-                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>USDT {{ inv.principal_amount }}</td>
                                 <td>{{ inv.duration_days }} days</td>
                                 <td>{{ inv.ends_at|date:"Y-m-d H:i" }}</td>
                                 <td>{{ inv.status }}</td>
@@ -118,7 +118,7 @@
                             <tr>
                                 <td>#{{ inv.id }}</td>
                                 <td>{{ inv.package.name|default:"-" }}</td>
-                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>USDT {{ inv.principal_amount }}</td>
                                 <td>{{ inv.duration_days }} days</td>
                                 <td>{% if inv.principal_returned %}Yes{% else %}No{% endif %}</td>
                                 <td>{{ inv.status }}</td>
@@ -133,3 +133,4 @@
     </div>
 </body>
 </html>
+

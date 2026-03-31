@@ -1,4 +1,4 @@
-﻿{% extends 'core/user_dashboard_master.html' %}
+{% extends 'core/user_dashboard_master.html' %}
 {% load static %}
 {% block title %}Packages{% endblock %}
 {% block dashboard_content %}
@@ -39,15 +39,15 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item d-flex justify-content-between px-0">
                         <span>Main Wallet</span>
-                        <strong>Tk {{ request.user.wallet.balance }}</strong>
+                        <strong>USDT {{ request.user.wallet.balance }}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between px-0">
                         <span>Investment Wallet</span>
-                        <strong>Tk {{ investment_wallet_balance }}</strong>
+                        <strong>USDT {{ investment_wallet_balance }}</strong>
                     </li>
                     <li class="list-group-item d-flex justify-content-between px-0">
                         <span>Completed Average</span>
-                        <strong>Tk {{ return_average }}</strong>
+                        <strong>USDT {{ return_average }}</strong>
                     </li>
                 </ul>
             </div>
@@ -90,7 +90,7 @@
                             <tr>
                                 <td>{{ inv.investment_code }}</td>
                                 <td>{{ inv.package.name|default:"-" }}</td>
-                                <td>Tk {{ inv.principal_amount }}</td>
+                                <td>USDT {{ inv.principal_amount }}</td>
                                 <td>{{ inv.duration_days }} days</td>
                                 <td>{% if inv.principal_returned %}<span class="badge bg-success-subtle text-success">Yes</span>{% else %}<span class="badge bg-danger-subtle text-danger">No</span>{% endif %}</td>
                                 <td>{{ inv.status }}</td>
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", function () {
         [
             "{{ inv.investment_code|default:'-'|escapejs }}",
             "{{ inv.package.name|default:'-'|escapejs }}",
-            "Tk {{ inv.principal_amount|escapejs }}",
+            "USDT {{ inv.principal_amount|escapejs }}",
             "{{ inv.duration_days|escapejs }} days",
             "{{ inv.ends_at|date:'Y-m-d H:i'|escapejs }}",
             "{{ inv.status|default:'-'|escapejs }}"
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             Swal.fire({
                 title: "Confirm Investment",
-                html: "Buy <b>" + packageName + "</b>?<br>Amount: <b>Tk " + packageAmount + "</b><br>Duration: <b>" + packageDuration + " days</b>",
+                html: "Buy <b>" + packageName + "</b>?<br>Amount: <b>USDT " + packageAmount + "</b><br>Duration: <b>" + packageDuration + " days</b>",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonText: "Confirm",
@@ -222,5 +222,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 </script>
 {% endblock %}
+
 
 

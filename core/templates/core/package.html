@@ -1,4 +1,4 @@
-﻿{% extends 'core/user_dashboard_master.html' %}
+{% extends 'core/user_dashboard_master.html' %}
 {% load static %}
 {% block title %}Packages{% endblock %}
 {% block dashboard_content %}
@@ -70,7 +70,7 @@
                                 {% csrf_token %}
                                 <input type="hidden" name="package_id" value="{{ p.id }}">
                                 <div class="mb-3">
-                                    <label class="form-label">Amount (Tk)</label>
+                                    <label class="form-label">Amount (USDT)</label>
                                     <input type="number" name="amount" class="form-control text-center" min="0.01" step="0.01" placeholder="Enter amount" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="sa-dialog-three-btn-{{ p.id }}">Start Investment</button>
@@ -85,7 +85,7 @@
                         </div>
                         <div class="card-body pb-0">
                             <ul class="list-unstyled vstack gap-3 mb-0 text-start">
-                                <li>Suggested Amount: <span class="text-success fw-semibold">Tk {{ p.amount }}</span></li>
+                                <li>Suggested Amount: <span class="text-success fw-semibold">USDT {{ p.amount }}</span></li>
                                 <li>Duration: <span class="text-success fw-semibold">{{ p.duration_days }} Days</span></li>
                                 <li>Popular: <span class="text-success fw-semibold">{% if p.is_popular %}Yes{% else %}No{% endif %}</span></li>
                                 <li>Status: <span class="text-success fw-semibold">{% if p.is_active %}Active{% else %}Inactive{% endif %}</span></li>
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             Swal.fire({
                 title: "Confirm Investment",
-                html: "Buy <b>" + packageName + "</b>?<br>Amount: <b>Tk " + packageAmount + "</b><br>Duration: <b>" + packageDuration + " days</b>",
+                html: "Buy <b>" + packageName + "</b>?<br>Amount: <b>USDT " + packageAmount + "</b><br>Duration: <b>" + packageDuration + " days</b>",
                 icon: "question",
                 showCancelButton: true,
                 confirmButtonText: "Confirm",
@@ -181,5 +181,6 @@ document.addEventListener("DOMContentLoaded", function () {
 </script>
 
 {% endblock %}
+
 
 

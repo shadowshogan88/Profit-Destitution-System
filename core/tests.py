@@ -33,6 +33,7 @@ class ReferralCommissionTests(TestCase):
                 CommissionRate(level=3, rate_percent=Decimal("3.00")),
                 CommissionRate(level=4, rate_percent=Decimal("2.00")),
                 CommissionRate(level=5, rate_percent=Decimal("1.00")),
+                CommissionRate(level=6, rate_percent=Decimal("79.00")),
             ]
         )
 
@@ -56,7 +57,7 @@ class ReferralCommissionTests(TestCase):
         u6.refresh_from_db()
         u7.refresh_from_db()
 
-        self.assertEqual(u7.wallet.balance, Decimal("79.00"))  # Investor gets net profit after referral commission
+        self.assertEqual(u7.wallet.balance, Decimal("79.00"))  # Investor gets L6 own profit
         self.assertEqual(u6.wallet.balance, Decimal("10.00"))  # L1 10%
         self.assertEqual(u5.wallet.balance, Decimal("5.00"))  # L2 5%
         self.assertEqual(u4.wallet.balance, Decimal("3.00"))  # L3 3%
@@ -86,6 +87,24 @@ class ReferralCommissionTests(TestCase):
         self.assertEqual(unsettled_entry.amount, Decimal("11.00"))
         self.assertEqual(unsettled_entry.missing_from_level, 2)
         self.assertEqual(unsettled_entry.missing_to_level, 5)
+
+    def test_upline_gets_commission_without_having_active_investment(self):
+        u1 = User.objects.create_user(username="no_invest_upline", password="x")
+        u2 = User.objects.create_user(username="earning_child", password="x", referred_by=u1)
+        package = InvestmentPackage.objects.create(name="Commission-Pack", amount=Decimal("500.00"), duration_days=7)
+
+        credit_wallet(u2, Decimal("500.00"), "Seed wallet")
+        create_package_investment(u2, package, Decimal("500.00"))
+
+        distribution = distribute_profit_to_active_investors(Decimal("100.00"))
+
+        u1.refresh_from_db()
+        u2.refresh_from_db()
+
+        self.assertEqual(distribution.total_amount, Decimal("100.00"))
+        self.assertEqual(u1.investments.count(), 0)
+        self.assertEqual(u1.wallet.balance, Decimal("10.00"))
+        self.assertEqual(u2.wallet.balance, Decimal("79.00"))
 
     def test_package_investment_locks_and_returns_principal(self):
         user = User.objects.create_user(username="investor", password="x")

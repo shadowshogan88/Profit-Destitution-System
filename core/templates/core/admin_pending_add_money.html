@@ -47,7 +47,7 @@
                             <tr>
                                 <td>{{ item.request_code }}</td>
                                 <td>{{ item.user.username }}</td>
-                                <td>Tk {{ item.amount }}</td>
+                                <td>USDT {{ item.amount }}</td>
                                 <td>{{ item.payment_method }}</td>
                                 <td>{{ item.transaction_reference|default:"-" }}</td>
                                 <td>{{ item.created_at|date:"d M Y, h:i A" }}</td>
@@ -81,3 +81,4 @@
     </div>
 </div>
 {% endblock %}
+

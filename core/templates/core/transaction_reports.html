@@ -80,9 +80,9 @@
                                     </td>
                                     <td>{{ row.request_code }}</td>
                                     <td>{{ row.username }}</td>
-                                    <td>Tk {{ row.amount }}</td>
-                                    <td>Tk {{ row.fee }}</td>
-                                    <td>Tk {{ row.net }}</td>
+                                    <td>USDT {{ row.amount }}</td>
+                                    <td>USDT {{ row.fee }}</td>
+                                    <td>USDT {{ row.net }}</td>
                                     <td>{{ row.method }}</td>
                                     <td>{{ row.reference|default:"-" }}</td>
                                     <td>{{ row.status }}</td>
@@ -104,7 +104,7 @@
                                             {{ tx.tx_type }}
                                         </span>
                                     </td>
-                                    <td>Tk {{ tx.amount }}</td>
+                                    <td>USDT {{ tx.amount }}</td>
                                     <td>{{ tx.description }}</td>
                                     <td>{{ tx.created_at|date:"d M Y, h:i A" }}</td>
                                 </tr>
@@ -173,3 +173,4 @@ document.addEventListener("DOMContentLoaded", function () {
 }
 </style>
 {% endblock %}
+

@@ -101,7 +101,7 @@
                         {% for item in payment_requests %}
                             <tr>
                                 <td>#{{ item.id }}</td>
-                                <td>Tk {{ item.amount }}</td>
+                                <td>USDT {{ item.amount }}</td>
                                 <td>{{ item.payment_method }}</td>
                                 <td>{{ item.transaction_reference|default:"-" }}</td>
                                 <td>{{ item.status }}</td>
@@ -241,3 +241,4 @@
     </script>
 </body>
 </html>
+

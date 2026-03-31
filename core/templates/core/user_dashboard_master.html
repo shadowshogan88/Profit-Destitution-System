@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 <!doctype html>
 <html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable" data-theme="material" data-theme-colors="default">
 
@@ -85,11 +85,11 @@
                 <div class="d-none d-md-flex align-items-center gap-2 me-3">
                     <div class="text-end px-3 py-2 border rounded bg-light">
                         <div class="fs-12 text-muted">Wallet</div>
-                        <div class="fw-semibold">Tk {{ request.user.wallet.balance|default:'0.00' }}</div>
+                        <div class="fw-semibold">USDT {{ request.user.wallet.balance|default:'0.00' }}</div>
                     </div>
                     <div class="text-end px-3 py-2 border rounded bg-light">
                         <div class="fs-12 text-muted">Total Invested</div>
-                        <div class="fw-semibold">Tk {{ request.user.total_invested_amount }}</div>
+                        <div class="fw-semibold">USDT {{ request.user.total_invested_amount }}</div>
                     </div>
                     <div class="text-end px-3 py-2 border rounded bg-light">
                         <div class="fs-12 text-muted">Referrals</div>
@@ -138,7 +138,7 @@
                         <h6 class="dropdown-header">Welcome Anna!</h6>
                         <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>Tk {{ request.user.wallet.balance|default:'0.00' }}</b></span></a>
+                        <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>USDT {{ request.user.wallet.balance|default:'0.00' }}</b></span></a>
                         <a class="dropdown-item" href="{% url 'password_change' %}"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Change Password</span></a>
                         <a class="dropdown-item" href="{% url 'lock-screen' %}?next={{ request.get_full_path|urlencode }}"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Lock screen</span></a>
                         <a class="dropdown-item" href="{% url 'logout' %}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
@@ -222,7 +222,7 @@
                     <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
                     <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a>
                     <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>Tk {{ request.user.wallet.balance|default:'0.00' }}</b></span></a>
+                    <a class="dropdown-item" href="{% url 'page-profile' %}"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>USDT {{ request.user.wallet.balance|default:'0.00' }}</b></span></a>
                     <a class="dropdown-item" href="{% url 'password_change' %}"><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Change Password</span></a>
                     <a class="dropdown-item" href="{% url 'lock-screen' %}?next={{ request.get_full_path|urlencode }}"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Lock screen</span></a>
                     <a class="dropdown-item" href="{% url 'logout' %}"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
@@ -522,3 +522,4 @@
 
 
 </html>
+

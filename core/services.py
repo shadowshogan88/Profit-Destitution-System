@@ -18,7 +18,9 @@ from .models import (
     WalletTransaction,
 )
 
-MAX_LEVEL = 5
+REFERRAL_MAX_LEVEL = 5
+OWN_PROFIT_LEVEL = 6
+TOTAL_LEVELS = 6
 TWOPLACES = Decimal("0.01")
 
 
@@ -28,16 +30,33 @@ def to_2dp(value: Decimal) -> Decimal:
 
 def get_rate_map() -> dict[int, Decimal]:
     configured = list(
-        CommissionRate.objects.filter(level__lte=MAX_LEVEL).order_by("level")
+        CommissionRate.objects.filter(level__lte=TOTAL_LEVELS).order_by("level")
     )
     if not configured:
         return {}
 
     rates = {item.level: item.rate_percent for item in configured}
-    max_level = max(rates.keys())
-    for level in range(1, max_level + 1):
+    for level in range(1, TOTAL_LEVELS + 1):
         rates.setdefault(level, Decimal("0.00"))
     return rates
+
+
+def validate_distribution_rates(rates: dict[int, Decimal]) -> None:
+    if not rates:
+        raise ValueError("Configure CommissionRate levels 1 to 6 before distributing profit.")
+
+    missing_levels = [level for level in range(1, TOTAL_LEVELS + 1) if level not in rates]
+    if missing_levels:
+        raise ValueError("Configure CommissionRate levels 1 to 6 before distributing profit.")
+
+    total_percent = to_2dp(sum((rates[level] for level in range(1, TOTAL_LEVELS + 1)), Decimal("0.00")))
+    if total_percent != Decimal("100.00"):
+        raise ValueError("L1 to L6 percentages must total exactly 100%.")
+
+
+def get_won_profit_amount(gross_profit: Decimal, rates: dict[int, Decimal]) -> Decimal:
+    own_profit_percent = rates[OWN_PROFIT_LEVEL]
+    return to_2dp((gross_profit * own_profit_percent) / Decimal("100"))
 
 
 @transaction.atomic
@@ -200,13 +219,12 @@ def realize_profit(investment: Investment, new_profit_amount: Decimal) -> None:
     if new_profit_amount <= 0:
         raise ValueError("Profit amount must be greater than zero")
 
-    # Referral commission is distributed first from this profit chunk.
-    referral_commission, _ = distribute_commission_upward(investment, new_profit_amount)
-    net_profit = to_2dp(new_profit_amount - referral_commission)
-    if net_profit < 0:
-        net_profit = Decimal("0.00")
+    rates = get_rate_map()
+    validate_distribution_rates(rates)
+    referral_commission, _ = distribute_commission_upward(investment, new_profit_amount, rates=rates)
+    net_profit = get_won_profit_amount(new_profit_amount, rates)
 
-    # Investor gets only the net won profit after referral commission.
+    # Investor gets the configured L6 own-profit share from gross profit.
     investment.profit_realized = to_2dp(investment.profit_realized + net_profit)
     investment.save(update_fields=["profit_realized"])
     if net_profit > 0:
@@ -222,12 +240,12 @@ def distribute_commission_upward(
     investment: Investment,
     profit_chunk: Decimal,
     distribution: ProfitDistribution | None = None,
+    rates: dict[int, Decimal] | None = None,
 ) -> tuple[Decimal, Decimal]:
     source_user = investment.user
-    rates = get_rate_map()
-    if not rates:
-        return Decimal("0.00"), Decimal("0.00")
-    target_max_level = max(rates.keys())
+    rates = rates or get_rate_map()
+    validate_distribution_rates(rates)
+    target_max_level = REFERRAL_MAX_LEVEL
 
     uplines: list[User] = []
     current = source_user.referred_by
@@ -379,6 +397,8 @@ def distribute_profit_to_active_investors(
     total_referral_commission = Decimal("0.00")
     total_unsettled_commission = Decimal("0.00")
     total_won_profit = Decimal("0.00")
+    rates = get_rate_map()
+    validate_distribution_rates(rates)
     for row in rows:
         gross_profit = row["gross_profit"]
         if gross_profit <= 0:
@@ -389,10 +409,9 @@ def distribute_profit_to_active_investors(
             investment,
             gross_profit,
             distribution=distribution,
+            rates=rates,
         )
-        won_profit = to_2dp(gross_profit - referral_commission)
-        if won_profit < 0:
-            won_profit = Decimal("0.00")
+        won_profit = get_won_profit_amount(gross_profit, rates)
 
         if won_profit > 0:
             investment.profit_realized = to_2dp(investment.profit_realized + won_profit)

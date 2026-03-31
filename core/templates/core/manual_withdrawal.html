@@ -41,7 +41,7 @@
 
             <section class="card wide">
                 <h2>Send Withdrawal Request</h2>
-                <p class="subtitle">Current Wallet Balance: Tk {{ request.user.wallet.balance }}</p>
+                <p class="subtitle">Current Wallet Balance: USDT {{ request.user.wallet.balance }}</p>
                 <form method="post">
                     {% csrf_token %}
 
@@ -84,17 +84,17 @@
                         {% for item in withdrawal_requests %}
                             <tr>
                                 <td>#{{ item.id }}</td>
-                                <td>Tk {{ item.amount }}</td>
+                                <td>USDT {{ item.amount }}</td>
                                 <td>{{ item.payment_method }}</td>
                                 <td>
                                     {% if item.withdrawal_fee_fixed > 0 %}
-                                        Fixed Tk {{ item.withdrawal_fee_fixed }}
+                                        Fixed USDT {{ item.withdrawal_fee_fixed }}
                                     {% else %}
                                         {{ item.withdrawal_fee_percent }}%
                                     {% endif %}
                                 </td>
-                                <td>Tk {{ item.withdrawal_fee_amount }}</td>
-                                <td>Tk {{ item.net_amount }}</td>
+                                <td>USDT {{ item.withdrawal_fee_amount }}</td>
+                                <td>USDT {{ item.net_amount }}</td>
                                 <td>{{ item.status }}</td>
                                 <td>{{ item.created_at|date:"Y-m-d H:i" }}</td>
                             </tr>
@@ -132,7 +132,7 @@
                     if (feePercent > 0) {
                         feePreview.textContent = `Withdrawal Fee: ${feePercent.toFixed(2)}%`;
                     } else if (feeFixed > 0) {
-                        feePreview.textContent = `Withdrawal Fee: Fixed Tk ${feeFixed.toFixed(2)}`;
+                        feePreview.textContent = `Withdrawal Fee: Fixed USDT ${feeFixed.toFixed(2)}`;
                     } else {
                         feePreview.textContent = "Withdrawal Fee: -";
                     }
@@ -142,11 +142,11 @@
                 const fee = feePercent > 0 ? (amount * feePercent) / 100 : feeFixed;
                 const net = Math.max(0, amount - fee);
                 if (feePercent > 0) {
-                    feePreview.textContent = `Withdrawal Fee: Tk ${fee.toFixed(2)} (${feePercent.toFixed(2)}%)`;
+                    feePreview.textContent = `Withdrawal Fee: USDT ${fee.toFixed(2)} (${feePercent.toFixed(2)}%)`;
                 } else {
-                    feePreview.textContent = `Withdrawal Fee: Fixed Tk ${fee.toFixed(2)}`;
+                    feePreview.textContent = `Withdrawal Fee: Fixed USDT ${fee.toFixed(2)}`;
                 }
-                netPreview.textContent = `Estimated Net Receive: Tk ${net.toFixed(2)}`;
+                netPreview.textContent = `Estimated Net Receive: USDT ${net.toFixed(2)}`;
             }
 
             methodSelect.addEventListener("change", async function() {
@@ -175,3 +175,4 @@
     </script>
 </body>
 </html>
+

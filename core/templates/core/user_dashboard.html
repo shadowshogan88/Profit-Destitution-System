@@ -1,4 +1,4 @@
-﻿{% extends 'core/user_dashboard_master.html' %}
+{% extends 'core/user_dashboard_master.html' %}
 {% load static %}
 {% block title %}{{ page_title }}{% endblock %}
 {% block dashboard_content %}
@@ -129,7 +129,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Wallet</p>
-                                                        <h4 class=" mb-0" >Tk<span class="counter-value" data-target="{{ request.user.wallet.balance }}">0</span></h4>
+                                                        <h4 class=" mb-0" >USDT <span class="counter-value" data-target="{{ request.user.wallet.balance }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">Available<span> </span></span>
@@ -149,7 +149,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Add Amount</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_add_money }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_add_money }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
@@ -169,7 +169,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Withdrals</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_withdrawals }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_withdrawals }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-danger-subtle text-danger">{{ now|date:"F" }}<span> </span></span>
@@ -189,7 +189,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Total Invested</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ total_invested }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ total_invested }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">All Active<span> </span></span>
@@ -209,7 +209,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Won Profit</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_won_profit }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_won_profit }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
@@ -229,7 +229,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1">Commission</p>
-                                                        <h4 class=" mb-0">Tk<span class="counter-value" data-target="{{ monthly_commission }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_commission }}">0</span></h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>

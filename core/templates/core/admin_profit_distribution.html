@@ -34,10 +34,10 @@
                     <input type="hidden" name="action" value="distribute_profit">
                     <div class="mb-3">
                         <label class="form-label">Current Total Invested (All Users)</label>
-                        <input type="text" class="form-control" value="Tk {{ current_total_invested }}" readonly>
+                        <input type="text" class="form-control" value="USDT {{ current_total_invested }}" readonly>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Total Amount (Tk)</label>
+                        <label class="form-label">Total Amount (USDT)</label>
                         <input type="number" class="form-control" name="total_amount" min="0.01" step="0.01" required>
                     </div>
                     <div class="mb-3">
@@ -52,3 +52,4 @@
 </div>
 
 {% endblock %}
+

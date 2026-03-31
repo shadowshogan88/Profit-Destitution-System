@@ -48,9 +48,9 @@
                             <tr>
                                 <td>{{ item.request_code }}</td>
                                 <td>{{ item.user.username }}</td>
-                                <td>Tk {{ item.amount }}</td>
-                                <td>Tk {{ item.withdrawal_fee_amount }}</td>
-                                <td>Tk {{ item.net_amount }}</td>
+                                <td>USDT {{ item.amount }}</td>
+                                <td>USDT {{ item.withdrawal_fee_amount }}</td>
+                                <td>USDT {{ item.net_amount }}</td>
                                 <td>{{ item.payment_method }}</td>
                                 <td>{{ item.created_at|date:"d M Y, h:i A" }}</td>
                                 <td>
@@ -83,3 +83,4 @@
     </div>
 </div>
 {% endblock %}
+
