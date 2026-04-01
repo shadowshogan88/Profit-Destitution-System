@@ -32,6 +32,7 @@ def ensure_email_verified_column(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+    atomic = False
     dependencies = [
         ("core", "0026_emailverificationtoken"),
     ]
@@ -39,4 +40,3 @@ class Migration(migrations.Migration):
     operations = [
         migrations.RunPython(ensure_email_verified_column, migrations.RunPython.noop),
     ]
-
