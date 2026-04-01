@@ -1,0 +1,11 @@
+{{ app_name }}
+
+Add money approved
+
+Hi {{ username }}, your add money request has been approved and credited to your wallet.
+
+Request code: {{ request_code }}
+Amount credited: USDT {{ amount }}
+Method: {{ payment_method }}
+{% if credited_at %}Credited at: {{ credited_at }}{% endif %}
+

@@ -233,6 +233,18 @@ def realize_profit(investment: Investment, new_profit_amount: Decimal) -> None:
             net_profit,
             f"Profit realized for investment #{investment.pk} (net won profit)",
         )
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_profit_received(
+                    investment.user,
+                    amount=net_profit,
+                    note=f"Profit realized for Investment {investment.investment_code or investment.pk}.",
+                )
+            )
+        except Exception:
+            pass
 
 
 @transaction.atomic
@@ -421,6 +433,18 @@ def distribute_profit_to_active_investors(
                 won_profit,
                 f"Admin profit distribution #{distribution.pk} (net won profit)",
             )
+            try:
+                from . import notifications
+
+                transaction.on_commit(
+                    lambda user=row["user"], amount=won_profit, dist_id=distribution.pk: notifications.send_profit_received(
+                        user,
+                        amount=amount,
+                        note=f"Profit distribution #{dist_id} credited to your wallet.",
+                    )
+                )
+            except Exception:
+                pass
 
         total_referral_commission = to_2dp(total_referral_commission + referral_commission)
         total_unsettled_commission = to_2dp(total_unsettled_commission + unsettled_commission)

@@ -720,6 +720,14 @@ def verify_withdrawal_otp(request: HttpRequest):
             withdrawal.save(update_fields=["email_otp_verified", "email_otp_verified_at"])
             token_obj.used_at = timezone.now()
             token_obj.save(update_fields=["used_at"])
+            try:
+                from . import notifications
+
+                transaction.on_commit(
+                    lambda: notifications.send_withdrawal_confirmed(request.user, withdrawal)
+                )
+            except Exception:
+                pass
             messages.success(request, "Withdrawal request verified successfully.")
             return redirect(f"{reverse('manual-withdrawal')}?submitted=1")
 
@@ -1015,7 +1023,7 @@ def add_money_page(request: HttpRequest):
             messages.error(request, "Payment details are required.")
             return redirect("add-money")
 
-        ManualPaymentRequest.objects.create(
+        payment_req = ManualPaymentRequest.objects.create(
             user=request.user,
             amount=amount,
             payment_method=selected_method.name,
@@ -1023,6 +1031,14 @@ def add_money_page(request: HttpRequest):
             details=details,
             proof_image=proof_image,
         )
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_add_money_submitted(request.user, payment_req)
+            )
+        except Exception:
+            pass
         messages.success(request, "Payment request submitted successfully.")
         return redirect(f"{reverse('add-money')}?submitted=1")
 
@@ -1068,7 +1084,7 @@ def manual_payment(request: HttpRequest):
             messages.error(request, "Payment details are required.")
             return redirect("manual-payment")
 
-        ManualPaymentRequest.objects.create(
+        payment_req = ManualPaymentRequest.objects.create(
             user=request.user,
             amount=amount,
             payment_method=selected_method.name,
@@ -1076,6 +1092,14 @@ def manual_payment(request: HttpRequest):
             details=details,
             proof_image=proof_image,
         )
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_add_money_submitted(request.user, payment_req)
+            )
+        except Exception:
+            pass
         messages.success(request, "Payment request submitted successfully.")
         return redirect("manual-payment")
 
@@ -1285,6 +1309,14 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
         if amount <= 0:
             raise ValueError("Amount must be greater than zero.")
         investment = create_package_investment(request.user, package, amount)
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_investment_confirmed(request.user, investment)
+            )
+        except Exception:
+            pass
         messages.success(
             request,
             f"Investment {investment.investment_code} started for USDT {amount} "
@@ -1464,6 +1496,16 @@ def admin_profit_distribution(request: HttpRequest):
                                         "updated_at",
                                     ]
                                 )
+                                try:
+                                    from . import notifications
+
+                                    transaction.on_commit(
+                                        lambda: notifications.send_withdrawal_approved(
+                                            withdrawal_req.user, withdrawal_req
+                                        )
+                                    )
+                                except Exception:
+                                    pass
                                 messages.success(
                                     request,
                                     f"Withdrawal request #{withdrawal_req.pk} approved.",
@@ -1614,6 +1656,16 @@ def admin_pending_withdrawals(request: HttpRequest):
                                         "updated_at",
                                     ]
                                 )
+                                try:
+                                    from . import notifications
+
+                                    transaction.on_commit(
+                                        lambda: notifications.send_withdrawal_approved(
+                                            withdrawal_req.user, withdrawal_req
+                                        )
+                                    )
+                                except Exception:
+                                    pass
                                 messages.success(
                                     request,
                                     f"Withdrawal request #{withdrawal_req.pk} approved.",

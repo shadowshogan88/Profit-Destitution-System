@@ -1,0 +1,14 @@
+{{ app_name }}
+
+Investment confirmed
+
+Hi {{ username }}, your investment has been confirmed.
+
+Investment code: {{ investment_code }}
+Amount: {{ amount }}
+{% if package_name %}Package: {{ package_name }}{% endif %}
+{% if duration_days %}Duration: {{ duration_days }} days{% endif %}
+{% if starts_at and ends_at %}Start: {{ starts_at }} | End: {{ ends_at }}{% endif %}
+
+If you didn’t make this investment, please contact support immediately.
+

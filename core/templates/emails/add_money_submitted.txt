@@ -1,0 +1,13 @@
+{{ app_name }}
+
+Add money request submitted
+
+Hi {{ username }}, we received your add money request.
+
+Request code: {{ request_code }}
+Amount: USDT {{ amount }}
+Method: {{ payment_method }}
+{% if reference %}Reference: {{ reference }}{% endif %}
+
+Our team will review it and update the status.
+

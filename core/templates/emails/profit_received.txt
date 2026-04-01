@@ -1,0 +1,9 @@
+{{ app_name }}
+
+Profit received
+
+Hi {{ username }}, profit has been added to your wallet.
+
+Amount received: USDT {{ amount }}
+{% if note %}Note: {{ note }}{% endif %}
+

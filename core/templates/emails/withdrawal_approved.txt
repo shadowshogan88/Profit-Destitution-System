@@ -1,0 +1,13 @@
+{{ app_name }}
+
+Withdrawal approved
+
+Hi {{ username }}, your withdrawal has been approved.
+
+Request code: {{ request_code }}
+Amount: USDT {{ amount }}
+Fee: USDT {{ fee_amount }}
+Net: USDT {{ net_amount }}
+Method: {{ payment_method }}
+{% if approved_at %}Approved at: {{ approved_at }}{% endif %}
+

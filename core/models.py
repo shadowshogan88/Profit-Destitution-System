@@ -117,6 +117,38 @@ class EmailConfiguration(models.Model):
     otp_expiry_minutes = models.PositiveSmallIntegerField(default=10)
     resend_cooldown_seconds = models.PositiveIntegerField(default=60)
 
+    notify_investment_confirmed_enabled = models.BooleanField(default=True)
+    notify_profit_received_enabled = models.BooleanField(default=True)
+    notify_add_money_submitted_enabled = models.BooleanField(default=True)
+    notify_add_money_approved_enabled = models.BooleanField(default=True)
+    notify_withdrawal_confirmed_enabled = models.BooleanField(default=True)
+    notify_withdrawal_approved_enabled = models.BooleanField(default=True)
+
+    subject_investment_confirmed = models.CharField(
+        max_length=160,
+        default="{{ app_name }} - Investment confirmed",
+    )
+    subject_profit_received = models.CharField(
+        max_length=160,
+        default="{{ app_name }} - Profit received",
+    )
+    subject_add_money_submitted = models.CharField(
+        max_length=160,
+        default="{{ app_name }} - Add money request submitted",
+    )
+    subject_add_money_approved = models.CharField(
+        max_length=160,
+        default="{{ app_name }} - Add money approved",
+    )
+    subject_withdrawal_confirmed = models.CharField(
+        max_length=160,
+        default="{{ app_name }} - Withdrawal request confirmed",
+    )
+    subject_withdrawal_approved = models.CharField(
+        max_length=160,
+        default="{{ app_name }} - Withdrawal approved",
+    )
+
     smtp_host = models.CharField(max_length=255, blank=True, default="")
     smtp_port = models.PositiveIntegerField(default=587)
     smtp_username = models.CharField(max_length=255, blank=True, default="")
@@ -698,3 +730,11 @@ def credit_wallet_when_manual_payment_approved(sender, instance: ManualPaymentRe
         locked.wallet_credited = True
         locked.credited_at = timezone.now()
         locked.save(update_fields=["wallet_credited", "credited_at", "updated_at"])
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_add_money_approved(locked.user, locked)
+            )
+        except Exception:
+            pass

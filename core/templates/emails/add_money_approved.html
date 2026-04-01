@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add money approved</title>
+  </head>
+  <body style="margin:0;padding:0;background:#0b1220;font-family:Arial,Helvetica,sans-serif;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#0b1220;padding:24px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="width:600px;max-width:100%;background:#111a2e;border-radius:12px;overflow:hidden;border:1px solid #223155;">
+            <tr>
+              <td style="padding:22px 24px;background:#0f1730;">
+                <div style="color:#cbd5e1;font-size:13px;letter-spacing:0.02em;">{{ app_name }}</div>
+                <div style="color:#ffffff;font-size:20px;font-weight:700;margin-top:6px;">Add money approved</div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:24px;color:#e2e8f0;">
+                <p style="margin:0 0 12px 0;font-size:14px;line-height:1.6;">Hi {{ username }}, your add money request has been approved and credited to your wallet.</p>
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin:12px 0 0 0;">
+                  <tr>
+                    <td style="padding:12px 14px;background:#0b1220;border:1px solid #223155;border-radius:10px;">
+                      <div style="font-size:12px;color:#94a3b8;">Request Code</div>
+                      <div style="font-size:16px;color:#ffffff;font-weight:700;margin-top:4px;">{{ request_code }}</div>
+                      <div style="margin-top:10px;font-size:14px;color:#ffffff;">
+                        Amount credited: <strong>USDT {{ amount }}</strong> &nbsp;|&nbsp; Method: <strong>{{ payment_method }}</strong>
+                      </div>
+                      {% if credited_at %}
+                      <div style="margin-top:8px;font-size:12px;color:#94a3b8;">Credited at: {{ credited_at }}</div>
+                      {% endif %}
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:18px 24px;border-top:1px solid #223155;color:#94a3b8;font-size:12px;line-height:1.6;">
+                If you believe this is incorrect, contact support.
+              </td>
+            </tr>
+          </table>
+          <div style="color:#64748b;font-size:12px;margin-top:14px;">© {{ year }} {{ app_name }}. All rights reserved.</div>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+

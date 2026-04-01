@@ -1,0 +1,12 @@
+{{ app_name }}
+
+Withdrawal request confirmed
+
+Hi {{ username }}, your withdrawal request has been confirmed.
+
+Request code: {{ request_code }}
+Amount: USDT {{ amount }}
+Net: USDT {{ net_amount }}
+Method: {{ payment_method }}
+{% if confirmed_at %}Confirmed at: {{ confirmed_at }}{% endif %}
+

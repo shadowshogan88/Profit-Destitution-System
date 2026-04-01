@@ -74,6 +74,44 @@ class EmailConfigurationAdmin(admin.ModelAdmin):
     list_filter = ("is_active", "smtp_use_tls", "smtp_use_ssl")
     search_fields = ("app_name", "smtp_host", "smtp_username")
 
+    fieldsets = (
+        ("Brand", {"fields": ("app_name", "default_from_email")}),
+        ("OTP", {"fields": ("otp_expiry_minutes", "resend_cooldown_seconds")}),
+        (
+            "Notifications",
+            {
+                "fields": (
+                    "notify_investment_confirmed_enabled",
+                    "subject_investment_confirmed",
+                    "notify_profit_received_enabled",
+                    "subject_profit_received",
+                    "notify_add_money_submitted_enabled",
+                    "subject_add_money_submitted",
+                    "notify_add_money_approved_enabled",
+                    "subject_add_money_approved",
+                    "notify_withdrawal_confirmed_enabled",
+                    "subject_withdrawal_confirmed",
+                    "notify_withdrawal_approved_enabled",
+                    "subject_withdrawal_approved",
+                )
+            },
+        ),
+        (
+            "SMTP",
+            {
+                "fields": (
+                    "smtp_host",
+                    "smtp_port",
+                    "smtp_username",
+                    "smtp_password",
+                    "smtp_use_tls",
+                    "smtp_use_ssl",
+                )
+            },
+        ),
+        ("Status", {"fields": ("is_active",)}),
+    )
+
 
 @admin.register(InvestmentPackage)
 class InvestmentPackageAdmin(admin.ModelAdmin):
