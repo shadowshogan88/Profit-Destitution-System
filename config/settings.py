@@ -4,8 +4,25 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load `.env` if present (useful for cPanel/Passenger where env vars may not be set).
+# Values from the real environment take precedence.
+dotenv_path = BASE_DIR / ".env"
+if dotenv_path.exists():
+    try:
+        for raw_line in dotenv_path.read_text(encoding="utf-8").splitlines():
+            line = raw_line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            key = key.strip()
+            value = value.strip().strip("'").strip('"')
+            if key and key not in os.environ:
+                os.environ[key] = value
+    except OSError:
+        pass
+
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-in-production")
-DEBUG = os.getenv("DJANGO_DEBUG", "True").strip().lower() in {"1", "true", "yes", "on"}
+DEBUG = os.getenv("DJANGO_DEBUG", "False").strip().lower() in {"1", "true", "yes", "on"}
 
 # Allow hosts via env, with a safe fallback for local + production domain.
 _allowed_hosts_env = os.getenv(
@@ -73,6 +90,16 @@ ASGI_APPLICATION = "config.asgi.application"
 db_engine = os.getenv("DJANGO_DB_ENGINE", "sqlite").strip().lower()
 
 if db_engine == "mysql":
+    try:
+        import MySQLdb  # type: ignore  # noqa: F401
+    except Exception:
+        # Allow running without mysqlclient by using PyMySQL as a drop-in replacement.
+        try:
+            import pymysql  # type: ignore
+
+            pymysql.install_as_MySQLdb()
+        except Exception:
+            pass
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
@@ -107,9 +134,21 @@ MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 if importlib.util.find_spec("whitenoise") is not None:
+    use_manifest_storage = os.getenv("DJANGO_STATIC_USE_MANIFEST", "False").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
-        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
+        "staticfiles": {
+            "BACKEND": (
+                "whitenoise.storage.CompressedManifestStaticFilesStorage"
+                if use_manifest_storage
+                else "whitenoise.storage.CompressedStaticFilesStorage"
+            )
+        },
     }
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.User"
