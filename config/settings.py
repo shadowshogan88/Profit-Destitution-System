@@ -6,12 +6,25 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret-key-change-in-production")
 DEBUG = os.getenv("DJANGO_DEBUG", "True").strip().lower() in {"1", "true", "yes", "on"}
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",") if host.strip()]
-CSRF_TRUSTED_ORIGINS = [
-    origin.strip()
-    for origin in os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",")
-    if origin.strip()
-]
+
+# Allow hosts via env, with a safe fallback for local + production domain.
+_allowed_hosts_env = os.getenv(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost,digitalassettradeintl.com,www.digitalassettradeintl.com",
+)
+ALLOWED_HOSTS = [host.strip() for host in _allowed_hosts_env.split(",") if host.strip()]
+
+# CSRF trusted origins via env; when not set, default to production origins in non-debug mode.
+_csrf_env = os.getenv("DJANGO_CSRF_TRUSTED_ORIGINS", "").strip()
+if _csrf_env:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_env.split(",") if o.strip()]
+elif not DEBUG:
+    CSRF_TRUSTED_ORIGINS = [
+        "https://digitalassettradeintl.com",
+        "https://www.digitalassettradeintl.com",
+    ]
+else:
+    CSRF_TRUSTED_ORIGINS = []
 
 INSTALLED_APPS = [
     "django.contrib.admin",
