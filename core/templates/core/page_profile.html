@@ -217,7 +217,7 @@
                         <label for="identity_type" class="form-label">Identity Type</label>
                         <select class="form-select" id="identity_type" name="identity_type">
                             <option value="">Select</option>
-                            {% for value,label in identity_type_choices %}
+                            {% for value,label in request.user.IdentityType.choices %}
                             <option value="{{ value }}" {% if request.user.identity_type == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
@@ -286,7 +286,7 @@
                         <label for="nominee_identity_type" class="form-label">Nominee Identity Type</label>
                         <select class="form-select" id="nominee_identity_type" name="nominee_identity_type">
                             <option value="">Select</option>
-                            {% for value,label in identity_type_choices %}
+                            {% for value,label in request.user.IdentityType.choices %}
                             <option value="{{ value }}" {% if nominee and nominee.identity_type == value %}selected{% endif %}>{{ label }}</option>
                             {% endfor %}
                         </select>
