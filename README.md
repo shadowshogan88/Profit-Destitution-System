@@ -23,6 +23,24 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+## Local Dev (Force SQLite)
+
+If your `.env` has `DJANGO_DB_ENGINE=mysql` but you want to run locally with SQLite (no MySQL client needed),
+use a session-only env override:
+
+```powershell
+$env:DJANGO_DB_ENGINE='sqlite'; python manage.py migrate
+```
+
+Or use the helper scripts:
+
+```powershell
+.\scripts\local_sqlite_migrate.ps1
+.\scripts\local_sqlite_runserver.ps1 -Port 8000
+```
+
+`.env` is ignored by git. Use `.env.example` as a safe template (no credentials) and keep real secrets only in your local `.env` or in cPanel env vars.
+
 ## cPanel Live With MySQL
 
 Use environment variables in cPanel before running migrations:
@@ -41,6 +59,11 @@ DJANGO_DB_PORT=3306
 ```
 
 If `DJANGO_DB_ENGINE` is not set to `mysql`, the project falls back to SQLite.
+
+To deploy from GitHub on cPanel:
+
+- Keep `.env` only on the server (or skip it entirely) and set the variables in cPanel instead.
+- Pull/update the code from GitHub, then run `python manage.py migrate` on the server.
 
 ## API Endpoints
 

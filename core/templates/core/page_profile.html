@@ -87,6 +87,32 @@
                                 <td class="text-muted">{{ request.user.email|default:"-" }}</td>
                             </tr>
                             <tr>
+                                <th class="ps-0" scope="row">Phone :</th>
+                                <td class="text-muted">{{ request.user.phone_number|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Address :</th>
+                                <td class="text-muted">{{ request.user.address|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Identity Type :</th>
+                                <td class="text-muted">{{ request.user.get_identity_type_display|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Identity No :</th>
+                                <td class="text-muted">{{ request.user.identity_number|default:"-" }}</td>
+                            </tr>
+                            <tr>
+                                <th class="ps-0" scope="row">Identity Image :</th>
+                                <td class="text-muted">
+                                    {% if request.user.identity_image %}
+                                    <a href="{{ request.user.identity_image.url }}" target="_blank">View</a>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
                                 <th class="ps-0" scope="row">Referral Code :</th>
                                 <td class="text-muted">{{ request.user.referral_code|default:"-" }}</td>
                             </tr>
@@ -170,6 +196,7 @@
                 </div>
                 <form method="post" enctype="multipart/form-data" class="row g-3">
                     {% csrf_token %}
+                    <input type="hidden" name="form_type" value="profile">
                     <div class="col-md-4">
                         <label for="first_name" class="form-label">First Name</label>
                         <input type="text" class="form-control" id="first_name" name="first_name" value="{{ request.user.first_name }}">
@@ -181,6 +208,42 @@
                     <div class="col-md-4">
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" value="{{ request.user.email }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="phone_number" class="form-label">Phone Number</label>
+                        <input type="text" class="form-control" id="phone_number" name="phone_number" value="{{ request.user.phone_number }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="identity_type" class="form-label">Identity Type</label>
+                        <select class="form-select" id="identity_type" name="identity_type">
+                            <option value="">Select</option>
+                            {% for value,label in identity_type_choices %}
+                            <option value="{{ value }}" {% if request.user.identity_type == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="identity_number" class="form-label">NID / Driving Licence No</label>
+                        <input type="text" class="form-control" id="identity_number" name="identity_number" value="{{ request.user.identity_number }}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="identity_image" class="form-label">NID / Driving Licence Image</label>
+                        <input type="file" class="form-control" id="identity_image" name="identity_image" accept="image/*">
+                        {% if request.user.identity_image %}
+                        <small class="text-muted d-block mt-1">Current: <a href="{{ request.user.identity_image.url }}" target="_blank">View</a></small>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="remove_identity_image" name="remove_identity_image">
+                            <label class="form-check-label" for="remove_identity_image">
+                                Remove current identity image
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="address" class="form-label">Address</label>
+                        <textarea class="form-control" id="address" name="address" rows="3">{{ request.user.address }}</textarea>
                     </div>
                     <div class="col-md-6">
                         <label for="profile_picture" class="form-label">Profile Picture</label>
@@ -197,6 +260,63 @@
                     <div class="col-12 text-end">
                         <button type="submit" class="btn btn-success">
                             <i class="ri-save-line align-bottom me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="card-title mb-0">Nominee</h5>
+                </div>
+                <form method="post" enctype="multipart/form-data" class="row g-3">
+                    {% csrf_token %}
+                    <input type="hidden" name="form_type" value="nominee">
+                    <div class="col-md-6">
+                        <label for="nominee_name" class="form-label">Nominee Name</label>
+                        <input type="text" class="form-control" id="nominee_name" name="nominee_name" value="{% if nominee %}{{ nominee.name }}{% endif %}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nominee_phone_number" class="form-label">Nominee Phone Number</label>
+                        <input type="text" class="form-control" id="nominee_phone_number" name="nominee_phone_number" value="{% if nominee %}{{ nominee.phone_number }}{% endif %}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nominee_identity_type" class="form-label">Nominee Identity Type</label>
+                        <select class="form-select" id="nominee_identity_type" name="nominee_identity_type">
+                            <option value="">Select</option>
+                            {% for value,label in identity_type_choices %}
+                            <option value="{{ value }}" {% if nominee and nominee.identity_type == value %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nominee_identity_number" class="form-label">Nominee NID / Driving Licence No</label>
+                        <input type="text" class="form-control" id="nominee_identity_number" name="nominee_identity_number" value="{% if nominee %}{{ nominee.identity_number }}{% endif %}">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="nominee_identity_image" class="form-label">Nominee NID / Driving Licence Image</label>
+                        <input type="file" class="form-control" id="nominee_identity_image" name="nominee_identity_image" accept="image/*">
+                        {% if nominee and nominee.identity_image %}
+                        <small class="text-muted d-block mt-1">Current: <a href="{{ nominee.identity_image.url }}" target="_blank">View</a></small>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 d-flex align-items-end">
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" value="1" id="remove_nominee_identity_image" name="remove_nominee_identity_image">
+                            <label class="form-check-label" for="remove_nominee_identity_image">
+                                Remove current nominee identity image
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <label for="nominee_address" class="form-label">Nominee Address</label>
+                        <textarea class="form-control" id="nominee_address" name="nominee_address" rows="3">{% if nominee %}{{ nominee.address }}{% endif %}</textarea>
+                    </div>
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-success">
+                            <i class="ri-save-line align-bottom me-1"></i> Save Nominee
                         </button>
                     </div>
                 </form>

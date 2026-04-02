@@ -15,6 +15,10 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
+    class IdentityType(models.TextChoices):
+        NID = "NID", "NID"
+        DRIVING_LICENCE = "DRIVING_LICENCE", "Driving Licence"
+
     class UserType(models.TextChoices):
         ADMIN = "admin", "Admin"
         USER = "user", "User"
@@ -33,6 +37,14 @@ class User(AbstractUser):
         related_name="downlines",
     )
     profile_picture = models.ImageField(upload_to="profile_pictures/", null=True, blank=True)
+
+    phone_number = models.CharField(max_length=32, blank=True, default="")
+    address = models.TextField(blank=True, default="")
+
+    identity_type = models.CharField(max_length=20, choices=IdentityType.choices, blank=True, default="")
+    identity_number = models.CharField(max_length=64, blank=True, default="")
+    identity_image = models.ImageField(upload_to="identity_documents/users/", null=True, blank=True)
+
     email_verified = models.BooleanField(default=False)
 
     @classmethod
@@ -66,6 +78,23 @@ class User(AbstractUser):
     @property
     def total_referrals(self) -> int:
         return self.downlines.count()
+
+
+class UserNominee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="nominee")
+
+    name = models.CharField(max_length=120, blank=True, default="")
+    address = models.TextField(blank=True, default="")
+    phone_number = models.CharField(max_length=32, blank=True, default="")
+
+    identity_type = models.CharField(max_length=20, choices=User.IdentityType.choices, blank=True, default="")
+    identity_number = models.CharField(max_length=64, blank=True, default="")
+    identity_image = models.ImageField(upload_to="identity_documents/nominees/", null=True, blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self) -> str:
+        return f"{self.user.username} nominee"
 
 
 class Wallet(models.Model):

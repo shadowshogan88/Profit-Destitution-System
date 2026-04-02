@@ -24,6 +24,7 @@ from .models import (
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
     User,
+    UserNominee,
     WithdrawalMethod,
     Wallet,
     WalletTransaction,
@@ -152,6 +153,14 @@ class UserAdmin(admin.ModelAdmin):
     @admin.display(description="Invested")
     def invested_amount(self, obj):
         return obj.total_invested
+
+
+@admin.register(UserNominee)
+class UserNomineeAdmin(admin.ModelAdmin):
+    list_display = ("user", "name", "phone_number", "identity_type", "identity_number", "updated_at")
+    search_fields = ("user__username", "name", "phone_number", "identity_number")
+    list_select_related = ("user",)
+    ordering = ("-updated_at",)
 
 
 @admin.register(CommissionLog)

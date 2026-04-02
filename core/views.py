@@ -41,6 +41,7 @@ from .models import (
     ProfitDistributionEntry,
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
+    UserNominee,
     WithdrawalMethod,
     Wallet,
     WalletTransaction,
@@ -439,14 +440,53 @@ def page_profile(request: HttpRequest):
     settle_matured_investments(user=user)
 
     if request.method == "POST":
+        form_type = (request.POST.get("form_type") or "profile").strip().lower()
+
+        if form_type == "nominee":
+            nominee, _ = UserNominee.objects.get_or_create(user=user)
+            nominee.name = (request.POST.get("nominee_name") or "").strip()
+            nominee.address = (request.POST.get("nominee_address") or "").strip()
+            nominee.phone_number = (request.POST.get("nominee_phone_number") or "").strip()
+
+            nominee_identity_type = (request.POST.get("nominee_identity_type") or "").strip()
+            valid_identity_types = {c[0] for c in User.IdentityType.choices}
+            nominee.identity_type = nominee_identity_type if nominee_identity_type in valid_identity_types else ""
+            nominee.identity_number = (request.POST.get("nominee_identity_number") or "").strip()
+
+            nominee_identity_image = request.FILES.get("nominee_identity_image")
+            remove_nominee_identity_image = request.POST.get("remove_nominee_identity_image") == "1"
+            if remove_nominee_identity_image and nominee.identity_image:
+                nominee.identity_image = None
+            elif nominee_identity_image:
+                nominee.identity_image = nominee_identity_image
+
+            nominee.save()
+            messages.success(request, "Nominee information updated successfully.")
+            return redirect("page-profile")
+
         first_name = (request.POST.get("first_name") or "").strip()
         last_name = (request.POST.get("last_name") or "").strip()
         email = (request.POST.get("email") or "").strip()
+        phone_number = (request.POST.get("phone_number") or "").strip()
+        address = (request.POST.get("address") or "").strip()
+
+        identity_type = (request.POST.get("identity_type") or "").strip()
+        valid_identity_types = {c[0] for c in User.IdentityType.choices}
+        if identity_type and identity_type not in valid_identity_types:
+            identity_type = ""
+        identity_number = (request.POST.get("identity_number") or "").strip()
+
         profile_picture = request.FILES.get("profile_picture")
+        identity_image = request.FILES.get("identity_image")
         remove_profile_picture = request.POST.get("remove_profile_picture") == "1"
+        remove_identity_image = request.POST.get("remove_identity_image") == "1"
 
         user.first_name = first_name
         user.last_name = last_name
+        user.phone_number = phone_number
+        user.address = address
+        user.identity_type = identity_type
+        user.identity_number = identity_number
 
         existing_email = (user.email or "").strip()
         if not email:
@@ -458,7 +498,14 @@ def page_profile(request: HttpRequest):
                 return redirect("page-profile")
             user.email = email
 
-        update_fields = ["first_name", "last_name"]
+        update_fields = [
+            "first_name",
+            "last_name",
+            "phone_number",
+            "address",
+            "identity_type",
+            "identity_number",
+        ]
         if user.email != existing_email:
             update_fields.append("email")
         if remove_profile_picture and user.profile_picture:
@@ -467,6 +514,12 @@ def page_profile(request: HttpRequest):
         elif profile_picture:
             user.profile_picture = profile_picture
             update_fields.append("profile_picture")
+        if remove_identity_image and user.identity_image:
+            user.identity_image = None
+            update_fields.append("identity_image")
+        elif identity_image:
+            user.identity_image = identity_image
+            update_fields.append("identity_image")
 
         user.save(update_fields=update_fields)
         messages.success(request, "Profile updated successfully.")
@@ -483,6 +536,7 @@ def page_profile(request: HttpRequest):
     ).count()
 
     recent_wallet_transactions = user.wallet_transactions.order_by("-created_at")[:10]
+    nominee = UserNominee.objects.filter(user=user).first()
 
     context = {
         "page_title": "My Profile",
@@ -498,6 +552,8 @@ def page_profile(request: HttpRequest):
         "pending_withdrawals": pending_withdrawals,
         "recent_wallet_transactions": recent_wallet_transactions,
         "full_name": user.get_full_name() or user.username,
+        "identity_type_choices": User.IdentityType.choices,
+        "nominee": nominee,
     }
     return render(request, "core/page_profile.html", context)
 
