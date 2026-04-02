@@ -400,15 +400,15 @@ class WithdrawalMethod(models.Model):
     def __str__(self) -> str:
         if self.withdrawal_fee_fixed > 0:
             return f"{self.name} (fixed {self.withdrawal_fee_fixed})"
-        return f"{self.name} ({self.withdrawal_fee_percent}%)"
+        if self.withdrawal_fee_percent > 0:
+            return f"{self.name} ({self.withdrawal_fee_percent}%)"
+        return f"{self.name} (no fee)"
 
     def clean(self):
         percent_positive = self.withdrawal_fee_percent > 0
         fixed_positive = self.withdrawal_fee_fixed > 0
         if percent_positive and fixed_positive:
             raise ValidationError("Use either withdrawal fee percent or fixed fee, not both.")
-        if not percent_positive and not fixed_positive:
-            raise ValidationError("Set a withdrawal fee in either percent or fixed amount.")
 
 
 class InvestmentPackage(models.Model):

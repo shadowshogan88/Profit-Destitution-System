@@ -172,7 +172,67 @@ document.addEventListener("DOMContentLoaded", function () {
                 cancelButtonColor: "#f06548",
             }).then(function (result) {
                 if (result.isConfirmed) {
-                    form.submit();
+                    const submitBtn = form.querySelector("button[type='submit']");
+                    if (submitBtn) submitBtn.disabled = true;
+
+                    Swal.fire({
+                        title: "Processing...",
+                        text: "Please wait while we start your investment.",
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: function () {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    const actionUrl = form.getAttribute("action") || window.location.href;
+                    const formData = new FormData(form);
+
+                    fetch(actionUrl, {
+                        method: "POST",
+                        headers: { "X-Requested-With": "XMLHttpRequest" },
+                        body: formData
+                    })
+                        .then(function (response) {
+                            return response.json().then(function (data) {
+                                return { response: response, data: data };
+                            });
+                        })
+                        .then(function (payload) {
+                            const data = payload.data || {};
+                            if (payload.response.ok && data.ok) {
+                                Swal.fire({
+                                    title: "Success",
+                                    html: data.message || "Investment started successfully.",
+                                    icon: "success",
+                                    confirmButtonText: "Go to Investments",
+                                    confirmButtonColor: "#0ab39c"
+                                }).then(function () {
+                                    window.location.href = data.redirect || "{% url 'investment-page' %}";
+                                });
+                                return;
+                            }
+
+                            Swal.fire({
+                                title: "Error",
+                                text: data.error || "Could not start investment. Please try again.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                                confirmButtonColor: "#f06548"
+                            });
+                        })
+                        .catch(function () {
+                            Swal.fire({
+                                title: "Error",
+                                text: "Network error. Please try again.",
+                                icon: "error",
+                                confirmButtonText: "OK",
+                                confirmButtonColor: "#f06548"
+                            });
+                        })
+                        .finally(function () {
+                            if (submitBtn) submitBtn.disabled = false;
+                        });
                 }
             });
         });

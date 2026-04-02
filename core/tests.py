@@ -173,7 +173,9 @@ class EmailVerificationTests(TestCase):
         )
         token_obj = EmailVerificationToken.create_for_user(user=user, otp_valid_minutes=10)
         url = reverse("email-verify") + f"?token={token_obj.token}"
-        self.client.post(url, {"token": str(token_obj.token), "otp_code": token_obj.otp_code})
+        resp = self.client.post(url, {"token": str(token_obj.token), "otp_code": token_obj.otp_code})
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn("/user-dashboard/", resp["Location"])
 
         user.refresh_from_db()
         token_obj.refresh_from_db()
@@ -191,7 +193,8 @@ class EmailVerificationTests(TestCase):
         )
         token_obj = EmailVerificationToken.create_for_user(user=user, otp_valid_minutes=10)
         url = reverse("email-verify") + f"?token={token_obj.token}"
-        self.client.post(url, {"token": str(token_obj.token), "otp_code": "000000"})
+        resp = self.client.post(url, {"token": str(token_obj.token), "otp_code": "000000"})
+        self.assertEqual(resp.status_code, 200)
 
         user.refresh_from_db()
         token_obj.refresh_from_db()

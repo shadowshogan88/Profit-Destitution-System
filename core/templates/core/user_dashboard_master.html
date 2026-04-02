@@ -120,7 +120,7 @@
 
 
                 <div class="dropdown ms-sm-3 header-item topbar-user">
-                    <button type="button" class="btn material-shadow-none" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button type="button" class="btn material-shadow-none border rounded bg-light px-3 py-2" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="d-flex align-items-center">
                             {% if request.user.profile_picture %}
                             <img class="rounded-circle header-profile-user" src="{{ request.user.profile_picture.url }}" alt="Header Avatar">
@@ -258,9 +258,7 @@
                                         <li class="nav-item">
                                             <a href="{% url 'investment-page' %}" class="nav-link" data-key="t-investment">Investment</a>
                                         </li>
-                                        <li class="nav-item">
-                                            <a href="#" class="nav-link" data-key="t-level-1.1">Cancel Investment</a>
-                                        </li>
+
                                     </ul>
                                 </div>
                         </li>
@@ -287,9 +285,7 @@
                                 </a>
                                 <div class="collapse menu-dropdown" id="sidebarWallet">
                                     <ul class="nav nav-sm flex-column">
-                                        <li class="nav-item">
-                                            <a href="{% url 'page-profile' %}" class="nav-link" data-key="t-Profile"> Profile </a>
-                                        </li>
+
                                         <li class="nav-item">
                                             <a href="{% url 'add-money' %}" class="nav-link" data-key="t-Add_Money"> Add Money </a>
                                         </li>
@@ -380,6 +376,18 @@
 
             <div class="page-content">
                 <div class="container-fluid">
+                    {% if messages %}
+                        <div class="row">
+                            <div class="col-12">
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags == 'error' %}alert-danger{% elif message.tags == 'success' %}alert-success{% elif message.tags == 'warning' %}alert-warning{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
 {% block dashboard_content %}
 {% endblock %}
 <footer class="footer">

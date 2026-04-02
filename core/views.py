@@ -430,12 +430,7 @@ def user_dashboard(request: HttpRequest):
 
 @login_required
 def dashboard(request: HttpRequest):
-    if request.user.user_type == User.UserType.USER:
-        return redirect("user-dashboard")
-
-    settle_matured_investments(user=request.user)
-    context = _dashboard_context(request.user)
-    return render(request, "core/dashboard.html", context)
+    return redirect("user-dashboard")
 
 
 @login_required
@@ -450,14 +445,22 @@ def page_profile(request: HttpRequest):
         profile_picture = request.FILES.get("profile_picture")
         remove_profile_picture = request.POST.get("remove_profile_picture") == "1"
 
-        if email and User.objects.exclude(pk=user.pk).filter(email__iexact=email).exists():
-            messages.error(request, "This email is already used by another account.")
-            return redirect("page-profile")
-
-        update_fields = ["first_name", "last_name", "email"]
         user.first_name = first_name
         user.last_name = last_name
-        user.email = email
+
+        existing_email = (user.email or "").strip()
+        if not email:
+            email = existing_email
+
+        if email and email.lower() != existing_email.lower():
+            if User.objects.exclude(pk=user.pk).filter(email__iexact=email).exists():
+                messages.error(request, "This email is already used by another account.")
+                return redirect("page-profile")
+            user.email = email
+
+        update_fields = ["first_name", "last_name"]
+        if user.email != existing_email:
+            update_fields.append("email")
         if remove_profile_picture and user.profile_picture:
             user.profile_picture = None
             update_fields.append("profile_picture")
@@ -611,6 +614,10 @@ def verify_email(request: HttpRequest):
 
     user = token_obj.user
     if token_obj.is_used:
+        if user.is_active and user.email_verified:
+            login(request, user)
+            messages.success(request, "Your email is already verified.")
+            return redirect("user-dashboard")
         messages.success(request, "Your email is already verified. You can sign in now.")
         return redirect("login")
     if token_obj.is_expired:
@@ -633,8 +640,9 @@ def verify_email(request: HttpRequest):
             user.save(update_fields=["email_verified", "is_active"])
             token_obj.used_at = timezone.now()
             token_obj.save(update_fields=["used_at"])
-            messages.success(request, "Email verified successfully. You can sign in now.")
-            return redirect("login")
+            login(request, user)
+            messages.success(request, "Email verified successfully.")
+            return redirect("user-dashboard")
 
     return render(
         request,
@@ -1297,11 +1305,15 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
     if request.method != "POST":
         return None
 
+    is_ajax = request.headers.get("x-requested-with") == "XMLHttpRequest"
     package_id = request.POST.get("package_id")
     amount_raw = request.POST.get("amount")
     package = InvestmentPackage.objects.filter(id=package_id, is_active=True).first()
     if not package:
-        messages.error(request, "Invalid investment package selected.")
+        message = "Invalid investment package selected."
+        if is_ajax:
+            return JsonResponse({"ok": False, "error": message}, status=400)
+        messages.error(request, message)
         return redirect(redirect_name)
 
     try:
@@ -1317,13 +1329,23 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
             )
         except Exception:
             pass
-        messages.success(
-            request,
+        success_message = (
             f"Investment {investment.investment_code} started for USDT {amount} "
-            f"and {package.duration_days} days.",
+            f"and {package.duration_days} days."
         )
+        if is_ajax:
+            return JsonResponse(
+                {
+                    "ok": True,
+                    "message": success_message,
+                    "redirect": reverse("investment-page"),
+                }
+            )
+        messages.success(request, success_message)
         return redirect("investment-page")
     except ValueError as exc:
+        if is_ajax:
+            return JsonResponse({"ok": False, "error": str(exc)}, status=400)
         messages.error(request, str(exc))
     return redirect(redirect_name)
 
