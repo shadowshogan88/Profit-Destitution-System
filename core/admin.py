@@ -23,6 +23,7 @@ from .models import (
     ProfitDistributionEntry,
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
+    SystemConfiguration,
     User,
     UserNominee,
     WithdrawalMethod,
@@ -161,6 +162,20 @@ class UserNomineeAdmin(admin.ModelAdmin):
     search_fields = ("user__username", "name", "phone_number", "identity_number")
     list_select_related = ("user",)
     ordering = ("-updated_at",)
+
+
+@admin.register(SystemConfiguration)
+class SystemConfigurationAdmin(admin.ModelAdmin):
+    list_display = ("min_investment_amount", "min_withdrawal_amount", "updated_at")
+    ordering = ("-updated_at",)
+
+    def has_add_permission(self, request):
+        if SystemConfiguration.objects.exists():
+            return False
+        return super().has_add_permission(request)
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(CommissionLog)

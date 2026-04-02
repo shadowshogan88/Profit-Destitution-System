@@ -34,6 +34,7 @@
         <div class="text-center mb-4">
             <h4 class="fw-semibold fs-22">Plans & Pricing</h4>
             <p class="text-muted mb-4 fs-15">Choose an active package and start investment from your wallet.</p>
+            <p class="text-muted mb-0 fs-14">Minimum investment: <strong>USDT {{ min_investment_amount }}</strong></p>
             <div class="d-inline-flex">
                 <ul class="nav nav-pills arrow-navtabs plan-nav rounded mb-0 p-1">
                     <li class="nav-item">
@@ -71,7 +72,7 @@
                                 <input type="hidden" name="package_id" value="{{ p.id }}">
                                 <div class="mb-3">
                                     <label class="form-label">Amount (USDT)</label>
-                                    <input type="number" name="amount" class="form-control text-center" min="0.01" step="0.01" placeholder="Enter amount" required>
+                                    <input type="number" name="amount" class="form-control text-center" min="{{ min_investment_amount }}" step="0.01" placeholder="Enter amount" required>
                                 </div>
                                 <button type="submit" class="btn btn-primary btn-sm waves-effect waves-light" id="sa-dialog-three-btn-{{ p.id }}">Start Investment</button>
                             </form>
@@ -149,11 +150,22 @@ document.addEventListener("DOMContentLoaded", function () {
             const packageDuration = form.dataset.packageDuration || "0";
             const amountInput = form.querySelector("input[name='amount']");
             const packageAmount = amountInput ? amountInput.value.trim() : "";
+            const minInvestment = Number("{{ min_investment_amount|default:'0' }}");
 
             if (!packageAmount || Number(packageAmount) <= 0) {
                 Swal.fire({
                     title: "Invalid Amount",
                     text: "Please enter a valid amount greater than zero.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#f06548"
+                });
+                return;
+            }
+            if (minInvestment && Number(packageAmount) < minInvestment) {
+                Swal.fire({
+                    title: "Minimum Amount",
+                    text: "Minimum investment is USDT " + minInvestment.toFixed(2),
                     icon: "error",
                     confirmButtonText: "OK",
                     confirmButtonColor: "#f06548"

@@ -201,6 +201,35 @@ class EmailConfiguration(models.Model):
         return cls.objects.create(is_active=True)
 
 
+class SystemConfiguration(models.Model):
+    min_investment_amount = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=Decimal("100.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+    min_withdrawal_amount = models.DecimalField(
+        max_digits=14,
+        decimal_places=2,
+        default=Decimal("50.00"),
+        validators=[MinValueValidator(Decimal("0.00"))],
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self) -> str:
+        return f"System Configuration (updated {self.updated_at:%Y-%m-%d %H:%M})"
+
+    @classmethod
+    def get_solo(cls) -> "SystemConfiguration":
+        existing = cls.objects.order_by("pk").first()
+        if existing:
+            return existing
+        return cls.objects.create()
+
+
 class WithdrawalOtpToken(models.Model):
     withdrawal_request = models.ForeignKey(
         "ManualWithdrawalRequest",

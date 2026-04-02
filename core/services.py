@@ -12,6 +12,7 @@ from .models import (
     InvestmentPackage,
     ProfitDistribution,
     ProfitDistributionEntry,
+    SystemConfiguration,
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
     User,
@@ -152,6 +153,10 @@ def create_investment(user: User, principal_amount: Decimal, from_wallet: bool =
     if principal_amount <= 0:
         raise ValueError("Investment amount must be greater than zero")
 
+    min_amount = to_2dp(SystemConfiguration.get_solo().min_investment_amount)
+    if principal_amount < min_amount:
+        raise ValueError(f"Minimum investment amount is USDT {min_amount}")
+
     if from_wallet:
         debit_wallet(user, principal_amount, "Investment principal deduction")
 
@@ -169,6 +174,10 @@ def create_package_investment(
         raise ValueError("Investment amount must be greater than zero")
     if package.duration_days <= 0:
         raise ValueError("Package duration must be greater than zero")
+
+    min_amount = to_2dp(SystemConfiguration.get_solo().min_investment_amount)
+    if amount < min_amount:
+        raise ValueError(f"Minimum investment amount is USDT {min_amount}")
 
     transfer_wallet_to_investment_wallet(
         user,

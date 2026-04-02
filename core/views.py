@@ -30,6 +30,7 @@ from .models import (
     CommissionLog,
     EmailConfiguration,
     EmailVerificationToken,
+    SystemConfiguration,
     WithdrawalOtpToken,
     Investment,
     InvestmentPackage,
@@ -1182,6 +1183,8 @@ def manual_payment(request: HttpRequest):
 def manual_withdrawal(request: HttpRequest):
     settle_matured_investments(user=request.user)
     withdrawal_methods = WithdrawalMethod.objects.filter(is_active=True).order_by("name")
+    system_cfg = SystemConfiguration.get_solo()
+    min_withdrawal_amount = system_cfg.min_withdrawal_amount
 
     if request.method == "POST":
         if not request.user.email:
@@ -1211,6 +1214,8 @@ def manual_withdrawal(request: HttpRequest):
             amount = _decimal_or_error(amount_raw)
             if amount <= 0:
                 raise ValueError("Amount must be greater than zero.")
+            if amount < min_withdrawal_amount:
+                raise ValueError(f"Minimum withdrawal amount is USDT {min_withdrawal_amount}")
         except ValueError as exc:
             messages.error(request, str(exc))
             return redirect("manual-withdrawal")
@@ -1270,6 +1275,7 @@ def manual_withdrawal(request: HttpRequest):
             "withdrawal_requests": withdrawal_requests,
             "withdrawal_methods": withdrawal_methods,
             "withdrawal_submitted": request.GET.get("submitted") == "1",
+            "min_withdrawal_amount": min_withdrawal_amount,
         },
     )
 
@@ -1337,6 +1343,7 @@ def payment_withdrawal_transaction(request: HttpRequest):
 
 def _build_investment_page_context(user):
     investment_wallet, _ = InvestmentWallet.objects.get_or_create(user=user)
+    system_cfg = SystemConfiguration.get_solo()
     packages = InvestmentPackage.objects.filter(is_active=True).order_by("name")
     active_investments_qs = user.investments.select_related("package").filter(
         status=Investment.Status.ACTIVE
@@ -1354,6 +1361,7 @@ def _build_investment_page_context(user):
         "completed_investments": completed_investments,
         "investment_wallet_balance": investment_wallet.balance,
         "return_average": return_average,
+        "min_investment_amount": system_cfg.min_investment_amount,
     }
 
 
