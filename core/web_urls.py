@@ -21,6 +21,7 @@ urlpatterns = [
     path("investments/packages/", views.investment_packages_page, name="investment-packages"),
     path("investments/topup/", views.investment_topup, name="investment-topup"),
     path("investments/return-request/", views.investment_return_request, name="investment-return-request"),
+    path("investments/return-cancel/", views.investment_return_cancel, name="investment-return-cancel"),
     path("admin/profit-distribution/", views.admin_profit_distribution, name="admin-profit-distribution"),
     path("investment-reports/", views.investment_reports, name="investment-reports"),
     path("transaction-reports/", views.transaction_reports, name="transaction-reports"),

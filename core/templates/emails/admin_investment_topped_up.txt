@@ -1,0 +1,11 @@
+{{ app_name }}
+
+Admin Notification: Investment increased (top-up)
+
+User: {{ username }}
+Investment: {{ investment_code }}
+Top-up: USDT {{ topup_amount }}
+Principal: USDT {{ previous_principal }} -> USDT {{ new_principal }}
+Ends: {{ previous_ends_at }} -> {{ new_ends_at }}
+Time: {{ created_at }}
+

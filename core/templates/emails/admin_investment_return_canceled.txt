@@ -1,0 +1,9 @@
+{{ app_name }}
+
+Admin Notification: Investment return request canceled
+
+User: {{ username }}
+Investment: {{ investment_code }}
+Principal: USDT {{ principal_amount }}
+Originally requested: {{ requested_at }}
+

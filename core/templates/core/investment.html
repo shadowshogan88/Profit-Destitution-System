@@ -120,7 +120,12 @@
 
                                     {% if inv.ends_at and inv.ends_at <= now %}
                                         {% if rr and rr.status == "pending" %}
-                                            <div class="text-muted small">Scheduled: {{ rr.scheduled_return_at|date:"d M Y, h:i A" }}</div>
+                                            <div class="text-muted small mb-2">Scheduled: {{ rr.scheduled_return_at|date:"d M Y, h:i A" }}</div>
+                                            <form method="post" action="{% url 'investment-return-cancel' %}">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="investment_id" value="{{ inv.id }}">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel Request</button>
+                                            </form>
                                         {% else %}
                                             <form method="post" action="{% url 'investment-return-request' %}">
                                                 {% csrf_token %}

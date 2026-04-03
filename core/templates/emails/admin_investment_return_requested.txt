@@ -1,0 +1,10 @@
+{{ app_name }}
+
+Admin Notification: Investment return requested
+
+User: {{ username }}
+Investment: {{ investment_code }}
+Principal: USDT {{ principal_amount }}
+Requested: {{ requested_at }}
+Scheduled return: {{ scheduled_return_at }}
+

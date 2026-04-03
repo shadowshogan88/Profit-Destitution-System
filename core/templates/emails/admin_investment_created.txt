@@ -1,0 +1,12 @@
+{{ app_name }}
+
+Admin Notification: New investment created
+
+User: {{ username }}
+Investment: {{ investment_code }}
+Package: {{ package_name|default:"-" }}
+Amount: USDT {{ amount }}
+Duration: {{ duration_days }} days
+Starts: {{ starts_at }}
+Ends: {{ ends_at }}
+

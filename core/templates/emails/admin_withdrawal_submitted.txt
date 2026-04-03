@@ -1,0 +1,11 @@
+{{ app_name }}
+
+Admin Notification: Withdrawal request submitted
+
+User: {{ username }}
+Request: {{ request_code }}
+Amount: USDT {{ amount }}
+Net: USDT {{ net_amount }}
+Method: {{ payment_method }}
+Submitted: {{ created_at }}
+

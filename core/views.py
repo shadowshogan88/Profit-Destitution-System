@@ -792,7 +792,10 @@ def verify_withdrawal_otp(request: HttpRequest):
                 from . import notifications
 
                 transaction.on_commit(
-                    lambda: notifications.send_withdrawal_confirmed(request.user, withdrawal)
+                    lambda: (
+                        notifications.send_withdrawal_confirmed(request.user, withdrawal),
+                        notifications.send_admin_withdrawal_confirmed(request.user, withdrawal),
+                    )
                 )
             except Exception:
                 pass
@@ -1103,7 +1106,10 @@ def add_money_page(request: HttpRequest):
             from . import notifications
 
             transaction.on_commit(
-                lambda: notifications.send_add_money_submitted(request.user, payment_req)
+                lambda: (
+                    notifications.send_add_money_submitted(request.user, payment_req),
+                    notifications.send_admin_add_money_submitted(request.user, payment_req),
+                )
             )
         except Exception:
             pass
@@ -1164,7 +1170,10 @@ def manual_payment(request: HttpRequest):
             from . import notifications
 
             transaction.on_commit(
-                lambda: notifications.send_add_money_submitted(request.user, payment_req)
+                lambda: (
+                    notifications.send_add_money_submitted(request.user, payment_req),
+                    notifications.send_admin_add_money_submitted(request.user, payment_req),
+                )
             )
         except Exception:
             pass
@@ -1255,6 +1264,14 @@ def manual_withdrawal(request: HttpRequest):
             net_amount=net_amount,
             account_details=account_details,
         )
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_admin_withdrawal_submitted(request.user, withdrawal)
+            )
+        except Exception:
+            pass
         token_obj = WithdrawalOtpToken.create_for_request(
             withdrawal_request=withdrawal,
             otp_valid_minutes=EmailConfiguration.get_active().otp_expiry_minutes,
@@ -1400,7 +1417,10 @@ def _handle_investment_package_purchase(request: HttpRequest, redirect_name: str
             from . import notifications
 
             transaction.on_commit(
-                lambda: notifications.send_investment_confirmed(request.user, investment)
+                lambda: (
+                    notifications.send_investment_confirmed(request.user, investment),
+                    notifications.send_admin_investment_created(request.user, investment),
+                )
             )
         except Exception:
             pass
@@ -1476,7 +1496,15 @@ def investment_topup(request: HttpRequest):
         return redirect("investment-page")
 
     try:
-        top_up_investment(inv, amount)
+        topup = top_up_investment(inv, amount)
+        try:
+            from . import notifications
+
+            transaction.on_commit(
+                lambda: notifications.send_admin_investment_topped_up(request.user, topup)
+            )
+        except Exception:
+            pass
     except ValueError as exc:
         messages.error(request, str(exc))
         return redirect("investment-page")
@@ -1512,8 +1540,51 @@ def investment_return_request(request: HttpRequest):
     rr.scheduled_return_at = scheduled
     rr.processed_at = None
     rr.save(update_fields=["status", "requested_at", "scheduled_return_at", "processed_at", "updated_at"])
+    try:
+        from . import notifications
+
+        transaction.on_commit(
+            lambda: notifications.send_admin_investment_return_requested(request.user, rr)
+        )
+    except Exception:
+        pass
 
     messages.success(request, "Return request submitted. Principal will be credited to your wallet after 24 hours.")
+    return redirect("investment-page")
+
+
+@login_required
+def investment_return_cancel(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    if request.method != "POST":
+        return redirect("investment-page")
+
+    investment_id = request.POST.get("investment_id")
+    inv = Investment.objects.filter(id=investment_id, user=request.user).first()
+    if not inv:
+        messages.error(request, "Investment not found.")
+        return redirect("investment-page")
+
+    rr = InvestmentReturnRequest.objects.filter(investment=inv).first()
+    if not rr or rr.status != InvestmentReturnRequest.Status.PENDING:
+        messages.error(request, "No pending return request found.")
+        return redirect("investment-page")
+
+    rr.status = InvestmentReturnRequest.Status.CANCELED
+    rr.scheduled_return_at = None
+    rr.processed_at = timezone.now()
+    rr.save(update_fields=["status", "scheduled_return_at", "processed_at", "updated_at"])
+
+    try:
+        from . import notifications
+
+        transaction.on_commit(
+            lambda: notifications.send_admin_investment_return_canceled(request.user, rr)
+        )
+    except Exception:
+        pass
+
+    messages.success(request, "Return request canceled.")
     return redirect("investment-page")
 
 

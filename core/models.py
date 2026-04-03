@@ -144,6 +144,13 @@ class EmailConfiguration(models.Model):
     app_name = models.CharField(max_length=80, default="Referral System")
     default_from_email = models.EmailField(blank=True, default="")
 
+    admin_notification_emails = models.TextField(
+        blank=True,
+        default="",
+        help_text="Comma-separated admin email addresses to receive master notifications.",
+    )
+    notify_admin_events_enabled = models.BooleanField(default=True)
+
     otp_expiry_minutes = models.PositiveSmallIntegerField(default=10)
     resend_cooldown_seconds = models.PositiveIntegerField(default=60)
 

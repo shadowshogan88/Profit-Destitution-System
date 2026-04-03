@@ -80,6 +80,7 @@ class EmailConfigurationAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("Brand", {"fields": ("app_name", "default_from_email")}),
+        ("Admin Notifications", {"fields": ("admin_notification_emails", "notify_admin_events_enabled")}),
         ("OTP", {"fields": ("otp_expiry_minutes", "resend_cooldown_seconds")}),
         (
             "Notifications",

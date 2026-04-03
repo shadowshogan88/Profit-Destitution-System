@@ -4,11 +4,13 @@ from decimal import Decimal
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
+from django.core import mail
 
 from .models import (
     CommissionLog,
     CommissionRate,
     EmailVerificationToken,
+    EmailConfiguration,
     InvestmentReturnRequest,
     WithdrawalOtpToken,
     InvestmentPackage,
@@ -227,6 +229,11 @@ class EmailVerificationTests(TestCase):
 )
 class WithdrawalOtpTests(TestCase):
     def test_withdrawal_requires_otp_verification(self):
+        cfg = EmailConfiguration.get_active()
+        cfg.admin_notification_emails = "admin@example.com"
+        cfg.notify_admin_events_enabled = True
+        cfg.save(update_fields=["admin_notification_emails", "notify_admin_events_enabled", "updated_at"])
+
         user = User.objects.create_user(
             username="w_user",
             password="x",
@@ -245,18 +252,22 @@ class WithdrawalOtpTests(TestCase):
             withdrawal_fee_percent=Decimal("0.00"),
         )
 
-        resp = self.client.post(
-            reverse("manual-withdrawal"),
-            {"amount": "50", "withdrawal_method_id": method.id, "account_details": "TRC20:xxxx"},
-            follow=False,
-        )
+        with self.captureOnCommitCallbacks(execute=True):
+            resp = self.client.post(
+                reverse("manual-withdrawal"),
+                {"amount": "50", "withdrawal_method_id": method.id, "account_details": "TRC20:xxxx"},
+                follow=False,
+            )
         self.assertEqual(resp.status_code, 302)
         token = WithdrawalOtpToken.objects.first()
         self.assertIsNotNone(token)
         self.assertFalse(token.withdrawal_request.email_otp_verified)
+        self.assertTrue(any("Withdrawal submitted" in m.subject for m in mail.outbox))
 
         verify_url = reverse("withdrawal-otp-verify") + f"?token={token.token}"
-        resp2 = self.client.post(verify_url, {"token": str(token.token), "otp_code": token.otp_code})
+        with self.captureOnCommitCallbacks(execute=True):
+            resp2 = self.client.post(verify_url, {"token": str(token.token), "otp_code": token.otp_code})
         self.assertEqual(resp2.status_code, 302)
         token.withdrawal_request.refresh_from_db()
         self.assertTrue(token.withdrawal_request.email_otp_verified)
+        self.assertTrue(any("Withdrawal OTP verified" in m.subject for m in mail.outbox))

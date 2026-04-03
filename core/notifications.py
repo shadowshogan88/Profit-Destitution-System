@@ -10,7 +10,14 @@ from django.template import Context, Template
 from django.template.loader import render_to_string
 from django.utils import timezone
 
-from .models import EmailConfiguration, Investment, ManualPaymentRequest, ManualWithdrawalRequest
+from .models import (
+    EmailConfiguration,
+    Investment,
+    InvestmentReturnRequest,
+    InvestmentTopUp,
+    ManualPaymentRequest,
+    ManualWithdrawalRequest,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -71,6 +78,156 @@ def _send_templated_email(
     except Exception:
         logger.exception("Failed sending notification email subject=%s to=%s", subject, to_email)
         return False
+
+
+def _admin_emails() -> list[str]:
+    cfg = EmailConfiguration.get_active()
+    if not cfg.notify_admin_events_enabled:
+        return []
+    raw = (cfg.admin_notification_emails or "").strip()
+    if not raw:
+        return []
+    emails: list[str] = []
+    for item in raw.replace(";", ",").split(","):
+        email = item.strip()
+        if email:
+            emails.append(email)
+    return emails
+
+
+def _send_templated_email_to_admins(
+    *,
+    subject: str,
+    template_txt: str,
+    template_html: str,
+    context: dict,
+) -> int:
+    sent = 0
+    for email in _admin_emails():
+        if _send_templated_email(
+            to_email=email,
+            subject=subject,
+            template_txt=template_txt,
+            template_html=template_html,
+            context=context,
+        ):
+            sent += 1
+    return sent
+
+
+def send_admin_add_money_submitted(user, payment_req: ManualPaymentRequest) -> int:
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - Add money submitted",
+        template_txt="emails/admin_add_money_submitted.txt",
+        template_html="emails/admin_add_money_submitted.html",
+        context={
+            "username": user.username,
+            "request_code": payment_req.request_code,
+            "amount": payment_req.amount,
+            "payment_method": payment_req.payment_method,
+            "reference": payment_req.transaction_reference,
+            "created_at": payment_req.created_at,
+        },
+    )
+
+
+def send_admin_investment_created(user, investment: Investment) -> int:
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - New investment",
+        template_txt="emails/admin_investment_created.txt",
+        template_html="emails/admin_investment_created.html",
+        context={
+            "username": user.username,
+            "investment_code": investment.investment_code,
+            "amount": investment.principal_amount,
+            "duration_days": investment.duration_days or (investment.package.duration_days if investment.package_id else 0),
+            "package_name": (investment.package.name if investment.package_id else ""),
+            "starts_at": investment.starts_at,
+            "ends_at": investment.ends_at,
+        },
+    )
+
+
+def send_admin_investment_topped_up(user, topup: InvestmentTopUp) -> int:
+    inv = topup.investment
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - Investment increased",
+        template_txt="emails/admin_investment_topped_up.txt",
+        template_html="emails/admin_investment_topped_up.html",
+        context={
+            "username": user.username,
+            "investment_code": inv.investment_code,
+            "topup_amount": topup.amount,
+            "previous_principal": topup.previous_principal,
+            "new_principal": topup.new_principal,
+            "previous_ends_at": topup.previous_ends_at,
+            "new_ends_at": topup.new_ends_at,
+            "created_at": topup.created_at,
+        },
+    )
+
+
+def send_admin_investment_return_requested(user, req: InvestmentReturnRequest) -> int:
+    inv = req.investment
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - Return requested",
+        template_txt="emails/admin_investment_return_requested.txt",
+        template_html="emails/admin_investment_return_requested.html",
+        context={
+            "username": user.username,
+            "investment_code": inv.investment_code,
+            "principal_amount": inv.principal_amount,
+            "requested_at": req.requested_at,
+            "scheduled_return_at": req.scheduled_return_at,
+        },
+    )
+
+
+def send_admin_investment_return_canceled(user, req: InvestmentReturnRequest) -> int:
+    inv = req.investment
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - Return request canceled",
+        template_txt="emails/admin_investment_return_canceled.txt",
+        template_html="emails/admin_investment_return_canceled.html",
+        context={
+            "username": user.username,
+            "investment_code": inv.investment_code,
+            "principal_amount": inv.principal_amount,
+            "requested_at": req.requested_at,
+        },
+    )
+
+
+def send_admin_withdrawal_submitted(user, withdrawal_req: ManualWithdrawalRequest) -> int:
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - Withdrawal submitted",
+        template_txt="emails/admin_withdrawal_submitted.txt",
+        template_html="emails/admin_withdrawal_submitted.html",
+        context={
+            "username": user.username,
+            "request_code": withdrawal_req.request_code,
+            "amount": withdrawal_req.amount,
+            "net_amount": withdrawal_req.net_amount,
+            "payment_method": withdrawal_req.payment_method,
+            "created_at": withdrawal_req.created_at,
+        },
+    )
+
+
+def send_admin_withdrawal_confirmed(user, withdrawal_req: ManualWithdrawalRequest) -> int:
+    return _send_templated_email_to_admins(
+        subject="{{ app_name }} - Withdrawal OTP verified",
+        template_txt="emails/admin_withdrawal_confirmed.txt",
+        template_html="emails/admin_withdrawal_confirmed.html",
+        context={
+            "username": user.username,
+            "request_code": withdrawal_req.request_code,
+            "amount": withdrawal_req.amount,
+            "net_amount": withdrawal_req.net_amount,
+            "payment_method": withdrawal_req.payment_method,
+            "confirmed_at": withdrawal_req.email_otp_verified_at,
+        },
+    )
 
 
 def send_investment_confirmed(user, investment: Investment) -> bool:

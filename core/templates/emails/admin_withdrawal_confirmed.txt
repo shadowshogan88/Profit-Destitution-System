@@ -1,0 +1,11 @@
+{{ app_name }}
+
+Admin Notification: Withdrawal OTP verified
+
+User: {{ username }}
+Request: {{ request_code }}
+Amount: USDT {{ amount }}
+Net: USDT {{ net_amount }}
+Method: {{ payment_method }}
+Verified: {{ confirmed_at }}
+

@@ -1,0 +1,11 @@
+<h2>{{ app_name }}</h2>
+<p><strong>Admin Notification:</strong> Investment increased (top-up)</p>
+<ul>
+  <li><strong>User:</strong> {{ username }}</li>
+  <li><strong>Investment:</strong> {{ investment_code }}</li>
+  <li><strong>Top-up:</strong> USDT {{ topup_amount }}</li>
+  <li><strong>Principal:</strong> USDT {{ previous_principal }} &rarr; USDT {{ new_principal }}</li>
+  <li><strong>Ends:</strong> {{ previous_ends_at }} &rarr; {{ new_ends_at }}</li>
+  <li><strong>Time:</strong> {{ created_at }}</li>
+</ul>
+

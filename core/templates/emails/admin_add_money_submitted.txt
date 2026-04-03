@@ -1,0 +1,11 @@
+{{ app_name }}
+
+Admin Notification: Add money request submitted
+
+User: {{ username }}
+Request: {{ request_code }}
+Amount: USDT {{ amount }}
+Method: {{ payment_method }}
+Reference: {{ reference|default:"-" }}
+Submitted: {{ created_at }}
+

@@ -150,7 +150,7 @@ def transfer_investment_wallet_to_wallet(user: User, amount: Decimal, descriptio
 
 
 @transaction.atomic
-def top_up_investment(investment: Investment, amount: Decimal) -> Investment:
+def top_up_investment(investment: Investment, amount: Decimal) -> InvestmentTopUp:
     amount = to_2dp(amount)
     if amount <= 0:
         raise ValueError("Top-up amount must be greater than zero")
@@ -202,7 +202,7 @@ def top_up_investment(investment: Investment, amount: Decimal) -> Investment:
         ]
     )
 
-    InvestmentTopUp.objects.create(
+    topup = InvestmentTopUp.objects.create(
         investment=investment,
         amount=amount,
         previous_principal=previous_principal,
@@ -211,7 +211,7 @@ def top_up_investment(investment: Investment, amount: Decimal) -> Investment:
         new_ends_at=investment.ends_at,
     )
 
-    return investment
+    return topup
 
 
 @transaction.atomic

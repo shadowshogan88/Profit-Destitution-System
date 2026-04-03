@@ -1,0 +1,12 @@
+<h2>{{ app_name }}</h2>
+<p><strong>Admin Notification:</strong> New investment created</p>
+<ul>
+  <li><strong>User:</strong> {{ username }}</li>
+  <li><strong>Investment:</strong> {{ investment_code }}</li>
+  <li><strong>Package:</strong> {{ package_name|default:"-" }}</li>
+  <li><strong>Amount:</strong> USDT {{ amount }}</li>
+  <li><strong>Duration:</strong> {{ duration_days }} days</li>
+  <li><strong>Starts:</strong> {{ starts_at }}</li>
+  <li><strong>Ends:</strong> {{ ends_at }}</li>
+</ul>
+
