@@ -8,6 +8,8 @@ from .models import (
     CommissionLog,
     CommissionRate,
     Investment,
+    InvestmentReturnRequest,
+    InvestmentTopUp,
     InvestmentWallet,
     InvestmentPackage,
     ProfitDistribution,
@@ -148,6 +150,107 @@ def transfer_investment_wallet_to_wallet(user: User, amount: Decimal, descriptio
 
 
 @transaction.atomic
+def top_up_investment(investment: Investment, amount: Decimal) -> Investment:
+    amount = to_2dp(amount)
+    if amount <= 0:
+        raise ValueError("Top-up amount must be greater than zero")
+
+    investment = (
+        Investment.objects.select_for_update()
+        .select_related("user", "package")
+        .get(pk=investment.pk)
+    )
+    if investment.status != Investment.Status.ACTIVE or investment.principal_returned:
+        raise ValueError("Only active investments can be increased")
+
+    rr = InvestmentReturnRequest.objects.select_for_update().filter(investment=investment).first()
+    if rr and rr.status == InvestmentReturnRequest.Status.PENDING:
+        raise ValueError("Return request is pending. Cancel/finish it before top-up.")
+
+    duration_days = int(investment.duration_days or (investment.package.duration_days if investment.package else 0))
+    if duration_days <= 0:
+        raise ValueError("This investment has no duration configured")
+
+    previous_principal = to_2dp(investment.principal_amount)
+    previous_ends_at = investment.ends_at
+
+    transfer_wallet_to_investment_wallet(
+        investment.user,
+        amount,
+        f"Top-up investment {investment.investment_code or investment.pk}",
+    )
+
+    now = timezone.now()
+    new_principal = to_2dp(previous_principal + amount)
+
+    min_amount = to_2dp(SystemConfiguration.get_solo().min_investment_amount)
+    if new_principal < min_amount:
+        raise ValueError(f"Minimum investment amount is USDT {min_amount}")
+
+    investment.principal_amount = new_principal
+    investment.starts_at = now
+    investment.ends_at = now + timedelta(days=duration_days)
+    investment.matured_at = None
+    investment.last_topped_up_at = now
+    investment.save(
+        update_fields=[
+            "principal_amount",
+            "starts_at",
+            "ends_at",
+            "matured_at",
+            "last_topped_up_at",
+        ]
+    )
+
+    InvestmentTopUp.objects.create(
+        investment=investment,
+        amount=amount,
+        previous_principal=previous_principal,
+        new_principal=new_principal,
+        previous_ends_at=previous_ends_at,
+        new_ends_at=investment.ends_at,
+    )
+
+    return investment
+
+
+@transaction.atomic
+def process_due_investment_returns(user: User | None = None) -> int:
+    qs = InvestmentReturnRequest.objects.select_for_update().select_related("investment", "investment__user").filter(
+        status=InvestmentReturnRequest.Status.PENDING,
+        scheduled_return_at__isnull=False,
+        scheduled_return_at__lte=timezone.now(),
+    )
+    if user is not None:
+        qs = qs.filter(investment__user=user)
+
+    processed = 0
+    for req in qs:
+        investment = req.investment
+        if investment.principal_returned or investment.status != Investment.Status.ACTIVE:
+            req.status = InvestmentReturnRequest.Status.CANCELED
+            req.processed_at = timezone.now()
+            req.save(update_fields=["status", "processed_at", "updated_at"])
+            continue
+
+        transfer_investment_wallet_to_wallet(
+            investment.user,
+            investment.principal_amount,
+            f"Principal returned (Investment {investment.investment_code or investment.pk})",
+        )
+        investment.principal_returned = True
+        investment.status = Investment.Status.COMPLETED
+        investment.save(update_fields=["principal_returned", "status"])
+
+        req.status = InvestmentReturnRequest.Status.PROCESSED
+        req.processed_at = timezone.now()
+        req.save(update_fields=["status", "processed_at", "updated_at"])
+        processed += 1
+
+    return processed
+
+
+@transaction.atomic
 def create_investment(user: User, principal_amount: Decimal, from_wallet: bool = False) -> Investment:
     principal_amount = to_2dp(principal_amount)
     if principal_amount <= 0:
@@ -199,27 +302,25 @@ def create_package_investment(
 
 @transaction.atomic
 def settle_matured_investments(user: User | None = None) -> int:
+    process_due_investment_returns(user=user)
+
     qs = Investment.objects.select_for_update().filter(
         status=Investment.Status.ACTIVE,
         principal_returned=False,
         ends_at__isnull=False,
         ends_at__lte=timezone.now(),
+        matured_at__isnull=True,
     )
     if user is not None:
         qs = qs.filter(user=user)
 
-    processed = 0
-    for inv in qs.select_related("user"):
-        transfer_investment_wallet_to_wallet(
-            inv.user,
-            inv.principal_amount,
-            f"Principal returned after package period (Investment #{inv.pk})",
-        )
-        inv.principal_returned = True
-        inv.status = Investment.Status.COMPLETED
-        inv.save(update_fields=["principal_returned", "status"])
-        processed += 1
-    return processed
+    updated = 0
+    now = timezone.now()
+    for inv in qs:
+        inv.matured_at = now
+        inv.save(update_fields=["matured_at"])
+        updated += 1
+    return updated
 
 
 @transaction.atomic

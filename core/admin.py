@@ -21,6 +21,8 @@ from .models import (
     PaymentMethod,
     ProfitDistribution,
     ProfitDistributionEntry,
+    InvestmentReturnRequest,
+    InvestmentTopUp,
     UnsettledBalanceAccount,
     UnsettledBalanceEntry,
     SystemConfiguration,
@@ -176,6 +178,23 @@ class SystemConfigurationAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+@admin.register(InvestmentReturnRequest)
+class InvestmentReturnRequestAdmin(admin.ModelAdmin):
+    list_display = ("investment", "status", "requested_at", "scheduled_return_at", "processed_at", "updated_at")
+    list_filter = ("status",)
+    search_fields = ("investment__investment_code", "investment__user__username")
+    list_select_related = ("investment", "investment__user")
+    ordering = ("-updated_at",)
+
+
+@admin.register(InvestmentTopUp)
+class InvestmentTopUpAdmin(admin.ModelAdmin):
+    list_display = ("investment", "amount", "previous_principal", "new_principal", "created_at")
+    search_fields = ("investment__investment_code", "investment__user__username")
+    list_select_related = ("investment", "investment__user")
+    ordering = ("-created_at",)
 
 
 @admin.register(CommissionLog)

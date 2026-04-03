@@ -18,6 +18,7 @@ class User(AbstractUser):
     class IdentityType(models.TextChoices):
         NID = "NID", "NID"
         DRIVING_LICENCE = "DRIVING_LICENCE", "Driving Licence"
+        PASSPORT = "PASSPORT", "Passport"
 
     class UserType(models.TextChoices):
         ADMIN = "admin", "Admin"
@@ -310,6 +311,8 @@ class Investment(models.Model):
     duration_days = models.PositiveIntegerField(default=0)
     starts_at = models.DateTimeField(null=True, blank=True)
     ends_at = models.DateTimeField(null=True, blank=True)
+    matured_at = models.DateTimeField(null=True, blank=True)
+    last_topped_up_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=12, choices=Status.choices, default=Status.ACTIVE)
     principal_returned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -359,6 +362,42 @@ class Investment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.investment_code or f'Investment#{self.pk}'} by {self.user.username}"
+
+
+class InvestmentTopUp(models.Model):
+    investment = models.ForeignKey(Investment, on_delete=models.CASCADE, related_name="topups")
+    amount = models.DecimalField(max_digits=14, decimal_places=2)
+    previous_principal = models.DecimalField(max_digits=14, decimal_places=2)
+    new_principal = models.DecimalField(max_digits=14, decimal_places=2)
+    previous_ends_at = models.DateTimeField(null=True, blank=True)
+    new_ends_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self) -> str:
+        return f"TopUp {self.amount} for {self.investment.investment_code or self.investment_id}"
+
+
+class InvestmentReturnRequest(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        PROCESSED = "processed", "Processed"
+        CANCELED = "canceled", "Canceled"
+
+    investment = models.OneToOneField(Investment, on_delete=models.CASCADE, related_name="return_request")
+    status = models.CharField(max_length=12, choices=Status.choices, default=Status.PENDING)
+    requested_at = models.DateTimeField(null=True, blank=True)
+    scheduled_return_at = models.DateTimeField(null=True, blank=True)
+    processed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated_at"]
+
+    def __str__(self) -> str:
+        return f"Return {self.investment.investment_code or self.investment_id} ({self.status})"
 
 
 class CommissionRate(models.Model):

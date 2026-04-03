@@ -9,6 +9,7 @@ from .models import (
     CommissionLog,
     CommissionRate,
     EmailVerificationToken,
+    InvestmentReturnRequest,
     WithdrawalOtpToken,
     InvestmentPackage,
     ProfitDistribution,
@@ -125,14 +126,32 @@ class ReferralCommissionTests(TestCase):
 
         inv.ends_at = timezone.now() - timedelta(days=1)
         inv.save(update_fields=["ends_at"])
-        settled = settle_matured_investments(user=user)
-        self.assertEqual(settled, 1)
+        updated = settle_matured_investments(user=user)
+        self.assertEqual(updated, 1)
 
         user.refresh_from_db()
         inv.refresh_from_db()
+        self.assertEqual(user.wallet.balance, Decimal("500.00"))
+        self.assertEqual(user.investment_wallet.balance, Decimal("500.00"))
+        self.assertFalse(inv.principal_returned)
+
+        req = InvestmentReturnRequest.objects.create(
+            investment=inv,
+            status=InvestmentReturnRequest.Status.PENDING,
+            requested_at=timezone.now() - timedelta(days=2),
+            scheduled_return_at=timezone.now() - timedelta(days=1),
+        )
+        processed = settle_matured_investments(user=user)
+        self.assertEqual(processed, 0)
+
+        req.refresh_from_db()
+        user.refresh_from_db()
+        inv.refresh_from_db()
+        self.assertEqual(req.status, InvestmentReturnRequest.Status.PROCESSED)
         self.assertEqual(user.wallet.balance, Decimal("1000.00"))
         self.assertEqual(user.investment_wallet.balance, Decimal("0.00"))
         self.assertTrue(inv.principal_returned)
+        self.assertEqual(inv.status, inv.Status.COMPLETED)
 
     def test_admin_distribution_spreads_profit_by_active_principal(self):
         u1 = User.objects.create_user(username="dist_u1", password="x")
@@ -228,7 +247,7 @@ class WithdrawalOtpTests(TestCase):
 
         resp = self.client.post(
             reverse("manual-withdrawal"),
-            {"amount": "10", "withdrawal_method_id": method.id, "account_details": "TRC20:xxxx"},
+            {"amount": "50", "withdrawal_method_id": method.id, "account_details": "TRC20:xxxx"},
             follow=False,
         )
         self.assertEqual(resp.status_code, 302)

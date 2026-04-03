@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal, InvalidOperation
+from datetime import timedelta
 
 import csv
 
@@ -30,6 +31,7 @@ from .models import (
     CommissionLog,
     EmailConfiguration,
     EmailVerificationToken,
+    InvestmentReturnRequest,
     SystemConfiguration,
     WithdrawalOtpToken,
     Investment,
@@ -53,6 +55,7 @@ from .services import (
     distribute_profit_to_active_investors,
     realize_profit,
     settle_matured_investments,
+    top_up_investment,
 )
 
 User = get_user_model()
@@ -1345,6 +1348,7 @@ def _build_investment_page_context(user):
     investment_wallet, _ = InvestmentWallet.objects.get_or_create(user=user)
     system_cfg = SystemConfiguration.get_solo()
     packages = InvestmentPackage.objects.filter(is_active=True).order_by("name")
+    now = timezone.now()
     active_investments_qs = user.investments.select_related("package").filter(
         status=Investment.Status.ACTIVE
     ).order_by("-created_at")
@@ -1353,6 +1357,10 @@ def _build_investment_page_context(user):
     ).order_by("-created_at")
     active_investments = list(active_investments_qs)
     completed_investments = list(completed_investments_qs)
+    return_requests = {
+        r.investment_id: r
+        for r in InvestmentReturnRequest.objects.filter(investment__in=active_investments_qs).select_related("investment")
+    }
 
     return_average = completed_investments_qs.aggregate(avg=Avg("principal_amount"))["avg"] or Decimal("0.00")
     return {
@@ -1362,6 +1370,9 @@ def _build_investment_page_context(user):
         "investment_wallet_balance": investment_wallet.balance,
         "return_average": return_average,
         "min_investment_amount": system_cfg.min_investment_amount,
+        "min_withdrawal_amount": system_cfg.min_withdrawal_amount,
+        "return_requests": return_requests,
+        "now": now,
     }
 
 
@@ -1440,6 +1451,70 @@ def investment_packages_page(request: HttpRequest):
         "core/package.html",
         _build_investment_page_context(request.user),
     )
+
+
+@login_required
+def investment_topup(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    if request.method != "POST":
+        return redirect("investment-page")
+
+    investment_id = request.POST.get("investment_id")
+    amount_raw = request.POST.get("amount")
+
+    try:
+        amount = _decimal_or_error(amount_raw)
+        if amount <= 0:
+            raise ValueError("Amount must be greater than zero.")
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return redirect("investment-page")
+
+    inv = Investment.objects.filter(id=investment_id, user=request.user).select_related("package").first()
+    if not inv:
+        messages.error(request, "Investment not found.")
+        return redirect("investment-page")
+
+    try:
+        top_up_investment(inv, amount)
+    except ValueError as exc:
+        messages.error(request, str(exc))
+        return redirect("investment-page")
+
+    messages.success(request, "Investment increased successfully. Duration restarted from today.")
+    return redirect("investment-page")
+
+
+@login_required
+def investment_return_request(request: HttpRequest):
+    settle_matured_investments(user=request.user)
+    if request.method != "POST":
+        return redirect("investment-page")
+
+    investment_id = request.POST.get("investment_id")
+    inv = Investment.objects.filter(id=investment_id, user=request.user).first()
+    if not inv:
+        messages.error(request, "Investment not found.")
+        return redirect("investment-page")
+
+    now = timezone.now()
+    if inv.status != Investment.Status.ACTIVE or inv.principal_returned:
+        messages.error(request, "This investment is not active.")
+        return redirect("investment-page")
+    if not inv.ends_at or inv.ends_at > now:
+        messages.error(request, "You can request return only after the investment duration ends.")
+        return redirect("investment-page")
+
+    scheduled = now + timedelta(days=1)
+    rr, _ = InvestmentReturnRequest.objects.get_or_create(investment=inv)
+    rr.status = InvestmentReturnRequest.Status.PENDING
+    rr.requested_at = now
+    rr.scheduled_return_at = scheduled
+    rr.processed_at = None
+    rr.save(update_fields=["status", "requested_at", "scheduled_return_at", "processed_at", "updated_at"])
+
+    messages.success(request, "Return request submitted. Principal will be credited to your wallet after 24 hours.")
+    return redirect("investment-page")
 
 
 @login_required
