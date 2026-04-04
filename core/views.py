@@ -395,6 +395,7 @@ def _dashboard_context(user):
     )
 
     return {
+        "wallet_balance": user.wallet.balance if hasattr(user, "wallet") else Decimal("0.00"),
         "total_invested": total_invested,
         "total_profit_won": total_profit_won,
         "commission_total": commission_total,
@@ -407,6 +408,53 @@ def _dashboard_context(user):
         "won_investments": won_investments[:20],
         "wallet_transactions": wallet_transactions,
         "direct_downline_count": user.downlines.count(),
+    }
+
+
+def _admin_dashboard_cards_context(now):
+    wallet_balance = Wallet.objects.aggregate(total=Sum("balance"))["total"] or Decimal("0.00")
+    monthly_add_money = (
+        ManualPaymentRequest.objects.filter(
+            status=ManualPaymentRequest.Status.APPROVED,
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    monthly_withdrawals = (
+        ManualWithdrawalRequest.objects.filter(
+            status=ManualWithdrawalRequest.Status.APPROVED,
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    total_invested = (
+        Investment.objects.filter(status=Investment.Status.ACTIVE).aggregate(total=Sum("principal_amount"))["total"]
+        or Decimal("0.00")
+    )
+    monthly_won_profit = (
+        ProfitDistributionEntry.objects.filter(
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("won_profit"))["total"]
+        or Decimal("0.00")
+    )
+    monthly_commission = (
+        CommissionLog.objects.filter(
+            created_at__year=now.year,
+            created_at__month=now.month,
+        ).aggregate(total=Sum("commission_amount"))["total"]
+        or Decimal("0.00")
+    )
+    return {
+        "wallet_balance": wallet_balance,
+        "monthly_add_money": monthly_add_money,
+        "monthly_withdrawals": monthly_withdrawals,
+        "total_invested": total_invested,
+        "monthly_won_profit": monthly_won_profit,
+        "monthly_commission": monthly_commission,
+        "is_admin_dashboard": True,
     }
 
 
@@ -432,6 +480,8 @@ def user_dashboard(request: HttpRequest):
             return redirect("user-dashboard")
 
     context = _dashboard_context(user)
+    if user.is_staff:
+        context.update(_admin_dashboard_cards_context(context["now"]))
     context["page_title"] = "User Dashboard"
     return render(request, "core/user_dashboard.html", context)
 
