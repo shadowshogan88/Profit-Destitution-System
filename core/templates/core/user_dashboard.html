@@ -129,7 +129,13 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Wallet</p>
-                                                        <h4 class=" mb-0" >USDT <span class="counter-value" data-target="{{ wallet_balance }}">0</span></h4>
+                                                        <h4 class=" mb-0" >USDT
+                                                            {% if is_admin_dashboard %}
+                                                                <span class="counter-value" data-target="{{ admin_wallet_balance_total }}">0</span>
+                                                            {% else %}
+                                                                <span class="counter-value" data-target="{{ wallet_balance }}">0</span>
+                                                            {% endif %}
+                                                        </h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">Available<span> </span></span>
@@ -149,10 +155,20 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Add Amount</p>
-                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_add_money }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT
+                                                            {% if is_admin_dashboard %}
+                                                                <span class="counter-value" data-target="{{ admin_add_money_total }}">0</span>
+                                                            {% else %}
+                                                                <span class="counter-value" data-target="{{ monthly_add_money }}">0</span>
+                                                            {% endif %}
+                                                        </h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
-                                                        <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
+                                                        {% if is_admin_dashboard %}
+                                                            <span class="badge bg-success-subtle text-success">All-time<span> </span></span>
+                                                        {% else %}
+                                                            <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div><!-- end card body -->
@@ -169,10 +185,20 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Withdrals</p>
-                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_withdrawals }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT
+                                                            {% if is_admin_dashboard %}
+                                                                <span class="counter-value" data-target="{{ admin_withdrawals_total }}">0</span>
+                                                            {% else %}
+                                                                <span class="counter-value" data-target="{{ monthly_withdrawals }}">0</span>
+                                                            {% endif %}
+                                                        </h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
-                                                        <span class="badge bg-danger-subtle text-danger">{{ now|date:"F" }}<span> </span></span>
+                                                        {% if is_admin_dashboard %}
+                                                            <span class="badge bg-danger-subtle text-danger">All-time<span> </span></span>
+                                                        {% else %}
+                                                            <span class="badge bg-danger-subtle text-danger">{{ now|date:"F" }}<span> </span></span>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div><!-- end card body -->
@@ -189,7 +215,13 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Total Invested</p>
-                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ total_invested }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT
+                                                            {% if is_admin_dashboard %}
+                                                                <span class="counter-value" data-target="{{ admin_total_invested_active }}">0</span>
+                                                            {% else %}
+                                                                <span class="counter-value" data-target="{{ total_invested }}">0</span>
+                                                            {% endif %}
+                                                        </h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
                                                         <span class="badge bg-success-subtle text-success">All Active<span> </span></span>
@@ -209,10 +241,20 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1"> Won Profit</p>
-                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_won_profit }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT
+                                                            {% if is_admin_dashboard %}
+                                                                <span class="counter-value" data-target="{{ admin_won_profit_total }}">0</span>
+                                                            {% else %}
+                                                                <span class="counter-value" data-target="{{ monthly_won_profit }}">0</span>
+                                                            {% endif %}
+                                                        </h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
-                                                        <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
+                                                        {% if is_admin_dashboard %}
+                                                            <span class="badge bg-success-subtle text-success">All-time<span> </span></span>
+                                                        {% else %}
+                                                            <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div><!-- end card body -->
@@ -229,16 +271,67 @@
                                                     </div>
                                                     <div class="flex-grow-1 ms-3">
                                                         <p class="text-uppercase fw-semibold fs-12 text-muted mb-1">Commission</p>
-                                                        <h4 class=" mb-0">USDT <span class="counter-value" data-target="{{ monthly_commission }}">0</span></h4>
+                                                        <h4 class=" mb-0">USDT
+                                                            {% if is_admin_dashboard %}
+                                                                <span class="counter-value" data-target="{{ admin_commission_total }}">0</span>
+                                                            {% else %}
+                                                                <span class="counter-value" data-target="{{ monthly_commission }}">0</span>
+                                                            {% endif %}
+                                                        </h4>
                                                     </div>
                                                     <div class="flex-shrink-0 align-self-end">
-                                                        <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
+                                                        {% if is_admin_dashboard %}
+                                                            <span class="badge bg-success-subtle text-success">All-time<span> </span></span>
+                                                        {% else %}
+                                                            <span class="badge bg-success-subtle text-success">{{ now|date:"F" }}<span> </span></span>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div><!-- end card body -->
                                         </div><!-- end card -->
                                     </div><!-- end col -->
                                 </div>
+
+                                {% if is_admin_dashboard %}
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <div class="card">
+                                            <div class="card-header d-flex align-items-center justify-content-between">
+                                                <h5 class="card-title mb-0">Monthly Summary</h5>
+                                                <span class="badge bg-primary-subtle text-primary">{{ now|date:"F Y" }}</span>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row g-3">
+                                                    <div class="col-lg-3 col-md-6">
+                                                        <div class="p-3 border rounded">
+                                                            <div class="text-muted small">Add Amount (Monthly)</div>
+                                                            <div class="fw-semibold">USDT <span class="counter-value" data-target="{{ admin_monthly_add_money }}">0</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-6">
+                                                        <div class="p-3 border rounded">
+                                                            <div class="text-muted small">Withdrawals (Monthly)</div>
+                                                            <div class="fw-semibold">USDT <span class="counter-value" data-target="{{ admin_monthly_withdrawals }}">0</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-6">
+                                                        <div class="p-3 border rounded">
+                                                            <div class="text-muted small">Won Profit (Monthly)</div>
+                                                            <div class="fw-semibold">USDT <span class="counter-value" data-target="{{ admin_monthly_won_profit }}">0</span></div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-3 col-md-6">
+                                                        <div class="p-3 border rounded">
+                                                            <div class="text-muted small">Commission (Monthly)</div>
+                                                            <div class="fw-semibold">USDT <span class="counter-value" data-target="{{ admin_monthly_commission }}">0</span></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
                             </div>
                         </div><!-- end col -->
                     </div><!-- end row -->

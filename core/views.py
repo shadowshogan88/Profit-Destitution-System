@@ -412,8 +412,28 @@ def _dashboard_context(user):
 
 
 def _admin_dashboard_cards_context(now):
-    wallet_balance = Wallet.objects.aggregate(total=Sum("balance"))["total"] or Decimal("0.00")
-    monthly_add_money = (
+    admin_wallet_balance_total = Wallet.objects.aggregate(total=Sum("balance"))["total"] or Decimal("0.00")
+
+    admin_add_money_total = (
+        ManualPaymentRequest.objects.filter(
+            status=ManualPaymentRequest.Status.APPROVED,
+        ).aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    admin_withdrawals_total = (
+        ManualWithdrawalRequest.objects.filter(
+            status=ManualWithdrawalRequest.Status.APPROVED,
+        ).aggregate(total=Sum("amount"))["total"]
+        or Decimal("0.00")
+    )
+    admin_won_profit_total = (
+        ProfitDistributionEntry.objects.aggregate(total=Sum("won_profit"))["total"] or Decimal("0.00")
+    )
+    admin_commission_total = (
+        CommissionLog.objects.aggregate(total=Sum("commission_amount"))["total"] or Decimal("0.00")
+    )
+
+    admin_monthly_add_money = (
         ManualPaymentRequest.objects.filter(
             status=ManualPaymentRequest.Status.APPROVED,
             created_at__year=now.year,
@@ -421,7 +441,7 @@ def _admin_dashboard_cards_context(now):
         ).aggregate(total=Sum("amount"))["total"]
         or Decimal("0.00")
     )
-    monthly_withdrawals = (
+    admin_monthly_withdrawals = (
         ManualWithdrawalRequest.objects.filter(
             status=ManualWithdrawalRequest.Status.APPROVED,
             created_at__year=now.year,
@@ -429,18 +449,18 @@ def _admin_dashboard_cards_context(now):
         ).aggregate(total=Sum("amount"))["total"]
         or Decimal("0.00")
     )
-    total_invested = (
+    admin_total_invested_active = (
         Investment.objects.filter(status=Investment.Status.ACTIVE).aggregate(total=Sum("principal_amount"))["total"]
         or Decimal("0.00")
     )
-    monthly_won_profit = (
+    admin_monthly_won_profit = (
         ProfitDistributionEntry.objects.filter(
             created_at__year=now.year,
             created_at__month=now.month,
         ).aggregate(total=Sum("won_profit"))["total"]
         or Decimal("0.00")
     )
-    monthly_commission = (
+    admin_monthly_commission = (
         CommissionLog.objects.filter(
             created_at__year=now.year,
             created_at__month=now.month,
@@ -448,12 +468,20 @@ def _admin_dashboard_cards_context(now):
         or Decimal("0.00")
     )
     return {
-        "wallet_balance": wallet_balance,
-        "monthly_add_money": monthly_add_money,
-        "monthly_withdrawals": monthly_withdrawals,
-        "total_invested": total_invested,
-        "monthly_won_profit": monthly_won_profit,
-        "monthly_commission": monthly_commission,
+        # All-time totals for admin cards
+        "admin_wallet_balance_total": admin_wallet_balance_total,
+        "admin_add_money_total": admin_add_money_total,
+        "admin_withdrawals_total": admin_withdrawals_total,
+        "admin_won_profit_total": admin_won_profit_total,
+        "admin_commission_total": admin_commission_total,
+        "admin_total_invested_active": admin_total_invested_active,
+
+        # Monthly totals for admin monthly section
+        "admin_monthly_add_money": admin_monthly_add_money,
+        "admin_monthly_withdrawals": admin_monthly_withdrawals,
+        "admin_monthly_won_profit": admin_monthly_won_profit,
+        "admin_monthly_commission": admin_monthly_commission,
+
         "is_admin_dashboard": True,
     }
 
