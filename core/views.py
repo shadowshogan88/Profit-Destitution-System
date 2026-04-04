@@ -1050,14 +1050,15 @@ def users_referral(request: HttpRequest):
             )
         }
         monthly_commission_map = {
-            row["beneficiary_id"]: row["total_amount"]
+            row["source_user_id"]: row["total_amount"]
             for row in (
                 CommissionLog.objects.filter(
-                    beneficiary_id__in=user_ids,
+                    beneficiary_id=request.user.id,
+                    source_user_id__in=user_ids,
                     created_at__year=now.year,
                     created_at__month=now.month,
                 )
-                .values("beneficiary_id")
+                .values("source_user_id")
                 .annotate(total_amount=Sum("commission_amount"))
             )
         }
