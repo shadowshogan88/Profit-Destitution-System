@@ -1,0 +1,113 @@
+{% extends 'core/user_dashboard_master.html' %}
+{% block title %}{{ page_title }}{% endblock %}
+{% block dashboard_content %}
+<div class="row">
+    <div class="col-12">
+        <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
+            <h4 class="mb-sm-0">{{ page_title }}</h4>
+            <div class="d-flex gap-2">
+                <span class="badge bg-success-subtle text-success">Online: {{ online_count }}</span>
+                <span class="badge bg-secondary-subtle text-secondary">Offline: {{ offline_count }}</span>
+            </div>
+        </div>
+        <div class="text-muted small">Online threshold: {{ online_threshold_minutes }} minutes</div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <form method="get" class="row g-2 align-items-end">
+                    <div class="col-md-6">
+                        <label class="form-label">Search</label>
+                        <input type="text" class="form-control" name="q" value="{{ q }}" placeholder="Username, name, email, phone">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Status</label>
+                        <select class="form-select" name="status">
+                            <option value="all" {% if status == 'all' %}selected{% endif %}>All</option>
+                            <option value="online" {% if status == 'online' %}selected{% endif %}>Online</option>
+                            <option value="offline" {% if status == 'offline' %}selected{% endif %}>Offline</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100">Apply</button>
+                        <a class="btn btn-light w-100" href="{% url 'admin-user-status' %}">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Users</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Username / Name</th>
+                                <th>Status</th>
+                                <th>Last Seen</th>
+                                <th>Last Login</th>
+                                <th>User Type</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for u in users %}
+                            <tr>
+                                <td>
+                                    <div class="fw-semibold">{{ u.username }}</div>
+                                    <div class="text-muted small">{{ u.get_full_name|default:"-" }}</div>
+                                </td>
+                                <td>
+                                    {% if u.last_seen_at and u.last_seen_at >= online_cutoff %}
+                                        <span class="badge bg-success">Online</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Offline</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if u.last_seen_at %}
+                                        {{ u.last_seen_at|date:"Y-m-d H:i" }}
+                                        {% if not (u.last_seen_at and u.last_seen_at >= online_cutoff) %}
+                                            <div class="text-muted small">Last active: {{ u.last_seen_at|timesince }} ago</div>
+                                        {% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if u.last_login %}
+                                        {{ u.last_login|date:"Y-m-d H:i" }}
+                                        <div class="text-muted small">{{ u.last_login|timesince }} ago</div>
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ u.user_type|default:"-" }}</td>
+                                <td>{{ u.email|default:"-" }}</td>
+                                <td>{{ u.phone_number|default:"-" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center text-muted">No users found.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

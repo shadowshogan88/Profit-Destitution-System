@@ -42,6 +42,8 @@ urlpatterns = [
     path("lock-screen/set/", views.set_lock_screen, name="lock-screen-set"),
     path("user-dashboard/", views.user_dashboard, name="user-dashboard"),
     path("dashboard/", views.dashboard, name="dashboard"),
+    path("dashboard/ping/", views.dashboard_ping, name="dashboard-ping"),
+    path("dashboard/admin/user-status/", views.admin_user_status, name="admin-user-status"),
     path("profile/", views.page_profile, name="page-profile"),
     path(
         "password-change/",

@@ -12,7 +12,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.hashers import make_password
 from django.contrib.messages.views import SuccessMessageMixin
 from django.db import transaction
-from django.db.models import Avg, Count, Sum
+from django.db.models import Avg, Count, Sum, Q
 from django.core.exceptions import ValidationError
 from django.core import mail
 from django.core.mail.backends.smtp import EmailBackend as SmtpEmailBackend
@@ -26,6 +26,7 @@ from django.template.loader import render_to_string
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 from .models import (
     CommissionLog,
@@ -192,7 +193,7 @@ def register_user(request: HttpRequest):
     data = _json_body(request)
     username = data.get("username")
     password = data.get("password")
-    email = (data.get("email") or "").strip()
+    email = (data.get("email") or "").strip().lower()
     user_type = (data.get("user_type") or User.UserType.USER).strip().lower()
     referrer_code = (data.get("referrer_code") or "").strip().upper()
 
@@ -209,6 +210,8 @@ def register_user(request: HttpRequest):
 
     if User.objects.filter(username=username).exists():
         return JsonResponse({"error": "username already exists"}, status=400)
+    if User.objects.filter(email__iexact=email).exists():
+        return JsonResponse({"error": "email already exists"}, status=400)
     if user_type not in {User.UserType.ADMIN, User.UserType.USER}:
         return JsonResponse({"error": "invalid user_type"}, status=400)
 
@@ -439,6 +442,26 @@ def dashboard(request: HttpRequest):
 
 
 @login_required
+@require_POST
+def dashboard_ping(request: HttpRequest):
+    """
+    Lightweight heartbeat endpoint used by the dashboard layout to keep `last_seen_at` fresh.
+    Throttles writes to reduce DB load.
+    """
+    now = timezone.now()
+    user = request.user
+
+    # Avoid writing too frequently (e.g., multiple tabs).
+    min_update_seconds = 20
+    last_seen_at = getattr(user, "last_seen_at", None)
+    should_update = (last_seen_at is None) or (now - last_seen_at).total_seconds() >= min_update_seconds
+    if should_update:
+        User.objects.filter(pk=user.pk).update(last_seen_at=now)
+
+    return JsonResponse({"ok": True, "server_time": now.isoformat()})
+
+
+@login_required
 def page_profile(request: HttpRequest):
     user = request.user
     settle_matured_investments(user=user)
@@ -470,7 +493,7 @@ def page_profile(request: HttpRequest):
 
         first_name = (request.POST.get("first_name") or "").strip()
         last_name = (request.POST.get("last_name") or "").strip()
-        email = (request.POST.get("email") or "").strip()
+        email = (request.POST.get("email") or "").strip().lower()
         phone_number = (request.POST.get("phone_number") or "").strip()
         address = (request.POST.get("address") or "").strip()
 
@@ -492,11 +515,11 @@ def page_profile(request: HttpRequest):
         user.identity_type = identity_type
         user.identity_number = identity_number
 
-        existing_email = (user.email or "").strip()
+        existing_email = (user.email or "").strip().lower()
         if not email:
             email = existing_email
 
-        if email and email.lower() != existing_email.lower():
+        if email and email != existing_email:
             if User.objects.exclude(pk=user.pk).filter(email__iexact=email).exists():
                 messages.error(request, "This email is already used by another account.")
                 return redirect("page-profile")
@@ -609,7 +632,7 @@ def register_with_referral(request: HttpRequest):
 
     if request.method == "POST":
         username = (request.POST.get("username") or "").strip()
-        email = (request.POST.get("email") or "").strip()
+        email = (request.POST.get("email") or "").strip().lower()
         user_type = User.UserType.USER
         password = request.POST.get("password") or ""
         confirm_password = request.POST.get("confirm_password") or ""
@@ -624,6 +647,9 @@ def register_with_referral(request: HttpRequest):
             validate_email(email)
         except ValidationError:
             messages.error(request, "Please enter a valid email address.")
+            return redirect("register-with-referral")
+        if User.objects.filter(email__iexact=email).exists():
+            messages.error(request, "This email is already used by another account.")
             return redirect("register-with-referral")
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
@@ -1805,6 +1831,53 @@ def admin_pending_add_money(request: HttpRequest):
         {
             "page_title": "Pending Add Money Requests",
             "pending_add_money": pending_add_money,
+        },
+    )
+
+
+@login_required
+def admin_user_status(request: HttpRequest):
+    if not request.user.is_staff:
+        return redirect("user-dashboard")
+
+    query = (request.GET.get("q") or "").strip()
+    status = (request.GET.get("status") or "all").strip().lower()
+
+    now = timezone.now()
+    online_threshold_minutes = 2
+    online_cutoff = now - timedelta(minutes=online_threshold_minutes)
+
+    users_qs = User.objects.all().order_by("username")
+    if query:
+        users_qs = users_qs.filter(
+            Q(username__icontains=query)
+            | Q(first_name__icontains=query)
+            | Q(last_name__icontains=query)
+            | Q(email__icontains=query)
+            | Q(phone_number__icontains=query)
+        )
+
+    if status == "online":
+        users_qs = users_qs.filter(last_seen_at__gte=online_cutoff)
+    elif status == "offline":
+        users_qs = users_qs.filter(Q(last_seen_at__lt=online_cutoff) | Q(last_seen_at__isnull=True))
+
+    base_qs = User.objects.all()
+    online_count = base_qs.filter(last_seen_at__gte=online_cutoff).count()
+    offline_count = base_qs.filter(Q(last_seen_at__lt=online_cutoff) | Q(last_seen_at__isnull=True)).count()
+
+    return render(
+        request,
+        "core/admin_user_status.html",
+        {
+            "page_title": "User Status",
+            "users": users_qs,
+            "q": query,
+            "status": status,
+            "online_cutoff": online_cutoff,
+            "online_count": online_count,
+            "offline_count": offline_count,
+            "online_threshold_minutes": online_threshold_minutes,
         },
     )
 

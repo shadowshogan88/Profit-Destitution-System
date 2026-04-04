@@ -318,6 +318,15 @@
                         {% if request.user.is_superuser or request.user.is_staff or request.user.user_type|lower == 'admin' %}
                         <li class="menu-title"><i class="ri-more-fill"></i> <span data-key="t-pages">Admin</span></li>
                         <li class="nav-item">
+                            <a class="nav-link menu-link" href="{% url 'admin-user-status' %}">
+                                <i class="ri-user-search-line"></i> <span data-key="t-admin-user-status">User Status</span>
+                                {% if admin_user_status_counts %}
+                                    <span class="badge bg-success ms-2">O: {{ admin_user_status_counts.online }}</span>
+                                    <span class="badge bg-secondary ms-1">F: {{ admin_user_status_counts.offline }}</span>
+                                {% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link menu-link" href="{% url 'admin-profit-distribution' %}">
                                 <i class="ri-coins-line"></i> <span data-key="t-admin-profit">Profit Distribution</span>
                             </a>
@@ -524,6 +533,55 @@
             document.addEventListener(eventName, resetTimer, { passive: true });
         });
         resetTimer();
+    })();
+    </script>
+    <script>
+    (function () {
+        var pingUrl = "{% url 'dashboard-ping' %}";
+        var intervalMs = 30 * 1000;
+
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                var cookies = document.cookie.split(";");
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function ping() {
+            if (!pingUrl) {
+                return;
+            }
+            fetch(pingUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest"
+                },
+                credentials: "same-origin",
+                body: ""
+            }).catch(function () {});
+        }
+
+        ping();
+        setInterval(function () {
+            if (!document.hidden) {
+                ping();
+            }
+        }, intervalMs);
+        document.addEventListener("visibilitychange", function () {
+            if (!document.hidden) {
+                ping();
+            }
+        });
     })();
     </script>
 </body>

@@ -9,6 +9,7 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import IntegrityError
 from django.db import models, transaction
 from django.db.models import Sum
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils import timezone
@@ -48,6 +49,18 @@ class User(AbstractUser):
 
     email_verified = models.BooleanField(default=False)
 
+    # Presence tracking: updated via JS heartbeat -> /dashboard/ping/
+    last_seen_at = models.DateTimeField(null=True, blank=True, db_index=True)
+
+    class Meta(AbstractUser.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=["email"],
+                condition=~Q(email=""),
+                name="uniq_core_user_email_nonempty",
+            )
+        ]
+
     @classmethod
     def generate_referral_code(cls) -> str:
         while True:
@@ -56,6 +69,8 @@ class User(AbstractUser):
                 return code
 
     def save(self, *args, **kwargs):
+        if self.email:
+            self.email = self.email.strip().lower()
         if not self.referral_code:
             self.referral_code = self.generate_referral_code()
         if self.is_superuser:
