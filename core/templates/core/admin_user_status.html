@@ -78,7 +78,7 @@
                                 <td>
                                     {% if u.last_seen_at %}
                                         {{ u.last_seen_at|date:"Y-m-d H:i" }}
-                                        {% if not (u.last_seen_at and u.last_seen_at >= online_cutoff) %}
+                                        {% if u.last_seen_at < online_cutoff %}
                                             <div class="text-muted small">Last active: {{ u.last_seen_at|timesince }} ago</div>
                                         {% endif %}
                                     {% else %}
@@ -110,4 +110,3 @@
     </div>
 </div>
 {% endblock %}
-
